@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "typeRoots": ["./node_modules/@types", "./typings"]
+  },
+  "include": ["miniprogram/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules"]
+}
