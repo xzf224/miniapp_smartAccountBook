@@ -74,9 +74,6 @@ Component({
       this.loadData()
     },
 
-    onRecordTap(e: any) {
-      wx.navigateTo({ url: `/pages/add-record/add-record?id=${e.detail.id}` })
-    },
 
     onRecordEdit(e: any) {
       const id = (e.currentTarget.dataset as any).id as string

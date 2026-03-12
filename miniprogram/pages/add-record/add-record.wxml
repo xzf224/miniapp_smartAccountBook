@@ -26,7 +26,8 @@
       <!-- <image class="arrow-icon" src="/images/calendar.png" /> -->
     </view>
     <view class="form-divider"></view>
-    <view class="form-row">
+    <view class="form-row note-row flex-row">
+      <text class="form-label">备注</text>
       <textarea class="note-input" placeholder="添加备注（可选）"
                 value="{{note}}" bind:input="onNoteInput" maxlength="200"
                 auto-height />

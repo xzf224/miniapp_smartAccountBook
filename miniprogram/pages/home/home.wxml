@@ -2,18 +2,44 @@
 <scroll-view scroll-y class="page-body">
   <view class="month-header flex-row">
     <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
-    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
-      <view class="month-picker-btn">
-        <image class="month-picker-icon" src="/images/calendar.png" />
+    <view class="header-icons flex-row">
+      <view class="icon-btn" bind:tap="onSearchToggle">
+        <image class="header-icon {{searchVisible ? 'icon-active' : ''}}" src="/images/search.png" mode="aspectFit" />
       </view>
-    </picker>
+      <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+        <view class="icon-btn">
+          <image class="header-icon" src="/images/calendar.png" mode="aspectFit" />
+        </view>
+      </picker>
+    </view>
   </view>
-  <summary-card income="{{income}}" expense="{{expense}}" balance="{{balance}}"
+
+  <!-- 搜索栏 -->
+  <view class="search-panel" wx:if="{{searchVisible}}">
+    <view class="search-input-wrap flex-row">
+      <image class="search-icon-small" src="/images/search.png" mode="aspectFit" />
+      <input class="search-input" value="{{searchKeyword}}" placeholder="搜索备注或分类"
+             placeholder-class="search-ph" bind:input="onSearchInput" />
+      <text wx:if="{{searchKeyword}}" class="search-clear" bind:tap="onSearchClear">×</text>
+    </view>
+    <view class="search-type-chips flex-row">
+      <view class="type-chip {{searchTypeIndex === index ? 'chip-active' : ''}}"
+            wx:for="{{searchTypes}}" wx:key="*this"
+            data-index="{{index}}" bind:tap="onSearchTypeChange">{{item}}</view>
+    </view>
+  </view>
+
+  <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
                 expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" />
+
+  <!-- 搜索结果提示 -->
+  <view wx:if="{{searchVisible}}" class="search-result-hint">
+    <text class="search-result-text">共 {{searchResultCount}} 条结果</text>
+  </view>
 
   <view class="empty-state" wx:if="{{isEmpty}}">
     <image class="empty-icon" src="../../images/list.png"></image>
-    <text class="empty-text">暂无记录，点击右下角按钮开始记账</text>
+    <text class="empty-text">{{searchVisible ? '未找到匹配记录' : '暂无记录，点击右下角按钮开始记账'}}</text>
   </view>
 
   <view class="record-groups" wx:else>
@@ -27,7 +53,7 @@
       <view class="day-records" style="overflow: hidden;">
         <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap">
           <swipe-cell bind:edit="onRecordEdit" bind:delete="onRecordDelete" data-id="{{record.id}}">
-            <record-item record="{{record}}" bind:tap="onRecordTap" />
+            <record-item record="{{record}}" />
           </swipe-cell>
           <view class="divider" wx:if="{{index < group.records.length - 1}}"></view>
         </view>

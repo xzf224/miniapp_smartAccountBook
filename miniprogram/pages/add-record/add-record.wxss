@@ -12,6 +12,10 @@
   align-items: center;
 }
 
+.form-row.note-row {
+  align-items: flex-start;
+}
+
 .form-label {
   font-size: 26rpx;
   color: var(--color-text-secondary);
@@ -40,7 +44,7 @@
 }
 
 .note-input {
-  width: 100%;
+  flex: 1;
   font-size: 28rpx;
   min-height: 80rpx;
   color: var(--color-text-primary);

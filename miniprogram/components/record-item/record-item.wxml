@@ -1,4 +1,4 @@
-<view class="record-item flex-row" bind:tap="onTap">
+<view class="record-item flex-row">
   <view class="icon-wrap" style="background: {{iconBg}};">
     <text class="icon">{{icon}}</text>
   </view>

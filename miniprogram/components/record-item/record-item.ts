@@ -27,9 +27,5 @@ Component({
     sign: '',
   },
 
-  methods: {
-    onTap() {
-      this.triggerEvent('tap', { id: this.data.record.id })
-    },
-  },
+  methods: {},
 })
