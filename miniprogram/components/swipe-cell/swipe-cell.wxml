@@ -1,0 +1,12 @@
+<view class="swipe-cell-wrap">
+  <view class="swipe-content" style="transform: translateX({{offsetX}}px)"
+        bind:touchstart="onTouchStart"
+        bind:touchmove="onTouchMove"
+        bind:touchend="onTouchEnd">
+    <slot></slot>
+  </view>
+  <view class="actions">
+    <view class="action-edit" bind:tap="onEdit">修改</view>
+    <view class="action-delete" bind:tap="onDelete">删除</view>
+  </view>
+</view>

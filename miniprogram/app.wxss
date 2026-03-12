@@ -1,0 +1,82 @@
+/* ====== CSS 变量 ====== */
+page {
+  --color-primary: #1AAD19;
+  --color-danger: #FA5151;
+  --color-income: #1AAD19;
+  --color-expense: #FA5151;
+  --color-neutral: #576B95;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #9B9B9B;
+  --color-text-placeholder: #C8C8C8;
+  --color-bg-page: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-border: #EFEFEF;
+  --radius-card: 0rpx;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+               "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+}
+
+/* ====== 通用类 ====== */
+.card {
+  background: var(--color-bg-card);
+  padding: 32rpx;
+  margin: 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.section-title {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  padding: 40rpx 32rpx 16rpx;
+  letter-spacing: 2rpx;
+}
+
+.flex-row { display: flex; flex-direction: row; align-items: center; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; }
+.text-center { text-align: center; }
+.text-income { color: var(--color-income); }
+.text-expense { color: var(--color-expense); }
+.text-neutral { color: var(--color-neutral); }
+
+/* ====== 类型 Tabs（跨页面复用） ====== */
+.type-tabs {
+  background: var(--color-bg-card);
+  border-bottom: 1rpx solid var(--color-border);
+  margin: 0;
+}
+.type-tab {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+.type-tab.active {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom: 3rpx solid var(--color-primary);
+}
+
+/* ====== 保存/操作按钮 ====== */
+.save-btn {
+  margin: 48rpx 32rpx;
+  background: var(--color-primary);
+  color: #fff;
+  text-align: center;
+  padding: 32rpx 0;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+
+/* ====== 页面安全区 ====== */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+

@@ -1,0 +1,60 @@
+.page-body {
+  background: var(--color-bg-page);
+  min-height: 100vh;
+}
+
+.form-card {
+  padding: 0;
+}
+
+.form-row {
+  padding: 32rpx;
+  align-items: center;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  width: 80rpx;
+  margin-right: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.currency-sign {
+  font-size: 40rpx;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  margin-right: 8rpx;
+}
+
+.amount-input {
+  font-size: 48rpx;
+  font-weight: 600;
+  letter-spacing: -1rpx;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.note-input {
+  width: 100%;
+  font-size: 28rpx;
+  min-height: 80rpx;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.form-divider {
+  height: 1rpx;
+  background: var(--color-border);
+  margin: 0 32rpx;
+}
+
+.arrow-icon {
+  width: 36rpx;
+  height: 36rpx;
+  flex-shrink: 0;
+}

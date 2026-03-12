@@ -1,0 +1,192 @@
+.page-body {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+}
+
+.month-header {
+  padding: 20rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-page);
+}
+
+.month-header-label {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 2rpx;
+}
+
+.month-picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.month-picker-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.section-title {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  padding-bottom: 20rpx;
+  letter-spacing: 2rpx;
+}
+
+/* Legend */
+.legend {
+  margin-top: 8rpx;
+}
+
+.legend-item {
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.legend-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  font-size: 26rpx;
+  color: #555;
+}
+
+.legend-pct {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* Category ranking */
+.rank-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.rank-item:last-child {
+  border-bottom: none;
+}
+
+.rank-row {
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.rank-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 7rpx;
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.rank-no {
+  font-size: 22rpx;
+  color: var(--color-text-placeholder);
+  width: 28rpx;
+  margin-right: 10rpx;
+  text-align: center;
+}
+
+.rank-name {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+}
+
+.rank-amount {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-right: 12rpx;
+}
+
+.rank-pct {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  width: 60rpx;
+  text-align: right;
+}
+
+.rank-bar-track {
+  height: 4rpx;
+  background: var(--color-border);
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.rank-bar-fill {
+  height: 4rpx;
+  transition: width 0.3s;
+}
+
+.budget-tip {
+  margin-top: 4rpx;
+}
+
+.budget-tip-text {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.budget-tip-text.over {
+  color: var(--color-expense);
+}
+
+/* Compare tabs */
+.compare-header {
+  align-items: center;
+}
+
+.compare-tabs {
+  background: var(--color-bg-page);
+  border: 1rpx solid var(--color-border);
+  border-radius: 8rpx;
+  padding: 4rpx;
+}
+
+.compare-tab {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  border-radius: 6rpx;
+}
+
+.compare-tab.active {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Text colors */
+.text-expense {
+  color: var(--color-expense, #ff4d4f);
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.pie-chart-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 16rpx 0;
+}
+
+.pie-canvas {
+  width: 480rpx;
+  height: 480rpx;
+}

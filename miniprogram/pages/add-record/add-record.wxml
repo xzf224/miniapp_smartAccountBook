@@ -1,0 +1,37 @@
+<navigation-bar title="{{isEdit ? '编辑记录' : '新增记录'}}" />
+<view class="page-body">
+  <view class="type-tabs flex-row">
+    <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+          wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
+          bind:tap="onTypeChange">{{item}}</view>
+  </view>
+
+  <view class="section-title">选择类别</view>
+  <category-grid categories="{{categories}}" selected="{{selectedCategory}}"
+                 bind:select="onCategorySelect" />
+
+  <view class="form-card card">
+    <view class="form-row flex-row">
+      <text class="form-label">金额</text>
+      <text class="currency-sign">¥</text>
+      <input class="amount-input flex-1" type="digit" placeholder="0.00"
+             value="{{amountText}}" bind:input="onAmountInput" />
+    </view>
+    <view class="form-divider"></view>
+    <view class="form-row flex-row">
+      <text class="form-label">日期</text>
+      <picker mode="date" value="{{date}}" bind:change="onDateChange">
+        <text class="picker-text">{{date}}</text>
+      </picker>
+      <!-- <image class="arrow-icon" src="/images/calendar.png" /> -->
+    </view>
+    <view class="form-divider"></view>
+    <view class="form-row">
+      <textarea class="note-input" placeholder="添加备注（可选）"
+                value="{{note}}" bind:input="onNoteInput" maxlength="200"
+                auto-height />
+    </view>
+  </view>
+
+  <view class="save-btn" bind:tap="onSave">保存记录</view>
+</view>

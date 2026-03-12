@@ -1,0 +1,41 @@
+<view class="page-root">
+<navigation-bar title="类别管理" back="{{true}}" />
+<scroll-view scroll-y class="page-body">
+
+  <view class="type-tabs flex-row">
+    <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+          wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
+          bind:tap="onTypeChange">{{item}}</view>
+  </view>
+
+  <view class="card">
+    <view class="cat-item flex-row" wx:for="{{categories}}" wx:key="name">
+      <text class="cat-name flex-1">{{item.name}}</text>
+      <view class="default-badge" wx:if="{{item.isDefault}}">
+        <text class="badge-text">系统</text>
+      </view>
+      <view class="delete-btn" wx:else data-name="{{item.name}}" bind:tap="onDeleteCategory">
+        <text class="delete-icon">✕</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card add-card">
+    <view class="add-title">添加新分类</view>
+    <view class="add-row flex-row">
+      <input class="add-input flex-1"
+             placeholder="输入分类名称"
+             value="{{newName}}"
+             maxlength="10"
+             bind:input="onNameInput"
+             confirm-type="done"
+             bind:confirm="onAddCategory" />
+      <view class="add-btn" bind:tap="onAddCategory">
+        <text class="add-btn-text">添加</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 60rpx;"></view>
+</scroll-view>
+</view>

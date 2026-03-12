@@ -1,0 +1,100 @@
+.page-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body {
+  flex: 1;
+  height: 0;
+  background: var(--color-bg-page);
+}
+
+.month-header {
+  padding: 16rpx 32rpx;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-card);
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.month-header-label {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 2rpx;
+}
+
+.month-picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.month-picker-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.save-btn {
+  margin: 32rpx 32rpx 0;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.switch-row {
+  align-items: center;
+  padding: 4rpx 0;
+}
+
+.switch-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.card-title {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  margin-bottom: 20rpx;
+  letter-spacing: 2rpx;
+}
+
+.budget-row {
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.budget-row:last-child {
+  border-bottom: none;
+}
+
+.budget-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.budget-input-wrap {
+  align-items: center;
+  background: var(--color-bg-page);
+  border-bottom: 1rpx solid var(--color-border);
+  padding: 8rpx 0;
+}
+
+.currency-sign {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 4rpx;
+}
+
+.budget-input {
+  width: 160rpx;
+  font-size: 30rpx;
+  color: #333;
+  text-align: right;
+}

@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.swipe-cell-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe-content {
+  position: relative;
+  z-index: 1;
+  background: var(--color-bg-card);
+  transition: transform 0.25s ease;
+}
+
+.actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 240rpx;
+  display: flex;
+  flex-direction: row;
+}
+
+.action-edit {
+  flex: 1;
+  background: #4A9EFF;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+
+.action-delete {
+  flex: 1;
+  background: var(--color-danger);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}

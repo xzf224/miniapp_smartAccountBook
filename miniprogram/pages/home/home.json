@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "summary-card": "/components/summary-card/summary-card",
+    "record-item": "/components/record-item/record-item",
+    "swipe-cell": "/components/swipe-cell/swipe-cell",
+    "fab-button": "/components/fab-button/fab-button"
+  }
+}

@@ -1,0 +1,33 @@
+<view class="summary-card">
+  <text class="card-title">本月收支</text>
+  <view class="cols flex-row">
+    <view class="col flex-col flex-1">
+      <view class="col-icon income-icon">
+        <text class="col-symbol">↑</text>
+      </view>
+      <text class="col-label">收入</text>
+      <text class="col-amount text-income">+{{income}}</text>
+    </view>
+    <view class="col flex-col flex-1">
+      <view class="col-icon expense-icon">
+        <text class="col-symbol">↓</text>
+      </view>
+      <text class="col-label">支出</text>
+      <text class="col-amount text-expense">-{{expense}}</text>
+      <view class="budget-bar-wrap" wx:if="{{expenseBudget > 0}}">
+        <view class="budget-bar-track">
+          <view class="budget-bar-fill {{budgetOver ? 'over' : ''}}"
+                style="width: {{budgetPercent}}%"></view>
+        </view>
+        <text class="budget-label">{{budgetLabel}}</text>
+      </view>
+    </view>
+    <view class="col flex-col flex-1">
+      <view class="col-icon balance-icon">
+        <text class="col-symbol">余</text>
+      </view>
+      <text class="col-label">结余</text>
+      <text class="col-amount">{{balance}}</text>
+    </view>
+  </view>
+</view>

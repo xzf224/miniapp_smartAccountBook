@@ -1,0 +1,3 @@
+<view class="bar-chart-container">
+  <canvas type="2d" id="barChart" class="bar-canvas"></canvas>
+</view>

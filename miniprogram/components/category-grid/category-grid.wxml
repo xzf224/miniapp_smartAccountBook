@@ -1,0 +1,10 @@
+<view class="category-grid">
+  <view class="grid-item {{item.name === selected ? 'active' : ''}}"
+        wx:for="{{categoryItems}}" wx:key="name"
+        bind:tap="onSelect" data-name="{{item.name}}">
+    <view class="icon-circle" style="background: {{item.color}};">
+      <text class="emoji">{{item.icon}}</text>
+    </view>
+    <text class="name">{{item.name}}</text>
+  </view>
+</view>

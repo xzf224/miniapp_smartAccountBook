@@ -1,0 +1,9 @@
+{
+  "name": "ocr-receipt",
+  "version": "1.0.0",
+  "description": "OCR cloud function for receipt scanning",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+.fab-container {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.75);
+  z-index: 99;
+}
+
+.fab-main {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 52rpx;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  line-height: 1;
+  font-family: Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.fab-plus {
+  display: block;
+  transform: translateY(-2rpx);
+}
+
+.fab-main.rotated {
+  transform: rotate(45deg);
+}
+
+.sub-buttons {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(20rpx);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.sub-buttons.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.sub-buttons.pop-down {
+  transform: translateY(-20rpx);
+}
+
+.sub-buttons.pop-down.show {
+  transform: translateY(0);
+}
+
+.sub-buttons.pop-left {
+  align-items: flex-start;
+}
+
+.sub-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #fff;
+  border-radius: 48rpx;
+  padding: 22rpx 40rpx;
+  margin-bottom: 10rpx;
+  border: 1rpx solid var(--color-border);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.sub-btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.sub-icon {
+  font-size: 40rpx;
+  margin-right: 14rpx;
+}
+
+.sub-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}

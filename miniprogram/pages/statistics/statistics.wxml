@@ -1,0 +1,75 @@
+<navigation-bar title="消费统计" back="{{false}}" />
+<view class="page-body">
+  <view class="month-header flex-row">
+    <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+      <view class="month-picker-btn">
+        <image class="month-picker-icon" src="/images/calendar.png" />
+      </view>
+    </picker>
+  </view>
+
+  <view class="type-tabs flex-row">
+    <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+          wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
+          bind:tap="onTypeChange">{{item}}</view>
+  </view>
+
+  <summary-card income="{{income}}" expense="{{expense}}" balance="{{balance}}" />
+
+  <view class="card" wx:if="{{hasPieData}}">
+    <view class="section-title">消费构成</view>
+    <pie-chart data="{{pieData}}" total="{{typeTotalText}}" />
+    <view class="legend">
+      <view class="legend-item flex-row" wx:for="{{rankingList}}" wx:key="category">
+        <view class="legend-dot" style="background: {{item.color}};"></view>
+        <text class="legend-name flex-1">{{item.category}}</text>
+        <text class="legend-pct">{{item.percentage}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{rankingList.length > 0}}">
+    <view class="section-title">类别排行</view>
+    <view class="rank-item" wx:for="{{rankingList}}" wx:key="category">
+      <view class="rank-row flex-row">
+        <view class="rank-dot" style="background: {{item.color}};"></view>
+        <text class="rank-no">{{index + 1}}</text>
+        <text class="rank-name flex-1">{{item.category}}</text>
+        <text class="rank-amount {{item.overBudget ? 'text-expense' : ''}}">
+          ¥{{item.amountText}}
+        </text>
+        <text class="rank-pct">{{item.percentage}}%</text>
+      </view>
+      <view class="rank-bar-track">
+        <view class="rank-bar-fill" style="width: {{item.percentage}}%; background: {{item.color}};"></view>
+      </view>
+      <view class="budget-tip flex-row" wx:if="{{item.budgetText}}">
+        <text class="budget-tip-text {{item.overBudget ? 'over' : ''}}">
+          预算 ¥{{item.budgetText}}{{item.overBudget ? ' ⚠️ 已超预算' : ''}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{hasBarData}}">
+    <view class="compare-header flex-row" style="margin-bottom: 16rpx;">
+      <text class="section-title" style="padding: 0; flex: 1;">趋势对比</text>
+      <view class="compare-tabs flex-row">
+        <view class="compare-tab {{compareMode === 'daily' ? 'active' : ''}}"
+              bind:tap="onCompareModeChange" data-mode="daily">每日</view>
+        <view class="compare-tab {{compareMode === 'weekly' ? 'active' : ''}}"
+              bind:tap="onCompareModeChange" data-mode="weekly">每周</view>
+        <view class="compare-tab {{compareMode === 'monthly' ? 'active' : ''}}"
+              bind:tap="onCompareModeChange" data-mode="monthly">每月</view>
+      </view>
+    </view>
+    <bar-chart data="{{barData}}" barColor="{{barColor}}" />
+  </view>
+
+  <view class="empty-state" wx:if="{{!hasPieData && !hasBarData}}">
+    <text class="empty-text">本月暂无{{types[typeIndex]}}记录</text>
+  </view>
+
+  <view style="height: 40rpx;"></view>
+</view>

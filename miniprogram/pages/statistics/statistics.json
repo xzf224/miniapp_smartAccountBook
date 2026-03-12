@@ -1,0 +1,9 @@
+{
+  "renderer": "webview",
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "summary-card": "/components/summary-card/summary-card",
+    "pie-chart": "/components/pie-chart/pie-chart",
+    "bar-chart": "/components/bar-chart/bar-chart"
+  }
+}

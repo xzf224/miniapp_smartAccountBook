@@ -1,0 +1,10 @@
+<view class="record-item flex-row" bind:tap="onTap">
+  <view class="icon-wrap" style="background: {{iconBg}};">
+    <text class="icon">{{icon}}</text>
+  </view>
+  <view class="info flex-col flex-1">
+    <text class="category">{{record.category}}</text>
+    <text class="note" wx:if="{{record.note}}">{{record.note}}</text>
+  </view>
+  <text class="amount {{colorClass}}">{{sign}}{{amountText}}</text>
+</view>

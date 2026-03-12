@@ -1,0 +1,21 @@
+<view class="overlay" wx:if="{{expanded}}" bind:tap="onOverlayTap"></view>
+<view class="sub-buttons {{expanded ? 'show' : ''}} {{popUp ? '' : 'pop-down'}} {{popLeft ? 'pop-left' : ''}}" style="{{subStyle}}">
+  <view class="sub-btn" bind:tap="onPhoto">
+    <image class="sub-btn-icon" src="/images/camera-a.png" mode="aspectFit" />
+    <text class="sub-label">拍照记账</text>
+  </view>
+  <view class="sub-btn" bind:tap="onVoice">
+    <image class="sub-btn-icon" src="/images/record-a.png" mode="aspectFit" />
+    <text class="sub-label">语音记账</text>
+  </view>
+  <view class="sub-btn" bind:tap="onManual">
+    <image class="sub-btn-icon" src="/images/note.png" mode="aspectFit" />
+    <text class="sub-label">手动记账</text>
+  </view>
+</view>
+<view class="fab-container" style="right: {{posRight}}px; bottom: {{posBottom}}px;">
+  <view class="fab-main {{expanded ? 'rotated' : ''}}"
+        bind:touchstart="onTouchStart"
+        catch:touchmove="onTouchMove"
+        bind:touchend="onTouchEnd"><text class="fab-plus">+</text></view>
+</view>

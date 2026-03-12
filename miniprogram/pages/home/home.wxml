@@ -1,0 +1,41 @@
+<navigation-bar title="记账本" back="{{false}}" />
+<scroll-view scroll-y class="page-body">
+  <view class="month-header flex-row">
+    <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+      <view class="month-picker-btn">
+        <image class="month-picker-icon" src="/images/calendar.png" />
+      </view>
+    </picker>
+  </view>
+  <summary-card income="{{income}}" expense="{{expense}}" balance="{{balance}}"
+                expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" />
+
+  <view class="empty-state" wx:if="{{isEmpty}}">
+    <image class="empty-icon" src="../../images/list.png"></image>
+    <text class="empty-text">暂无记录，点击右下角按钮开始记账</text>
+  </view>
+
+  <view class="record-groups" wx:else>
+    <view class="day-group" wx:for="{{groups}}" wx:key="date" wx:for-item="group">
+      <view class="day-header flex-row">
+        <text class="day-date">{{group.dateDisplay}}</text>
+        <text class="day-net {{group.dayNetNegative ? 'text-expense' : 'text-income'}}">
+          {{group.dayNetNegative ? '-' : '+'}}{{group.dayNetText}}
+        </text>
+      </view>
+      <view class="day-records" style="overflow: hidden;">
+        <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap">
+          <swipe-cell bind:edit="onRecordEdit" bind:delete="onRecordDelete" data-id="{{record.id}}">
+            <record-item record="{{record}}" bind:tap="onRecordTap" />
+          </swipe-cell>
+          <view class="divider" wx:if="{{index < group.records.length - 1}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 200rpx;"></view>
+</scroll-view>
+
+<fab-button bind:manual="onManual" bind:voice="onVoice" bind:photo="onPhoto" />

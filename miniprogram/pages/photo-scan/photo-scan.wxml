@@ -1,0 +1,85 @@
+<navigation-bar title="拍照记账" />
+<view class="page-container">
+
+  <!-- 可滚动结果区域 -->
+  <scroll-view class="results-area" scroll-y="{{true}}">
+
+    <!-- 空状态 -->
+    <view wx:if="{{!imagePath && !showResult && !scanning}}" class="empty-state">
+      <image class="empty-icon-img" src="/images/camera.png" mode="aspectFit" />
+      <text class="empty-title">拍摄或选择购物小票</text>
+      <text class="empty-hint">支持超市、餐厅等各类小票识别</text>
+    </view>
+
+    <!-- 识别中占位 -->
+    <view wx:if="{{scanning && !showResult}}" class="empty-state">
+      <text class="empty-icon-emoji">⏳</text>
+      <text class="empty-title">正在识别中…</text>
+    </view>
+
+    <!-- 图片预览 -->
+    <view wx:if="{{imagePath}}" class="preview-card">
+      <image src="{{imagePath}}" mode="widthFix" class="preview-img" bind:tap="onPreviewImage" />
+      <view wx:if="{{!showResult}}" class="scan-action-btn {{scanning ? 'scan-btn-disabled' : ''}}" bind:tap="onStartScan">
+        <text>{{scanning ? '识别中…' : '开始识别'}}</text>
+      </view>
+    </view>
+
+    <!-- 解析结果草稿 -->
+    <block wx:if="{{showResult}}">
+      <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
+        <view class="draft-row">
+          <text class="draft-icon-text">{{item.icon}}</text>
+          <view class="draft-content">
+            <view class="draft-pickers">
+              <picker mode="selector" range="{{allTypes}}" value="{{item.typeIndex}}"
+                      bind:change="onEditType" data-index="{{index}}">
+                <text class="picker-tag type-tag">{{item.type}}</text>
+              </picker>
+              <picker mode="selector" range="{{allCategories[item.type]}}" value="{{item.categoryIndex}}"
+                      bind:change="onEditCategory" data-index="{{index}}">
+                <text class="picker-tag cat-tag">{{item.category}} ▾</text>
+              </picker>
+            </view>
+            <input class="draft-note-input" value="{{item.note}}"
+                   bind:input="onEditNote" data-index="{{index}}"
+                   placeholder="商品名" placeholder-class="input-ph" />
+          </view>
+          <view class="draft-amount-area">
+            <text class="draft-currency">¥</text>
+            <input class="draft-amount-input" type="digit" value="{{item.amountYuan}}"
+                   bind:input="onEditAmount" data-index="{{index}}"
+                   placeholder="0.00" placeholder-class="input-ph" />
+          </view>
+          <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
+        </view>
+      </view>
+
+      <view class="save-all-btn" bind:tap="onSaveAll">
+        <text>保存全部（{{drafts.length}} 条）</text>
+      </view>
+    </block>
+
+  </scroll-view>
+
+  <!-- 底部固定面板 -->
+  <view class="bottom-panel">
+    <view class="action-row">
+      <view class="action-btn {{scanning ? 'action-disabled' : ''}}" bind:tap="onChooseFromAlbum">
+        <view class="action-icon-wrap">
+          <image class="action-icon" src="/images/photo.png" mode="aspectFit" />
+        </view>
+        <text class="action-label">选择照片</text>
+      </view>
+      <view class="action-divider"></view>
+      <view class="action-btn {{scanning ? 'action-disabled' : ''}}" bind:tap="onTakePhoto">
+        <view class="action-icon-wrap">
+          <image class="action-icon" src="/images/camera.png" mode="aspectFit" />
+        </view>
+        <text class="action-label">拍照</text>
+      </view>
+    </view>
+    <text class="disclaimer">本服务为AI生成内容，结果仅供参考</text>
+  </view>
+
+</view>

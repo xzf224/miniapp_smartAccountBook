@@ -1,0 +1,71 @@
+<navigation-bar title="语音记账" />
+<view class="page-container">
+
+  <!-- 可滚动的结果区域 -->
+  <scroll-view class="results-area" scroll-y="{{true}}">
+    <!-- 空状态 -->
+    <view wx:if="{{!showResult && !recognizedText && !isTranslating}}" class="empty-state">
+      <image class="empty-icon-img" src="/images/record-w.png" mode="aspectFit" />
+      <text class="empty-title">说出您的消费内容</text>
+      <text class="empty-hint">例如：午餐30元，打车15块</text>
+    </view>
+
+    <!-- 识别中占位 -->
+    <view wx:if="{{isTranslating && !recognizedText}}" class="empty-state">
+      <text class="empty-icon">⏳</text>
+      <text class="empty-title">正在识别中…</text>
+    </view>
+
+    <!-- 识别原文 -->
+    <view wx:if="{{recognizedText}}" class="raw-text-card">
+      <text class="raw-text-label">识别原文</text>
+      <text class="raw-text">{{recognizedText}}</text>
+    </view>
+
+    <!-- 解析结果草稿 -->
+    <block wx:if="{{showResult}}">
+      <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
+        <view class="draft-row">
+          <text class="draft-icon-text">{{item.icon}}</text>
+          <view class="draft-content">
+            <text class="draft-category">{{item.category}} · {{item.type}}</text>
+            <input class="draft-note-input" value="{{item.note}}"
+                   bind:input="onEditNote" data-index="{{index}}"
+                   placeholder="添加备注" placeholder-class="input-ph" />
+          </view>
+          <view class="draft-amount-area">
+            <text class="draft-currency">¥</text>
+            <input class="draft-amount-input" type="digit" value="{{item.amountYuan}}"
+                   bind:input="onEditAmount" data-index="{{index}}"
+                   placeholder="0.00" placeholder-class="input-ph" />
+          </view>
+          <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
+        </view>
+      </view>
+
+      <view class="save-all-btn" bind:tap="onSaveAll">
+        <text>保存全部（{{drafts.length}} 条）</text>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- 底部固定面板 -->
+  <view class="bottom-panel">
+    <view class="status-bar">
+      <view class="status-dot {{isRecording ? 'dot-recording' : isTranslating ? 'dot-translating' : 'dot-ready'}}"></view>
+      <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '正在录音' : '准备就绪'}}</text>
+    </view>
+
+    <text class="mic-hint">{{isRecording ? '松开停止' : '按住说话'}}</text>
+
+    <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
+          bind:touchstart="onStartRecord"
+          bind:touchend="onStopRecord"
+          catch:touchmove="preventMove">
+      <image class="mic-icon-img" src="/images/record.png" mode="aspectFit" />
+    </view>
+
+    <text class="disclaimer">本服务为AI生成内容，结果仅供参考</text>
+  </view>
+
+</view>

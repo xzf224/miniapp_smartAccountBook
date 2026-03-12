@@ -1,0 +1,85 @@
+.page-body {
+  height: 100vh;
+  background: var(--color-bg-page);
+}
+
+.month-header {
+  padding: 20rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-page);
+}
+
+.month-header-label {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 2rpx;
+}
+
+.month-picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.month-picker-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 240rpx;
+}
+
+.empty-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px;
+  display: block;
+}
+
+.empty-text {
+  margin-top: 32rpx;
+  color: var(--color-text-secondary);
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+}
+
+.day-group {
+  margin-bottom: 0;
+}
+
+.day-header {
+  padding: 28rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.day-date {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+}
+
+.day-net {
+  font-size: 26rpx;
+  font-weight: 600;
+  letter-spacing: -0.5rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background: var(--color-border);
+  margin: 0 32rpx;
+}

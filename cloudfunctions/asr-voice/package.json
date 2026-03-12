@@ -1,0 +1,7 @@
+{
+  "name": "asr-voice",
+  "version": "1.0.0",
+  "description": "百度语音识别云函数，持有 API 密钥，供前端安全调用",
+  "main": "index.js",
+  "dependencies": {}
+}

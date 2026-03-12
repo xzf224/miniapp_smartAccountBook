@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+.summary-card {
+  margin: 20rpx 24rpx 8rpx;
+  background: #F0F6FF;
+  border-radius: 20rpx;
+  padding: 32rpx 16rpx 28rpx;
+}
+
+.card-title {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  margin-bottom: 24rpx;
+  letter-spacing: 2rpx;
+  display: block;
+}
+
+.cols {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.col-icon {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.income-icon  { background: rgba(26, 173, 25, 0.15); }
+.expense-icon { background: rgba(250, 81, 81, 0.15); }
+.balance-icon { background: rgba(74, 158, 255, 0.15); }
+
+.col-symbol {
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.income-icon  .col-symbol { color: var(--color-income); }
+.expense-icon .col-symbol { color: var(--color-expense); }
+.balance-icon .col-symbol { color: #4A9EFF; }
+
+.col-label {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  margin-bottom: 10rpx;
+}
+
+.col-amount {
+  font-size: 36rpx;
+  font-weight: 700;
+  letter-spacing: -1rpx;
+  color: var(--color-text-primary);
+}
+
+.budget-bar-wrap {
+  margin-top: 10rpx;
+  width: 100%;
+  align-items: center;
+}
+
+.budget-bar-track {
+  width: 100%;
+  height: 4rpx;
+  background: rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  background: var(--color-expense);
+}
+
+.budget-bar-fill.over {
+  background: #FA5151;
+}
+
+.budget-label {
+  font-size: 20rpx;
+  color: var(--color-text-secondary);
+  margin-top: 6rpx;
+}

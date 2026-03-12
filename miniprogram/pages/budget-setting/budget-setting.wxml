@@ -1,0 +1,63 @@
+<view class="page-root">
+<navigation-bar title="预算设置" back="{{true}}" />
+<scroll-view scroll-y class="page-body">
+
+  <view class="type-tabs flex-row">
+    <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+          wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
+          bind:tap="onTypeChange">{{item}}</view>
+  </view>
+
+  <view class="card">
+    <view class="switch-row flex-row">
+      <text class="switch-label flex-1">按月设置</text>
+      <switch checked="{{useMonthly}}" bind:change="onMonthlyToggle" color="var(--color-primary, #07c160)" />
+    </view>
+    <view wx:if="{{useMonthly}}" style="margin-top: 8rpx;">
+      <view class="month-header flex-row">
+        <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+        <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+          <view class="month-picker-btn">
+            <image class="month-picker-icon" src="/images/calendar.png" />
+          </view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">总预算</view>
+    <view class="budget-row flex-row">
+      <text class="budget-label flex-1">{{types[typeIndex]}}总额</text>
+      <view class="budget-input-wrap flex-row">
+        <text class="currency-sign">¥</text>
+        <input class="budget-input"
+               type="digit"
+               placeholder="不限"
+               value="{{totalBudgetYuan}}"
+               bind:input="onTotalInput" />
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">各类别预算</view>
+    <view class="budget-row flex-row" wx:for="{{categoryBudgets}}" wx:key="category">
+      <text class="budget-label flex-1">{{item.category}}</text>
+      <view class="budget-input-wrap flex-row">
+        <text class="currency-sign">¥</text>
+        <input class="budget-input"
+               type="digit"
+               placeholder="不限"
+               value="{{item.budgetYuan}}"
+               data-index="{{index}}"
+               bind:input="onCategoryInput" />
+      </view>
+    </view>
+  </view>
+
+  <button class="save-btn" bind:tap="onSave">保存预算</button>
+
+  <view style="height: 60rpx;"></view>
+</scroll-view>
+</view>
