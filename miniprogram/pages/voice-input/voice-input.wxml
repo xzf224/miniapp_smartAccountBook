@@ -25,21 +25,33 @@
     <!-- 解析结果草稿 -->
     <block wx:if="{{showResult}}">
       <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
-        <view class="draft-row">
+        <!-- 第一行：图标 + 类型 + 分类 + 删除 -->
+        <view class="draft-row1">
           <text class="draft-icon-text">{{item.icon}}</text>
-          <view class="draft-content">
-            <text class="draft-category">{{item.category}} · {{item.type}}</text>
-            <input class="draft-note-input" value="{{item.note}}"
-                   bind:input="onEditNote" data-index="{{index}}"
-                   placeholder="添加备注" placeholder-class="input-ph" />
-          </view>
+          <picker range="{{allTypes}}" value="{{item.typeIndex}}"
+                  bindchange="onEditType" data-index="{{index}}">
+            <view class="draft-chip {{item.type === '收入' ? 'chip-income' : item.type === '支出' ? 'chip-expense' : 'chip-neutral'}}">{{item.type}} ▾</view>
+          </picker>
+          <picker range="{{allCategories[item.type]}}" value="{{item.categoryIndex}}"
+                  bindchange="onEditCategory" data-index="{{index}}">
+            <view class="draft-chip chip-cat">{{item.category}} ▾</view>
+          </picker>
+          <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
+        </view>
+        <!-- 第二行：日期 + 备注 + 金额 -->
+        <view class="draft-row2">
+          <picker mode="date" value="{{item.date}}" bindchange="onEditDate" data-index="{{index}}">
+            <view class="draft-date-chip">{{item.date}}</view>
+          </picker>
+          <input class="draft-note-input" value="{{item.note}}"
+                 bind:input="onEditNote" data-index="{{index}}"
+                 placeholder="添加备注" placeholder-class="input-ph" />
           <view class="draft-amount-area">
             <text class="draft-currency">¥</text>
             <input class="draft-amount-input" type="digit" value="{{item.amountYuan}}"
                    bind:input="onEditAmount" data-index="{{index}}"
                    placeholder="0.00" placeholder-class="input-ph" />
           </view>
-          <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
         </view>
       </view>
 
@@ -61,6 +73,7 @@
     <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
           bind:touchstart="onStartRecord"
           bind:touchend="onStopRecord"
+          bind:touchcancel="onStopRecord"
           catch:touchmove="preventMove">
       <image class="mic-icon-img" src="/images/record.png" mode="aspectFit" />
     </view>

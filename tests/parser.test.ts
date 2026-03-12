@@ -45,6 +45,24 @@ describe('parseVoiceText', () => {
       expect(results[0]).toMatchObject({ type: '收入', category: '工资', amount: 500000 })
     })
 
+    test('"发了" → 收入（工资发放场景）', () => {
+      const results = parseVoiceText('今天发了1000块')
+      expect(results).toHaveLength(1)
+      expect(results[0]).toMatchObject({ type: '收入', category: '工资' })
+    })
+
+    test('"发了红包" → 仍为支出（红包关键词优先）', () => {
+      const results = parseVoiceText('发了红包500')
+      expect(results).toHaveLength(1)
+      expect(results[0]).toMatchObject({ type: '支出', category: '发红包' })
+    })
+
+    test('"到账" → 收入', () => {
+      const results = parseVoiceText('工资到账8000')
+      expect(results).toHaveLength(1)
+      expect(results[0]).toMatchObject({ type: '收入' })
+    })
+
     test('未知关键词 → 归入支出/其他', () => {
       const results = parseVoiceText('买了个东西50元')
       expect(results).toHaveLength(1)

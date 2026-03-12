@@ -11,17 +11,17 @@
       <text class="empty-hint">支持超市、餐厅等各类小票识别</text>
     </view>
 
-    <!-- 识别中占位 -->
-    <view wx:if="{{scanning && !showResult}}" class="empty-state">
-      <text class="empty-icon-emoji">⏳</text>
-      <text class="empty-title">正在识别中…</text>
-    </view>
-
     <!-- 图片预览 -->
     <view wx:if="{{imagePath}}" class="preview-card">
       <image src="{{imagePath}}" mode="widthFix" class="preview-img" bind:tap="onPreviewImage" />
-      <view wx:if="{{!showResult}}" class="scan-action-btn {{scanning ? 'scan-btn-disabled' : ''}}" bind:tap="onStartScan">
-        <text>{{scanning ? '识别中…' : '开始识别'}}</text>
+      <!-- 识别进度（图片下方） -->
+      <view wx:if="{{scanning}}" class="scan-progress">
+        <view class="scan-spinner"></view>
+        <text class="scan-progress-text">正在识别中…</text>
+      </view>
+      <!-- 开始识别按钮 -->
+      <view wx:if="{{!scanning && !showResult}}" class="scan-action-btn" bind:tap="onStartScan">
+        <text>开始识别</text>
       </view>
     </view>
 

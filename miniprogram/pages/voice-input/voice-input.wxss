@@ -83,36 +83,75 @@ page {
   box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
-.draft-row {
+/* 第一行：图标 + 类型/分类 chip + 删除 */
+.draft-row1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+/* 第二行：日期 + 备注 + 金额 */
+.draft-row2 {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
 .draft-icon-text {
-  font-size: 48rpx;
-  margin-right: 20rpx;
+  font-size: 44rpx;
+  margin-right: 16rpx;
   flex-shrink: 0;
 }
 
-.draft-content {
-  flex: 1;
-  min-width: 0;
+/* 类型 / 分类 chip */
+.draft-chip {
+  border-radius: 32rpx;
+  padding: 6rpx 18rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  margin-right: 12rpx;
+  flex-shrink: 0;
 }
 
-.draft-category {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
-  display: block;
+.chip-income {
+  background: #e8f7ef;
+  color: #07c160;
+}
+
+.chip-expense {
+  background: #fff0f0;
+  color: #ff4757;
+}
+
+.chip-neutral {
+  background: #f2f2f2;
+  color: #888;
+}
+
+.chip-cat {
+  background: #f2f2f2;
+  color: #555;
+}
+
+/* 日期 chip */
+.draft-date-chip {
+  font-size: 22rpx;
+  color: #aaa;
+  background: #f5f6f8;
+  border-radius: 20rpx;
+  padding: 6rpx 14rpx;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  white-space: nowrap;
 }
 
 .draft-note-input {
+  flex: 1;
+  min-width: 0;
   font-size: 24rpx;
   color: #888;
-  margin-top: 8rpx;
-  width: 100%;
-  height: 40rpx;
+  height: 48rpx;
 }
 
 .draft-amount-area {
@@ -131,19 +170,20 @@ page {
 }
 
 .draft-amount-input {
-  font-size: 36rpx;
+  font-size: 34rpx;
   font-weight: 700;
   color: #333;
-  width: 120rpx;
+  width: 200rpx;
   text-align: right;
 }
 
 .remove-icon {
   font-size: 40rpx;
   color: #ccc;
-  padding: 4rpx 0 4rpx 20rpx;
+  padding: 4rpx 0;
   line-height: 1;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .input-ph {
@@ -170,7 +210,7 @@ page {
   flex-direction: column;
   align-items: center;
   background: #fff;
-  padding: 28rpx 40rpx 240rpx;
+  padding: 28rpx 40rpx calc(40rpx + env(safe-area-inset-bottom));
   border-top: 1rpx solid #eee;
 }
 

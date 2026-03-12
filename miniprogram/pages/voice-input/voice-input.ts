@@ -7,7 +7,9 @@ const recorderManager = wx.getRecorderManager()
 interface DraftRecord {
   tempId: number
   type: RecordType
+  typeIndex: number
   category: string
+  categoryIndex: number
   amountYuan: string
   note: string
   date: string
@@ -26,6 +28,13 @@ Component({
   },
 
   lifetimes: {
+    detached() {
+      // 页面销毁时确保麦克风关闭（DevTools / 异常退出兜底）
+      if (this.data.isRecording) {
+        recorderManager.stop()
+      }
+    },
+
     attached() {
       const cats = getCategories()
       this.setData({ allCategories: cats as any })
@@ -135,15 +144,23 @@ Component({
         wx.showToast({ title: '未识别到有效记录', icon: 'none' })
         return
       }
-      const drafts: DraftRecord[] = results.map((r, i) => ({
-        tempId: i,
-        type: r.type,
-        category: r.category,
-        amountYuan: (r.amount / 100).toFixed(2),
-        note: r.note,
-        date: r.date,
-        icon: CATEGORY_ICONS[r.category] || '他',
-      }))
+      const { allCategories } = this.data
+      const drafts: DraftRecord[] = results.map((r, i) => {
+        const typeIdx = (RECORD_TYPES as string[]).indexOf(r.type as string)
+        const catList: string[] = (allCategories as any)[r.type as string] || []
+        const catIdx = catList.indexOf(r.category)
+        return {
+          tempId: i,
+          type: r.type,
+          typeIndex: typeIdx >= 0 ? typeIdx : 0,
+          category: r.category,
+          categoryIndex: catIdx >= 0 ? catIdx : 0,
+          amountYuan: (r.amount / 100).toFixed(2),
+          note: r.note,
+          date: r.date,
+          icon: CATEGORY_ICONS[r.category] || '他',
+        }
+      })
       this.setData({ drafts, showResult: true })
     },
 
@@ -158,6 +175,48 @@ Component({
       const idx = (e.currentTarget.dataset as any).index as number
       const drafts = [...this.data.drafts]
       drafts[idx] = { ...drafts[idx], note: e.detail.value }
+      this.setData({ drafts })
+    },
+
+    onEditType(e: WechatMiniprogram.PickerChange) {
+      const idx = (e.currentTarget.dataset as any).index as number
+      const typeIndex = Number(e.detail.value)
+      const { allCategories, drafts } = this.data
+      const newType = RECORD_TYPES[typeIndex] as RecordType
+      const catList: string[] = (allCategories as any)[newType as string] || []
+      const newCategory = catList[0] || ''
+      const drafts2 = [...drafts]
+      drafts2[idx] = {
+        ...drafts2[idx],
+        type: newType,
+        typeIndex,
+        category: newCategory,
+        categoryIndex: 0,
+        icon: CATEGORY_ICONS[newCategory] || '他',
+      }
+      this.setData({ drafts: drafts2 })
+    },
+
+    onEditCategory(e: WechatMiniprogram.PickerChange) {
+      const idx = (e.currentTarget.dataset as any).index as number
+      const categoryIndex = Number(e.detail.value)
+      const { allCategories, drafts } = this.data
+      const catList: string[] = (allCategories as any)[drafts[idx].type as string] || []
+      const newCategory = catList[categoryIndex] || ''
+      const drafts2 = [...drafts]
+      drafts2[idx] = {
+        ...drafts2[idx],
+        category: newCategory,
+        categoryIndex,
+        icon: CATEGORY_ICONS[newCategory] || '他',
+      }
+      this.setData({ drafts: drafts2 })
+    },
+
+    onEditDate(e: WechatMiniprogram.PickerChange) {
+      const idx = (e.currentTarget.dataset as any).index as number
+      const drafts = [...this.data.drafts]
+      drafts[idx] = { ...drafts[idx], date: e.detail.value as string }
       this.setData({ drafts })
     },
 

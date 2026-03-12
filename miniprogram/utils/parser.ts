@@ -185,6 +185,9 @@ const KEYWORD_CATEGORY_MAP: Record<string, { type: RecordType; category: string 
   '退款': { type: '收入', category: '退款' },
   '退货': { type: '收入', category: '退款' },
   '收红包': { type: '收入', category: '其他收入' },
+  '收到': { type: '收入', category: '其他收入' },  // "收到1000" → 收入
+  '到账': { type: '收入', category: '工资' },       // "工资到账5000" → 收入
+  '发了': { type: '收入', category: '工资' },       // "今天发了1000" → 收入（发红包已在支出区优先匹配）
   '利息': { type: '收入', category: '其他收入' },
   '理财': { type: '收入', category: '其他收入' },
   '投资': { type: '收入', category: '其他收入' },
