@@ -19,6 +19,11 @@ Component({
     isEmpty: true,
     pickerRange: [PICKER_YEARS, PICKER_MONTHS] as string[][],
     pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
+    searchVisible: false,
+    searchKeyword: '',
+    searchTypeIndex: 0,
+    searchTypes: ['全部', '支出', '收入'],
+    searchResultCount: 0,
   },
 
   lifetimes: {
