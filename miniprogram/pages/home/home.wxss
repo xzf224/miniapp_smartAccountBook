@@ -19,7 +19,14 @@
   letter-spacing: 2rpx;
 }
 
-.month-picker-btn {
+.header-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,9 +34,142 @@
   height: 64rpx;
 }
 
-.month-picker-icon {
+.header-icon {
   width: 40rpx;
   height: 40rpx;
+}
+
+.header-icon.icon-active {
+  opacity: 1;
+  /* tint green via a CSS trick isn't possible in WXML, use opacity to indicate active */
+}
+
+/* 搜索面板 */
+.search-panel {
+  background: #fff;
+  padding: 16rpx 24rpx 20rpx;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.search-input-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #f5f6f8;
+  border-radius: 40rpx;
+  padding: 14rpx 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.search-icon-small {
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.4;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  height: 40rpx;
+}
+
+.search-ph {
+  color: #bbb;
+}
+
+.search-clear {
+  font-size: 36rpx;
+  color: #bbb;
+  padding: 0 4rpx;
+  line-height: 1;
+}
+
+.search-type-chips {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.type-chip {
+  padding: 8rpx 28rpx;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #888;
+  background: #f5f6f8;
+}
+
+.type-chip.chip-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.search-result-hint {
+  padding: 16rpx 32rpx 4rpx;
+}
+
+.search-result-text {
+  font-size: 24rpx;
+  color: #aaa;
+}
+
+/* 金额/日期筛选行 */
+.search-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 16rpx;
+}
+
+.search-row-label {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  width: 60rpx;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+}
+
+.search-range-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.range-input {
+  width: 120rpx;
+  height: 56rpx;
+  background: #f5f6f8;
+  border-radius: 12rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.range-sep {
+  font-size: 24rpx;
+  color: #bbb;
+  margin: 0 12rpx;
+}
+
+.range-unit {
+  font-size: 24rpx;
+  color: #aaa;
+  margin-left: 8rpx;
+}
+
+.range-date-btn {
+  height: 56rpx;
+  line-height: 56rpx;
+  background: #f5f6f8;
+  border-radius: 12rpx;
+  padding: 0 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .empty-state {

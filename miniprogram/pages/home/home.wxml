@@ -3,22 +3,22 @@
   <view class="month-header flex-row">
     <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
     <view class="header-icons flex-row">
-      <view class="icon-btn" bind:tap="onSearchToggle">
-        <image class="header-icon {{searchVisible ? 'icon-active' : ''}}" src="/images/search.png" mode="aspectFit" />
-      </view>
       <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
         <view class="icon-btn">
           <image class="header-icon" src="/images/calendar.png" mode="aspectFit" />
         </view>
       </picker>
+      <view class="icon-btn" bind:tap="onSearchToggle">
+        <image class="header-icon" src="{{searchVisible ? '/images/search-active.png' : '/images/search.png'}}" mode="aspectFit" />
+      </view>
     </view>
   </view>
 
   <!-- 搜索栏 -->
   <view class="search-panel" wx:if="{{searchVisible}}">
     <view class="search-input-wrap flex-row">
-      <image class="search-icon-small" src="/images/search.png" mode="aspectFit" />
-      <input class="search-input" value="{{searchKeyword}}" placeholder="搜索备注或分类"
+      <image class="search-icon-small" src="/images/search-active.png" mode="aspectFit" />
+      <input class="search-input" value="{{searchKeyword}}" placeholder="搜索备注或类别"
              placeholder-class="search-ph" bind:input="onSearchInput" />
       <text wx:if="{{searchKeyword}}" class="search-clear" bind:tap="onSearchClear">×</text>
     </view>
@@ -26,6 +26,32 @@
       <view class="type-chip {{searchTypeIndex === index ? 'chip-active' : ''}}"
             wx:for="{{searchTypes}}" wx:key="*this"
             data-index="{{index}}" bind:tap="onSearchTypeChange">{{item}}</view>
+    </view>
+    <!-- 金额区间 -->
+    <view class="search-row flex-row">
+      <text class="search-row-label">金额</text>
+      <view class="search-range-wrap flex-row">
+        <input class="range-input" type="digit" value="{{amountMin}}" placeholder="最小"
+               placeholder-class="search-ph" bind:input="onAmountMinInput" />
+        <text class="range-sep">—</text>
+        <input class="range-input" type="digit" value="{{amountMax}}" placeholder="最大"
+               placeholder-class="search-ph" bind:input="onAmountMaxInput" />
+        <text class="range-unit">元</text>
+      </view>
+    </view>
+    <!-- 日期区间 -->
+    <view class="search-row flex-row">
+      <text class="search-row-label">日期</text>
+      <view class="search-range-wrap flex-row">
+        <picker mode="date" value="{{dateStart}}" bind:change="onDateStartChange">
+          <view class="range-date-btn">{{dateStart || '开始日期'}}</view>
+        </picker>
+        <text class="range-sep">—</text>
+        <picker mode="date" value="{{dateEnd}}" bind:change="onDateEndChange">
+          <view class="range-date-btn">{{dateEnd || '结束日期'}}</view>
+        </picker>
+        <text wx:if="{{dateStart || dateEnd}}" class="search-clear" bind:tap="onDateRangeClear">×</text>
+      </view>
     </view>
   </view>
 

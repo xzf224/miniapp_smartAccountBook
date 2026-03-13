@@ -24,6 +24,10 @@ Component({
     searchTypeIndex: 0,
     searchTypes: ['全部', '支出', '收入'],
     searchResultCount: 0,
+    amountMin: '',
+    amountMax: '',
+    dateStart: '',
+    dateEnd: '',
   },
 
   lifetimes: {
@@ -40,10 +44,29 @@ Component({
 
   methods: {
     loadData() {
-      const { year, month } = this.data
+      const { year, month, searchKeyword, searchTypeIndex } = this.data
       const allRecords = getRecords()
       const monthStr = `${year}-${String(month).padStart(2, '0')}`
-      const monthRecords = allRecords.filter((r: any) => r.date.startsWith(monthStr))
+      let monthRecords = allRecords.filter((r: any) => r.date.startsWith(monthStr))
+
+      // 搜索过滤
+      const keyword = searchKeyword.trim().toLowerCase()
+      if (keyword) {
+        monthRecords = monthRecords.filter((r: any) =>
+          r.note.toLowerCase().includes(keyword) || r.category.toLowerCase().includes(keyword)
+        )
+      }
+      if (searchTypeIndex === 1) monthRecords = monthRecords.filter((r: any) => r.type === '支出')
+      else if (searchTypeIndex === 2) monthRecords = monthRecords.filter((r: any) => r.type === '收入')
+
+      const { amountMin, amountMax, dateStart, dateEnd } = this.data
+      const minFen = amountMin ? Math.round(parseFloat(amountMin) * 100) : 0
+      const maxFen = amountMax ? Math.round(parseFloat(amountMax) * 100) : Infinity
+      if (amountMin || amountMax) {
+        monthRecords = monthRecords.filter((r: any) => r.amount >= minFen && r.amount <= maxFen)
+      }
+      if (dateStart) monthRecords = monthRecords.filter((r: any) => r.date >= dateStart)
+      if (dateEnd) monthRecords = monthRecords.filter((r: any) => r.date <= dateEnd)
 
       let incomeTotal = 0
       let expenseTotal = 0
@@ -63,6 +86,7 @@ Component({
         expenseBudget,
         groups,
         isEmpty: monthRecords.length === 0,
+        searchResultCount: monthRecords.length,
       })
     },
 
@@ -79,6 +103,56 @@ Component({
       this.loadData()
     },
 
+    onSearchToggle() {
+      const searchVisible = !this.data.searchVisible
+      if (!searchVisible) {
+        this.setData({ searchVisible, searchKeyword: '', searchTypeIndex: 0, amountMin: '', amountMax: '', dateStart: '', dateEnd: '' })
+      } else {
+        this.setData({ searchVisible })
+      }
+      this.loadData()
+    },
+
+    onSearchInput(e: WechatMiniprogram.Input) {
+      this.setData({ searchKeyword: e.detail.value })
+      this.loadData()
+    },
+
+    onSearchClear() {
+      this.setData({ searchKeyword: '' })
+      this.loadData()
+    },
+
+    onSearchTypeChange(e: WechatMiniprogram.TouchEvent) {
+      const idx = (e.currentTarget.dataset as any).index as number
+      this.setData({ searchTypeIndex: idx })
+      this.loadData()
+    },
+
+    onAmountMinInput(e: WechatMiniprogram.Input) {
+      this.setData({ amountMin: e.detail.value })
+      this.loadData()
+    },
+
+    onAmountMaxInput(e: WechatMiniprogram.Input) {
+      this.setData({ amountMax: e.detail.value })
+      this.loadData()
+    },
+
+    onDateStartChange(e: WechatMiniprogram.PickerChange) {
+      this.setData({ dateStart: e.detail.value as string })
+      this.loadData()
+    },
+
+    onDateEndChange(e: WechatMiniprogram.PickerChange) {
+      this.setData({ dateEnd: e.detail.value as string })
+      this.loadData()
+    },
+
+    onDateRangeClear() {
+      this.setData({ dateStart: '', dateEnd: '' })
+      this.loadData()
+    },
 
     onRecordEdit(e: any) {
       const id = (e.currentTarget.dataset as any).id as string
