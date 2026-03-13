@@ -1,8 +1,10 @@
-import { IRecord, ICategories, IBudget, DEFAULT_CATEGORIES } from '../models/record'
+import { IRecord, ICategories, IBudget, DEFAULT_CATEGORIES, IRecurringRule, IPendingDraft } from '../models/record'
 
 const RECORDS_KEY = 'records'
 const CATEGORIES_KEY = 'categories'
 const BUDGETS_KEY = 'budgets'
+const RECURRING_RULES_KEY = 'recurring_rules'
+const PENDING_DRAFTS_KEY = 'pending_drafts'
 
 // ---- 记录 CRUD ----
 
@@ -137,4 +139,47 @@ export function exportRecordsCSV(): string {
     `${r.type},${r.category},${(r.amount / 100).toFixed(2)},${r.date},"${r.note.replace(/"/g, '""')}",${new Date(r.createTime).toLocaleString()}`,
   )
   return BOM + [header, ...rows].join('\n')
+}
+
+// ---- 定期规则 CRUD ----
+
+export function getRecurringRules(): IRecurringRule[] {
+  return wx.getStorageSync(RECURRING_RULES_KEY) || []
+}
+
+export function saveRecurringRules(rules: IRecurringRule[]): void {
+  wx.setStorageSync(RECURRING_RULES_KEY, rules)
+}
+
+export function addRecurringRule(rule: IRecurringRule): void {
+  const rules = getRecurringRules()
+  rules.push(rule)
+  saveRecurringRules(rules)
+}
+
+export function updateRecurringRule(rule: IRecurringRule): void {
+  const rules = getRecurringRules()
+  const idx = rules.findIndex(r => r.id === rule.id)
+  if (idx !== -1) {
+    rules[idx] = rule
+    saveRecurringRules(rules)
+  }
+}
+
+export function deleteRecurringRule(id: string): void {
+  saveRecurringRules(getRecurringRules().filter(r => r.id !== id))
+}
+
+// ---- 待确认草稿 CRUD ----
+
+export function getPendingDrafts(): IPendingDraft[] {
+  return wx.getStorageSync(PENDING_DRAFTS_KEY) || []
+}
+
+export function savePendingDrafts(drafts: IPendingDraft[]): void {
+  wx.setStorageSync(PENDING_DRAFTS_KEY, drafts)
+}
+
+export function removePendingDraft(id: string): void {
+  savePendingDrafts(getPendingDrafts().filter(d => d.id !== id))
 }

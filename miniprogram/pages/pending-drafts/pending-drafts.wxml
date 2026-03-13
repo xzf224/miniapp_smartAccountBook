@@ -1,0 +1,49 @@
+<navigation-bar title="待确认草稿" back="{{true}}" />
+<scroll-view scroll-y class="page-body">
+
+  <view class="empty-state" wx:if="{{drafts.length === 0}}">
+    <text class="empty-icon">✅</text>
+    <text class="empty-text">暂无待确认草稿</text>
+  </view>
+
+  <view wx:else>
+    <view class="draft-card" wx:for="{{drafts}}" wx:key="id" wx:for-item="draft">
+      <view class="draft-header">
+        <text class="draft-name">{{draft.ruleName}}</text>
+        <text class="draft-date">{{draft.date}}</text>
+      </view>
+      <view class="draft-meta">
+        <text class="draft-type {{draft.type === '支出' ? 'type-expense' : 'type-income'}}">{{draft.type}}</text>
+        <text class="draft-category">{{draft.category}}</text>
+      </view>
+      <view class="draft-row">
+        <text class="field-label">金额</text>
+        <view class="amount-input-wrap">
+          <text class="amount-prefix">¥</text>
+          <input class="amount-input"
+                 type="digit"
+                 value="{{draft.editAmount}}"
+                 data-index="{{index}}"
+                 bind:input="onAmountInput" />
+        </view>
+      </view>
+      <view class="draft-row">
+        <text class="field-label">备注</text>
+        <input class="note-input"
+               value="{{draft.editNote}}"
+               placeholder="无"
+               placeholder-class="ph"
+               data-index="{{index}}"
+               bind:input="onNoteInput" />
+      </view>
+      <view class="draft-actions">
+        <view class="btn-ignore" data-index="{{index}}" bind:tap="onIgnoreDraft">忽略</view>
+        <view class="btn-confirm" data-index="{{index}}" bind:tap="onConfirmDraft">确认入账</view>
+      </view>
+    </view>
+
+    <view class="confirm-all-btn" bind:tap="onConfirmAll">全部确认入账</view>
+  </view>
+
+  <view style="height: 60rpx;"></view>
+</scroll-view>

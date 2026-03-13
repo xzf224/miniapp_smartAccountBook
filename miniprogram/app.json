@@ -7,7 +7,10 @@
     "pages/voice-input/voice-input",
     "pages/photo-scan/photo-scan",
     "pages/budget-setting/budget-setting",
-    "pages/category-manage/category-manage"
+    "pages/category-manage/category-manage",
+    "pages/recurring/recurring",
+    "pages/recurring-form/recurring-form",
+    "pages/pending-drafts/pending-drafts"
   ],
   "window": {
     "navigationBarTextStyle": "black",

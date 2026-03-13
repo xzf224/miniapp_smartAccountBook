@@ -1,4 +1,5 @@
-import { getRecords, deleteRecord, getBudgetAmount } from '../../utils/storage'
+import { getRecords, deleteRecord, getBudgetAmount, getPendingDrafts } from '../../utils/storage'
+import { checkRecurringRules } from '../../utils/recurring'
 import { groupRecordsByDate } from '../../utils/date'
 import { fenToYuan } from '../../models/record'
 
@@ -28,6 +29,7 @@ Component({
     amountMax: '',
     dateStart: '',
     dateEnd: '',
+    pendingDraftCount: 0,
   },
 
   lifetimes: {
@@ -38,6 +40,7 @@ Component({
 
   pageLifetimes: {
     show() {
+      checkRecurringRules()
       this.loadData()
     },
   },
@@ -78,6 +81,8 @@ Component({
       const groups = groupRecordsByDate(monthRecords)
       const expenseBudget = getBudgetAmount(year, month, '支出', '__total__')
 
+      const pendingDraftCount = getPendingDrafts().length
+
       this.setData({
         income: fenToYuan(incomeTotal),
         expense: fenToYuan(expenseTotal),
@@ -87,6 +92,7 @@ Component({
         groups,
         isEmpty: monthRecords.length === 0,
         searchResultCount: monthRecords.length,
+        pendingDraftCount,
       })
     },
 
@@ -171,6 +177,10 @@ Component({
           }
         },
       })
+    },
+
+    onViewDrafts() {
+      wx.navigateTo({ url: '/pages/pending-drafts/pending-drafts' })
     },
 
     onManual() {

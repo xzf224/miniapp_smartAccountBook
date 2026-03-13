@@ -223,3 +223,28 @@
   background: var(--color-border);
   margin: 0 32rpx;
 }
+
+/* 待确认草稿提示卡 */
+.draft-hint-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16rpx 24rpx 4rpx;
+  padding: 22rpx 28rpx;
+  background: #e8f9f0;
+  border-radius: 16rpx;
+  border-left: 8rpx solid #07c160;
+}
+
+.draft-hint-text {
+  font-size: 26rpx;
+  color: #1a7a45;
+  font-weight: 500;
+}
+
+.draft-hint-arrow {
+  font-size: 24rpx;
+  color: #07c160;
+  font-weight: 600;
+}

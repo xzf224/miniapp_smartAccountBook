@@ -31,7 +31,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
   '服务': '#2ECC71', '教育': '#3498DB', '娱乐': '#E74C3C', '运动': '#27AE60',
   '生活缴费': '#F39C12', '旅行': '#1ABC9C', '宠物': '#E67E22', '医疗': '#E74C3C',
   '保险': '#2980B9', '公益': '#E84393', '发红包': '#E74C3C', '转账': '#95A5A6',
-  '亲属卡': '#3498DB', '其他人情': '#F39C12', '退还': '#2ECC71', '其他': '#95A5A6', 
+  '亲属卡': '#3498DB', '其他人情': '#F39C12', '退还': '#2ECC71',
+  '房租': '#E67E22', '会员费': '#9B59B6', '话费': '#3498DB', '其他': '#95A5A6', 
   // 收入
   '工资': '#27AE60', '奖金': '#F1C40F', '兼职': '#2ECC71', '报销': '#3498DB',
   '退款': '#1ABC9C', '投资': '#9B59B6', '红包': '#E74C3C',
@@ -46,7 +47,8 @@ export const CATEGORY_ICONS: Record<string, string> = {
   '服务': '务', '教育': '育', '娱乐': '娱', '运动': '动',
   '生活缴费': '水', '旅行': '旅', '宠物': '宰', '医疗': '医',
   '保险': '保', '公益': '益', '发红包': '包', '转账': '转',
-  '亲属卡': '卡', '其他人情': '情', '退还': '退','其他': '他', 
+  '亲属卡': '卡', '其他人情': '情', '退还': '退',
+  '房租': '租', '会员费': '会', '话费': '话', '其他': '他', 
   // 收入
   '工资': '薪', '奖金': '奖', '兼职': '兆', '报销': '销',
   '退款': '退', '投资': '投', '红包': '红',
@@ -59,7 +61,7 @@ export const DEFAULT_CATEGORIES: ICategories = {
   '支出': [
     '餐饮', '交通', '服饰', '购物', '服务', '教育', '娱乐', '运动',
     '生活缴费', '旅行', '宠物', '医疗', '保险', '公益', '发红包', '转账',
-    '亲属卡', '其他人情', '退还','其他', 
+    '亲属卡', '其他人情', '退还', '房租', '会员费', '话费', '其他',
   ],
   '收入': ['工资', '奖金', '兼职', '报销', '退款', '投资', '红包', '其他'],
   '不计入收支': ['借入', '借出', '理财转入', '理财转出', '信用卡还款', '余额互转'],
@@ -77,4 +79,33 @@ export function fenToYuan(fen: number): string {
 
 export function generateId(): string {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+}
+
+export interface IRecurringRule {
+  id: string
+  name: string
+  type: RecordType
+  category: string
+  amount: number            // 分
+  note: string
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  dayOfMonth?: number       // 1–31（monthly / yearly）
+  dayOfWeek?: number        // 0–6（weekly，0=周日）
+  monthOfYear?: number      // 1–12（yearly）
+  startDate: string         // YYYY-MM-DD
+  endDate?: string          // 可选结束日期
+  lastGeneratedDate: string // 最后一次生成草稿的日期，防重复
+  enabled: boolean
+}
+
+export interface IPendingDraft {
+  id: string
+  ruleId: string
+  ruleName: string
+  type: RecordType
+  category: string
+  amount: number
+  note: string
+  date: string          // 到期日期 YYYY-MM-DD
+  generatedAt: number   // 生成时间戳
 }

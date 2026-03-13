@@ -14,6 +14,10 @@ Component({
       wx.navigateTo({ url: '/pages/category-manage/category-manage' })
     },
 
+    onRecurring() {
+      wx.navigateTo({ url: '/pages/recurring/recurring' })
+    },
+
     onExportData() {
       const csv = exportRecordsCSV()
       if (!csv) {

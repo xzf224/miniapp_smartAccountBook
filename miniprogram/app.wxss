@@ -64,15 +64,16 @@ page {
 
 /* ====== 保存/操作按钮 ====== */
 .save-btn {
-  margin: 48rpx 32rpx;
+  margin: 40rpx 32rpx 0;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
   background: var(--color-primary);
   color: #fff;
-  text-align: center;
-  padding: 32rpx 0;
-  border-radius: 8rpx;
   font-size: 32rpx;
   font-weight: 600;
-  letter-spacing: 4rpx;
+  letter-spacing: 2rpx;
 }
 
 /* ====== 页面安全区 ====== */

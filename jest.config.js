@@ -15,5 +15,6 @@ module.exports = {
     'miniprogram/utils/date.ts',
     'miniprogram/models/record.ts',
     'miniprogram/utils/storage.ts',
+    'miniprogram/utils/recurring.ts',
   ],
 }

@@ -58,6 +58,12 @@
   <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
                 expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" />
 
+  <!-- 待确认草稿提示卡 -->
+  <view class="draft-hint-card" wx:if="{{pendingDraftCount > 0 && !searchVisible}}" bind:tap="onViewDrafts">
+    <text class="draft-hint-text">📌 {{pendingDraftCount}} 条定期账单待确认</text>
+    <text class="draft-hint-arrow">查看草稿 ›</text>
+  </view>
+
   <!-- 搜索结果提示 -->
   <view wx:if="{{searchVisible}}" class="search-result-hint">
     <text class="search-result-text">共 {{searchResultCount}} 条结果</text>

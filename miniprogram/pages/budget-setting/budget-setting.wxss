@@ -38,14 +38,7 @@
   height: 40rpx;
 }
 
-.save-btn {
-  margin: 32rpx 32rpx 0;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 16rpx;
-  font-size: 32rpx;
-  font-weight: 600;
-}
+
 
 .switch-row {
   align-items: center;

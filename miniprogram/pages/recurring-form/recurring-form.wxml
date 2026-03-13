@@ -1,0 +1,119 @@
+<navigation-bar title="{{isEdit ? '编辑定期账单' : '新增定期账单'}}" back="{{true}}" />
+<scroll-view scroll-y class="page-body">
+
+  <!-- 名称 -->
+  <view class="form-section">
+    <text class="form-label">名称</text>
+    <input class="form-input"
+           value="{{name}}"
+           placeholder="如：房租、会员费、话费"
+           placeholder-class="form-ph"
+           maxlength="20"
+           bind:input="onNameInput" />
+  </view>
+
+  <!-- 类型 -->
+  <view class="form-section">
+    <text class="form-label">类型</text>
+    <view class="type-tabs">
+      <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+            wx:for="{{types}}" wx:key="*this"
+            data-index="{{index}}" bind:tap="onTypeChange">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 类别 -->
+  <view class="form-section form-section-col">
+    <text class="form-label">类别</text>
+    <category-grid categories="{{categories}}" selected="{{selectedCategory}}"
+                   bind:select="onCategorySelect" />
+  </view>
+
+  <!-- 金额 -->
+  <view class="form-section">
+    <text class="form-label">金额</text>
+    <view class="amount-row">
+      <text class="amount-prefix">¥</text>
+      <input class="form-input amount-input"
+             type="digit"
+             value="{{amountText}}"
+             placeholder="0.00"
+             placeholder-class="form-ph"
+             bind:input="onAmountInput" />
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-section">
+    <text class="form-label">备注</text>
+    <input class="form-input"
+           value="{{note}}"
+           placeholder="可选"
+           placeholder-class="form-ph"
+           bind:input="onNoteInput" />
+  </view>
+
+  <!-- 频率 -->
+  <view class="form-section">
+    <text class="form-label">频率</text>
+    <picker mode="selector" range="{{freqOptions}}" value="{{freqIndex}}" bind:change="onFreqChange">
+      <view class="picker-item">{{freqOptions[freqIndex]}} ›</view>
+    </picker>
+  </view>
+
+  <!-- 星期（weekly） -->
+  <view class="form-section" wx:if="{{freqIndex === 1}}">
+    <text class="form-label">星期</text>
+    <picker mode="selector" range="{{dowOptions}}" value="{{dowIndex}}" bind:change="onDowChange">
+      <view class="picker-item">{{dowOptions[dowIndex]}} ›</view>
+    </picker>
+  </view>
+
+  <!-- 日期（monthly） -->
+  <view class="form-section" wx:if="{{freqIndex === 2}}">
+    <text class="form-label">每月第</text>
+    <picker mode="selector" range="{{domOptions}}" value="{{domIndex}}" bind:change="onDomChange">
+      <view class="picker-item">{{domOptions[domIndex]}} ›</view>
+    </picker>
+  </view>
+
+  <!-- 月份+日期（yearly） -->
+  <view wx:if="{{freqIndex === 3}}">
+    <view class="form-section">
+      <text class="form-label">月份</text>
+      <picker mode="selector" range="{{moyOptions}}" value="{{moyIndex}}" bind:change="onMoyChange">
+        <view class="picker-item">{{moyOptions[moyIndex]}} ›</view>
+      </picker>
+    </view>
+    <view class="form-section">
+      <text class="form-label">日期</text>
+      <picker mode="selector" range="{{domOptions}}" value="{{domIndex}}" bind:change="onDomChange">
+        <view class="picker-item">{{domOptions[domIndex]}} ›</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 开始日期 -->
+  <view class="form-section">
+    <text class="form-label">开始日期</text>
+    <picker mode="date" value="{{startDate}}" bind:change="onStartDateChange">
+      <view class="picker-item">{{startDate}} ›</view>
+    </picker>
+  </view>
+
+  <!-- 结束日期（可选） -->
+  <view class="form-section">
+    <text class="form-label">结束日期</text>
+    <view class="end-date-row">
+      <picker mode="date" value="{{endDate || startDate}}" bind:change="onEndDateChange">
+        <view class="picker-item">{{endDate || '不限（长期有效）'}} ›</view>
+      </picker>
+      <text wx:if="{{endDate}}" class="clear-end" bind:tap="onClearEndDate">清除</text>
+    </view>
+  </view>
+
+  <!-- 保存 -->
+  <view class="save-btn" bind:tap="onSave">保存</view>
+
+  <view style="height: 80rpx;"></view>
+</scroll-view>
