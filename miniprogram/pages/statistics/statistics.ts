@@ -31,6 +31,11 @@ Component({
     pieData: [] as Array<{ name: string; value: number; color: string }>,
     rankingList: [] as any[],
     compareMode: 'daily' as CompareMode,
+    compareTabs: [
+      { mode: 'weekly', label: '周' },
+      { mode: 'daily', label: '月' },
+      { mode: 'monthly', label: '年' },
+    ] as Array<{ mode: CompareMode; label: string }>,
     barData: [] as Array<{ label: string; value: number }>,
     barColor: CHART_COLORS[0],
     hasPieData: false,

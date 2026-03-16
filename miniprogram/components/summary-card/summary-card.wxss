@@ -3,68 +3,77 @@
 }
 
 .summary-card {
-  margin: 20rpx 24rpx 8rpx;
-  background: #F0F6FF;
-  border-radius: 20rpx;
-  padding: 32rpx 16rpx 28rpx;
+  margin: 16rpx 24rpx 8rpx;
+  background: linear-gradient(135deg, #FF8A00 0%, #FFB347 100%);
+  border-radius: 32rpx;
+  padding: 36rpx 32rpx 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(255, 138, 0, 0.35);
 }
 
-.card-title {
-  font-size: 22rpx;
-  color: var(--color-text-secondary);
-  margin-bottom: 24rpx;
-  letter-spacing: 2rpx;
+.card-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
   display: block;
+  margin-bottom: 12rpx;
+  letter-spacing: 1rpx;
 }
 
-.cols {
+.card-balance {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  display: block;
+  letter-spacing: -2rpx;
+  margin-bottom: 32rpx;
+}
+
+.stats-row {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
 }
 
-.col {
+.stat-item {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.col-icon {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 26rpx;
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.35);
+  margin-top: 8rpx;
+}
+
+.stat-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12rpx;
-}
-
-.income-icon  { background: rgba(26, 173, 25, 0.15); }
-.expense-icon { background: rgba(250, 81, 81, 0.15); }
-.balance-icon { background: rgba(74, 158, 255, 0.15); }
-
-.col-symbol {
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 700;
-  line-height: 1;
+  color: #FFFFFF;
+  margin-bottom: 8rpx;
 }
 
-.income-icon  .col-symbol { color: var(--color-income); }
-.expense-icon .col-symbol { color: var(--color-expense); }
-.balance-icon .col-symbol { color: #4A9EFF; }
+.income-icon  { background: rgba(255, 255, 255, 0.25); }
+.expense-icon { background: rgba(255, 255, 255, 0.25); }
 
-.col-label {
+.stat-label {
   font-size: 22rpx;
-  color: var(--color-text-secondary);
-  margin-bottom: 10rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6rpx;
 }
 
-.col-amount {
-  font-size: 36rpx;
+.stat-amount {
+  font-size: 34rpx;
   font-weight: 700;
+  color: #FFFFFF;
   letter-spacing: -1rpx;
-  color: var(--color-text-primary);
 }
 
 .budget-bar-wrap {
@@ -76,21 +85,23 @@
 .budget-bar-track {
   width: 100%;
   height: 4rpx;
-  background: rgba(0,0,0,0.08);
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4rpx;
   overflow: hidden;
 }
 
 .budget-bar-fill {
   height: 100%;
-  background: var(--color-expense);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 4rpx;
 }
 
 .budget-bar-fill.over {
-  background: #FA5151;
+  background: #FFE0E0;
 }
 
 .budget-label {
   font-size: 20rpx;
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.75);
   margin-top: 6rpx;
 }

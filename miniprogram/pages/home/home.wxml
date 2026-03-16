@@ -58,6 +58,25 @@
   <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
                 expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" />
 
+  <view wx:if="{{!searchVisible}}" class="quick-actions">
+    <view class="quick-action" bind:tap="onManual">
+      <image class="quick-action-icon" src="/images/record-a.png" mode="aspectFit" />
+      <text class="quick-action-label">记一笔</text>
+    </view>
+    <view class="quick-action" bind:tap="onVoice">
+      <image class="quick-action-icon" src="/images/mic.svg" mode="aspectFit" />
+      <text class="quick-action-label">语音记账</text>
+    </view>
+    <view class="quick-action" bind:tap="onViewAllRecords">
+      <image class="quick-action-icon" src="/images/list.png" mode="aspectFit" />
+      <text class="quick-action-label">交易记录</text>
+    </view>
+    <view class="quick-action" bind:tap="onOpenBudget">
+      <image class="quick-action-icon" src="/images/wallet.png" mode="aspectFit" />
+      <text class="quick-action-label">预算</text>
+    </view>
+  </view>
+
   <!-- 待确认草稿提示卡 -->
   <view class="draft-hint-card" wx:if="{{pendingDraftCount > 0 && !searchVisible}}" bind:tap="onViewDrafts">
     <text class="draft-hint-text">📌 {{pendingDraftCount}} 条定期账单待确认</text>
@@ -75,6 +94,10 @@
   </view>
 
   <view class="record-groups" wx:else>
+    <view class="record-head">
+      <text class="record-head-title">最近交易</text>
+      <text class="record-head-link" bind:tap="onViewAllRecords">查看全部</text>
+    </view>
     <view class="day-group" wx:for="{{groups}}" wx:key="date" wx:for-item="group">
       <view class="day-header flex-row">
         <text class="day-date">{{group.dateDisplay}}</text>

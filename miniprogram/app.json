@@ -1,8 +1,11 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/budget/budget",
+    "pages/quick-add/quick-add",
     "pages/statistics/statistics",
     "pages/settings/settings",
+    "pages/records/records",
     "pages/add-record/add-record",
     "pages/voice-input/voice-input",
     "pages/photo-scan/photo-scan",
@@ -10,35 +13,48 @@
     "pages/category-manage/category-manage",
     "pages/recurring/recurring",
     "pages/recurring-form/recurring-form",
-    "pages/pending-drafts/pending-drafts"
+    "pages/pending-drafts/pending-drafts",
+    "pages/currency-setting/currency-setting"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#1AAD19",
+    "color": "#A0A7B4",
+    "selectedColor": "#FF8A00",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/new/house.png",
+        "selectedIconPath": "images/new/house-active.png"
+      },
+      {
+        "pagePath": "pages/budget/budget",
+        "text": "预算",
+        "iconPath": "images/new/wallet-cards.png",
+        "selectedIconPath": "images/new/wallet-cards-active.png"
+      },
+      {
+        "pagePath": "pages/quick-add/quick-add",
         "text": "记账",
-        "iconPath": "images/tab-home.png",
-        "selectedIconPath": "images/tab-home-active.png"
+        "iconPath": "images/record-a.png",
+        "selectedIconPath": "images/record-a.png"
       },
       {
         "pagePath": "pages/statistics/statistics",
         "text": "统计",
-        "iconPath": "images/tab-stats.png",
-        "selectedIconPath": "images/tab-stats-active.png"
+        "iconPath": "images/new/chart-pie.png",
+        "selectedIconPath": "images/new/chart-pie-active.png"
       },
       {
         "pagePath": "pages/settings/settings",
-        "text": "设置",
-        "iconPath": "images/tab-settings.png",
-        "selectedIconPath": "images/tab-settings-active.png"
+        "text": "我的",
+        "iconPath": "images/new/user.png",
+        "selectedIconPath": "images/new/user-active.png"
       }
     ]
   },

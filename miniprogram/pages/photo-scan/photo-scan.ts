@@ -1,5 +1,5 @@
 import { parseOCRResult, parsedToRecord } from '../../utils/parser'
-import { addRecordsBatch, getCategories } from '../../utils/storage'
+import { addRecordsBatch, getCategories, getRecords } from '../../utils/storage'
 import { CATEGORY_ICONS, yuanToFen, RecordType, RECORD_TYPES } from '../../models/record'
 
 interface DraftRecord {
@@ -20,6 +20,7 @@ Component({
     scanning: false,
     drafts: [] as DraftRecord[],
     showResult: false,
+    recentScans: [] as Array<{ title: string; date: string; amountText: string }>,
     allTypes: RECORD_TYPES,
     allCategories: {} as Record<string, string[]>,
   },
@@ -28,10 +29,28 @@ Component({
     attached() {
       const cats = getCategories()
       this.setData({ allCategories: cats as any })
+      this.loadRecentScans()
+    },
+  },
+
+  pageLifetimes: {
+    show() {
+      this.loadRecentScans()
     },
   },
 
   methods: {
+    loadRecentScans() {
+      const recentScans = getRecords()
+        .slice(0, 3)
+        .map(item => ({
+          title: `${item.category}小票`,
+          date: item.date,
+          amountText: `¥${(item.amount / 100).toFixed(2)}`,
+        }))
+      this.setData({ recentScans })
+    },
+
     _pickImage(sourceType: ('album' | 'camera')[]) {
       if (this.data.scanning) return
       wx.chooseMedia({
@@ -197,6 +216,7 @@ Component({
         }),
       )
       addRecordsBatch(records)
+      this.loadRecentScans()
       wx.showToast({ title: `已保存 ${records.length} 条记录` })
       setTimeout(() => wx.navigateBack(), 600)
     },

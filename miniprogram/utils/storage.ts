@@ -5,6 +5,33 @@ const CATEGORIES_KEY = 'categories'
 const BUDGETS_KEY = 'budgets'
 const RECURRING_RULES_KEY = 'recurring_rules'
 const PENDING_DRAFTS_KEY = 'pending_drafts'
+const CATEGORY_META_KEY = 'category_meta'
+
+export interface ICategoryMeta {
+  icon: string
+  color: string
+  bgColor: string
+}
+
+export function getCategoryMeta(): Record<string, ICategoryMeta> {
+  return wx.getStorageSync(CATEGORY_META_KEY) || {}
+}
+
+export function setCategoryMeta(name: string, meta: ICategoryMeta): void {
+  const all = getCategoryMeta()
+  all[name] = meta
+  wx.setStorageSync(CATEGORY_META_KEY, all)
+}
+
+export interface IAppBackupPayload {
+  version: number
+  exportedAt: number
+  records: IRecord[]
+  categories: ICategories
+  budgets: IBudget[]
+  recurringRules: IRecurringRule[]
+  pendingDrafts: IPendingDraft[]
+}
 
 // ---- 记录 CRUD ----
 
@@ -139,6 +166,37 @@ export function exportRecordsCSV(): string {
     `${r.type},${r.category},${(r.amount / 100).toFixed(2)},${r.date},"${r.note.replace(/"/g, '""')}",${new Date(r.createTime).toLocaleString()}`,
   )
   return BOM + [header, ...rows].join('\n')
+}
+
+export function exportBackupJSON(): string {
+  const payload: IAppBackupPayload = {
+    version: 1,
+    exportedAt: Date.now(),
+    records: getRecords(),
+    categories: getCategories(),
+    budgets: getBudgets(),
+    recurringRules: getRecurringRules(),
+    pendingDrafts: getPendingDrafts(),
+  }
+  return JSON.stringify(payload, null, 2)
+}
+
+export function restoreBackupJSON(raw: string): boolean {
+  const parsed = JSON.parse(raw || '{}') as Partial<IAppBackupPayload>
+  if (!Array.isArray(parsed.records) || !parsed.categories || !Array.isArray(parsed.budgets)) {
+    return false
+  }
+
+  saveRecords(parsed.records)
+  saveCategories({
+    '支出': Array.isArray(parsed.categories['支出']) ? parsed.categories['支出'] : [...DEFAULT_CATEGORIES['支出']],
+    '收入': Array.isArray(parsed.categories['收入']) ? parsed.categories['收入'] : [...DEFAULT_CATEGORIES['收入']],
+    '不计入收支': Array.isArray(parsed.categories['不计入收支']) ? parsed.categories['不计入收支'] : [...DEFAULT_CATEGORIES['不计入收支']],
+  })
+  saveBudgets(Array.isArray(parsed.budgets) ? parsed.budgets : [])
+  saveRecurringRules(Array.isArray(parsed.recurringRules) ? parsed.recurringRules : [])
+  savePendingDrafts(Array.isArray(parsed.pendingDrafts) ? parsed.pendingDrafts : [])
+  return true
 }
 
 // ---- 定期规则 CRUD ----

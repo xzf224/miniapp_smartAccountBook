@@ -1,0 +1,107 @@
+.page-body {
+  min-height: 100vh;
+  background: #f6f7f9;
+  padding: 8rpx 24rpx 24rpx;
+  box-sizing: border-box;
+}
+
+.budget-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+}
+
+.budget-card-top,
+.budget-foot-row,
+.budget-item-row,
+.section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.budget-card-title,
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.budget-card-days,
+.budget-foot-left,
+.budget-foot-right,
+.budget-item-sub {
+  font-size: 22rpx;
+  color: #9ca3af;
+}
+
+.budget-main-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 14rpx;
+}
+
+.budget-main-amount {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.budget-main-sub {
+  margin-left: 10rpx;
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+
+.progress-track,
+.budget-item-track {
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: #eef0f4;
+  overflow: hidden;
+  margin-top: 16rpx;
+}
+
+.progress-fill,
+.budget-item-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: #ff8a00;
+}
+
+.section-row {
+  margin: 28rpx 0 16rpx;
+}
+
+.section-add {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #ff8a00;
+}
+
+.budget-item {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.budget-item-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.budget-item-percent {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.empty-tip {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 24rpx;
+}

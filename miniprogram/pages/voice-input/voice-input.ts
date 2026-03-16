@@ -23,6 +23,7 @@ Component({
     recognizedText: '',
     drafts: [] as DraftRecord[],
     showResult: false,
+    examples: ['午饭花了 35 元', '打车去公司 18 元', '买咖啡 26 元'],
     allTypes: RECORD_TYPES,
     allCategories: {} as Record<string, string[]>,
   },

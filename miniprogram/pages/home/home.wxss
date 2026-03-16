@@ -115,6 +115,33 @@
   color: #aaa;
 }
 
+.quick-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 24rpx 24rpx 8rpx;
+}
+
+.quick-action {
+  width: 23%;
+  background: #f6f7fb;
+  border-radius: 18rpx;
+  padding: 18rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quick-action-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.quick-action-label {
+  margin-top: 12rpx;
+  font-size: 20rpx;
+  color: #6b7280;
+}
+
 /* 金额/日期筛选行 */
 .search-row {
   display: flex;
@@ -195,6 +222,25 @@
 
 .day-group {
   margin-bottom: 0;
+}
+
+.record-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx 0;
+}
+
+.record-head-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.record-head-link {
+  font-size: 22rpx;
+  color: #ff8a00;
+  font-weight: 600;
 }
 
 .day-header {

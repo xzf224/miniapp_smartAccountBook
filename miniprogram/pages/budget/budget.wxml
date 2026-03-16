@@ -1,0 +1,38 @@
+<navigation-bar title="预算管理" back="{{false}}" />
+<scroll-view scroll-y class="page-body">
+  <view class="budget-card">
+    <view class="budget-card-top">
+      <text class="budget-card-title">{{month}}月总预算</text>
+      <text class="budget-card-days">剩余{{daysLeft}}天</text>
+    </view>
+    <view class="budget-main-row">
+      <text class="budget-main-amount">¥{{expenseText}}</text>
+      <text class="budget-main-sub">/ ¥{{totalBudgetText}}</text>
+    </view>
+    <view class="progress-track">
+      <view class="progress-fill" style="width: {{progress}}%;"></view>
+    </view>
+    <view class="budget-foot-row">
+      <text class="budget-foot-left">已用 {{progress}}%</text>
+      <text class="budget-foot-right">剩余 ¥{{remainText}}</text>
+    </view>
+  </view>
+
+  <view class="section-row">
+    <text class="section-title">分类预算</text>
+    <text class="section-add" bind:tap="onOpenBudgetSetting">+ 添加</text>
+  </view>
+
+  <view class="budget-item" wx:for="{{items}}" wx:key="category">
+    <view class="budget-item-row">
+      <text class="budget-item-name">{{item.category}}</text>
+      <text class="budget-item-percent" style="color: {{item.color}};">{{item.percent}}%</text>
+    </view>
+    <text class="budget-item-sub">¥{{item.spentText}} / ¥{{item.budgetText}}</text>
+    <view class="budget-item-track">
+      <view class="budget-item-fill" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+    </view>
+  </view>
+  <view class="empty-tip" wx:if="{{items.length === 0}}">还没有分类预算，点击右上角添加</view>
+  <view style="height: 40rpx;"></view>
+</scroll-view>

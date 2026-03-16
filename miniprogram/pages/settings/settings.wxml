@@ -1,17 +1,41 @@
-<navigation-bar title="设置" back="{{false}}" />
+<navigation-bar title="我的" back="{{false}}" />
 <scroll-view scroll-y class="page-body">
+  <view class="stats-row">
+    <view class="stat-item">
+      <text class="stat-value">{{statRecords}}</text>
+      <text class="stat-label">本月记录</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statCategories}}</text>
+      <text class="stat-label">分类总数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statBudgets}}</text>
+      <text class="stat-label">预算设置</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statRules}}</text>
+      <text class="stat-label">已设规则</text>
+    </view>
+  </view>
 
-  <view class="section-header">账单管理</view>
+  <view class="section-header">数据管理</view>
   <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onBudgetSetting">
-      <image class="item-icon-img" src="/images/budget.png" mode="aspectFit" />
-      <text class="item-label flex-1">预算设置</text>
+    <view class="settings-item flex-row" bind:tap="onBackupData">
+      <image class="item-icon-img" src="/images/arrow-left-right.png" mode="aspectFit" />
+      <text class="item-label flex-1">数据备份</text>
       <text class="item-arrow">›</text>
     </view>
     <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onCategoryManage">
-      <image class="item-icon-img" src="/images/category.png" mode="aspectFit" />
-      <text class="item-label flex-1">类别管理</text>
+    <view class="settings-item flex-row" bind:tap="onRestoreData">
+      <image class="item-icon-img" src="/images/brush-cleaning.png" mode="aspectFit" />
+      <text class="item-label flex-1">数据恢复</text>
+      <text class="item-arrow">›</text>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onExportData">
+      <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
+      <text class="item-label flex-1">导出数据</text>
       <text class="item-arrow">›</text>
     </view>
     <view class="divider"></view>
@@ -22,29 +46,49 @@
     </view>
   </view>
 
-  <view class="section-header">数据</view>
+  <view class="section-header">个性化</view>
   <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onExportData">
-      <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
-      <text class="item-label flex-1">导出账单 (CSV)</text>
+    <view class="settings-item flex-row" bind:tap="onBudgetSetting">
+      <image class="item-icon-img" src="/images/target.png" mode="aspectFit" />
+      <text class="item-label flex-1">预算管理</text>
       <text class="item-arrow">›</text>
     </view>
     <view class="divider"></view>
-    <view class="settings-item flex-row danger" bind:tap="onClearAll">
-      <image class="item-icon-img" src="/images/clear.png" mode="aspectFit" />
-      <text class="item-label flex-1">清空所有数据</text>
+    <view class="settings-item flex-row" bind:tap="onCategoryManage">
+      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      <text class="item-label flex-1">分类管理</text>
+      <text class="item-arrow">›</text>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onReminder">
+      <image class="item-icon-img" src="/images/alarm-clock.png" mode="aspectFit" />
+      <text class="item-label flex-1">提醒设置</text>
+      <text class="item-arrow">›</text>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onCurrency">
+      <image class="item-icon-img" src="/images/target.png" mode="aspectFit" />
+      <text class="item-label flex-1">货币设置</text>
       <text class="item-arrow">›</text>
     </view>
   </view>
 
-  <view class="section-header">分享</view>
+  <view class="section-header">关于</view>
   <view class="card settings-group">
-    <button class="settings-item flex-row share-btn" open-type="share">
-      <image class="item-icon-img" src="/images/share.png" mode="aspectFit" />
-      <text class="item-label flex-1">分享给朋友</text>
+    <view class="settings-item flex-row" bind:tap="onAbout">
+      <image class="item-icon-img" src="/images/info.png" mode="aspectFit" />
+      <text class="item-label flex-1">关于我们</text>
       <text class="item-arrow">›</text>
-    </button>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onFeedback">
+      <image class="item-icon-img" src="/images/message-circle.png" mode="aspectFit" />
+      <text class="item-label flex-1">意见反馈</text>
+      <text class="item-arrow">›</text>
+    </view>
   </view>
+
+  <view class="logout-btn" bind:tap="onClearAll">退出登录</view>
 
   <view class="app-info">
     <text class="app-name">极简小帐</text>

@@ -1,0 +1,34 @@
+<navigation-bar title="货币设置" back="{{true}}" />
+<scroll-view scroll-y class="page-body">
+
+  <view class="current-card">
+    <view class="current-left">
+      <text class="current-symbol">{{currentCurrency.symbol}}</text>
+      <view class="current-info">
+        <text class="current-name">{{currentCurrency.name}}</text>
+        <text class="current-code">{{currentCurrency.code}}</text>
+      </view>
+    </view>
+    <text class="current-badge">当前货币</text>
+  </view>
+
+  <text class="section-title">选择默认货币</text>
+
+  <view class="card currency-list">
+    <view class="currency-item flex-row"
+          wx:for="{{currencies}}" wx:key="code"
+          data-code="{{item.code}}"
+          bind:tap="onSelect">
+      <text class="currency-symbol-col">{{item.symbol}}</text>
+      <view class="currency-meta flex-1">
+        <text class="currency-name">{{item.name}}</text>
+        <text class="currency-code">{{item.code}}</text>
+      </view>
+      <view class="check-icon" wx:if="{{item.code === selectedCode}}">✓</view>
+    </view>
+  </view>
+
+  <text class="note-tip">默认货币将应用于新建交易，已有交易不受影响</text>
+
+  <view style="height: 60rpx;"></view>
+</scroll-view>

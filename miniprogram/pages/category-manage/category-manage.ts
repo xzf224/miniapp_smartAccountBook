@@ -1,11 +1,28 @@
-import { getCategories, addCategory, deleteCategory } from '../../utils/storage'
-import { CATEGORY_ICONS, ICategories, DEFAULT_CATEGORIES } from '../../models/record'
+import { getCategories, addCategory, deleteCategory, getCategoryMeta, setCategoryMeta } from '../../utils/storage'
+import { CATEGORY_COLORS, CATEGORY_ICONS, ICategories, DEFAULT_CATEGORIES } from '../../models/record'
 
 interface CategoryDisplayItem {
   name: string
   icon: string
   isDefault: boolean
+  color: string
+  bgColor: string
 }
+
+const PASTEL_BACKGROUNDS = [
+  '#FFF2E8', '#EEF4FF', '#F4EDFF', '#EAFBF1',
+  '#EDF5FF', '#FFF0F4', '#FFF8E5', '#EEFBEF',
+]
+
+const ICON_OPTIONS = ['🍔', '🚗', '👗', '🛍️', '🏠', '🎮', '📚', '💊',
+  '✈️', '🐶', '💰', '🎁', '🏋️', '☕', '🎵', '🌿',
+  '🔧', '💡', '🌈', '⭐', '❤️', '🎯', '🍕', '🚀']
+
+const COLOR_OPTIONS = [
+  '#FF8A00', '#FF6B9D', '#E74C3C', '#F39C12',
+  '#27AE60', '#2ECC71', '#1ABC9C', '#3498DB',
+  '#4A9EFF', '#9B59B6', '#E84393', '#95A5A6',
+]
 
 Component({
   data: {
@@ -13,6 +30,11 @@ Component({
     types: ['支出', '收入'],
     categories: [] as CategoryDisplayItem[],
     newName: '',
+    showAddBox: false,
+    selectedIcon: '⭐',
+    selectedColor: '#FF8A00',
+    iconOptions: ICON_OPTIONS,
+    colorOptions: COLOR_OPTIONS,
   },
 
   lifetimes: {
@@ -25,13 +47,19 @@ Component({
     loadCategories() {
       const { typeIndex } = this.data
       const cats = getCategories()
+      const meta = getCategoryMeta()
       const list: string[] = typeIndex === 0 ? cats['支出'] : cats['收入']
       const defaults = typeIndex === 0 ? DEFAULT_CATEGORIES['支出'] : DEFAULT_CATEGORIES['收入']
-      const categories: CategoryDisplayItem[] = list.map((name: string) => ({
-        name,
-        icon: CATEGORY_ICONS[name] || '他',
-        isDefault: defaults.includes(name)
-      }))
+      const categories: CategoryDisplayItem[] = list.map((name: string, index: number) => {
+        const customMeta = meta[name]
+        return {
+          name,
+          icon: customMeta?.icon || CATEGORY_ICONS[name] || '他',
+          isDefault: defaults.includes(name),
+          color: customMeta?.color || CATEGORY_COLORS[name] || '#FF8A00',
+          bgColor: customMeta?.bgColor || PASTEL_BACKGROUNDS[index % PASTEL_BACKGROUNDS.length],
+        }
+      })
       this.setData({ categories })
     },
 
@@ -44,8 +72,16 @@ Component({
       this.setData({ newName: e.detail.value })
     },
 
+    onSelectIcon(e: WechatMiniprogram.CustomEvent) {
+      this.setData({ selectedIcon: e.currentTarget.dataset.icon })
+    },
+
+    onSelectColor(e: WechatMiniprogram.CustomEvent) {
+      this.setData({ selectedColor: e.currentTarget.dataset.color })
+    },
+
     onAddCategory() {
-      const { newName, typeIndex } = this.data
+      const { newName, typeIndex, selectedIcon, selectedColor } = this.data
       const trimmed = newName.trim()
       if (!trimmed) {
         wx.showToast({ title: '请输入分类名', icon: 'none' })
@@ -59,8 +95,17 @@ Component({
         return
       }
       addCategory(type, trimmed)
-      this.setData({ newName: '' })
+      setCategoryMeta(trimmed, {
+        icon: selectedIcon,
+        color: selectedColor,
+        bgColor: '#F8F4FF',
+      })
+      this.setData({ newName: '', showAddBox: false, selectedIcon: '⭐', selectedColor: '#FF8A00' })
       this.loadCategories()
+    },
+
+    onToggleAddBox() {
+      this.setData({ showAddBox: !this.data.showAddBox })
     },
 
     onDeleteCategory(e: WechatMiniprogram.CustomEvent) {

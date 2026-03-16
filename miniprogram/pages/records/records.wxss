@@ -1,0 +1,270 @@
+.page-body {
+  min-height: 100vh;
+  background: #f6f7f9;
+  padding: 0 24rpx 24rpx;
+  box-sizing: border-box;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+  padding: 18rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+
+.search-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 12rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 24rpx;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10rpx;
+  padding: 12rpx 0;
+}
+
+.filter-pill {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: #fff;
+  color: #6b7280;
+  font-size: 22rpx;
+}
+
+.filter-pill.active {
+  background: #ff8a00;
+  color: #fff;
+}
+
+.group-block {
+  margin-top: 8rpx;
+}
+
+.group-head {
+  padding: 12rpx 4rpx;
+}
+
+.group-date {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.group-list {
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.empty-state {
+  margin-top: 80rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+
+/* 右上角筛选按钮 */
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #f0f0f0;
+  position: relative;
+}
+
+.filter-btn-active {
+  background: #fff3e0;
+}
+
+.filter-btn-icon {
+  font-size: 26rpx;
+  color: #6b7280;
+}
+
+.filter-btn-text {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
+.filter-btn-active .filter-btn-icon,
+.filter-btn-active .filter-btn-text {
+  color: #ff8a00;
+}
+
+.filter-dot {
+  position: absolute;
+  top: 4rpx;
+  right: 4rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: #ff8a00;
+}
+
+/* 筛选面板遮罩 */
+.filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+/* 底部弹出面板 */
+.filter-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 101;
+  padding: 0 0 env(safe-area-inset-bottom);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-panel-show {
+  transform: translateY(0);
+}
+
+.filter-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx 32rpx 20rpx;
+  border-bottom: 1rpx solid #f0efee;
+}
+
+.filter-panel-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1918;
+}
+
+.filter-reset {
+  font-size: 26rpx;
+  color: #ff8a00;
+}
+
+.filter-scroll {
+  flex: 1;
+  overflow: hidden;
+}
+
+.filter-section {
+  padding: 28rpx 32rpx 0;
+}
+
+.filter-section-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1a1918;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid #f0efee;
+}
+
+.filter-chip {
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  background: #f6f7f9;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.filter-chip.chip-active {
+  background: #ff8a00;
+  color: #fff;
+}
+
+.amount-range-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 28rpx;
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid #f0efee;
+}
+
+.amount-range-input {
+  flex: 1;
+  height: 64rpx;
+  background: #f6f7f9;
+  border-radius: 12rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  color: #1a1918;
+  box-sizing: border-box;
+}
+
+.range-ph {
+  color: #bbb;
+  font-size: 24rpx;
+}
+
+.range-dash {
+  font-size: 26rpx;
+  color: #aaa;
+}
+
+.range-unit {
+  font-size: 24rpx;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 32rpx 28rpx;
+  border-top: 1rpx solid #f0efee;
+}
+
+.filter-cancel-btn {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  border: 1rpx solid #e0e0e0;
+  font-size: 28rpx;
+  color: #6b7280;
+}
+
+.filter-confirm-btn {
+  flex: 2;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  background: #ff8a00;
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4rpx 16rpx rgba(255, 138, 0, 0.4);
+}

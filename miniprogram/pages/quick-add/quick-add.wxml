@@ -1,0 +1,36 @@
+<navigation-bar title="记一笔" back="{{false}}" />
+<view class="page-body">
+  <view class="type-switch">
+    <view class="type-pill {{typeIndex === index ? 'active' : ''}}"
+          wx:for="{{types}}" wx:key="*this" data-index="{{index}}" bind:tap="onTypeChange">{{item}}</view>
+  </view>
+
+  <view class="amount-panel">
+    <text class="amount-label">金额</text>
+    <view class="amount-row">
+      <text class="currency">¥</text>
+      <input class="amount-input" type="digit" value="{{amountText}}" placeholder="0.00" bind:input="onAmountInput" />
+    </view>
+    <view class="amount-line"></view>
+  </view>
+
+  <view class="section-block">
+    <text class="section-title">选择分类</text>
+    <category-grid categories="{{categories}}" selected="{{selectedCategory}}" bind:select="onCategorySelect" />
+  </view>
+
+  <view class="detail-list">
+    <view class="detail-row">
+      <text class="detail-label">日期</text>
+      <picker mode="date" value="{{date}}" bind:change="onDateChange">
+        <text class="detail-value">{{date}}</text>
+      </picker>
+    </view>
+    <view class="detail-row">
+      <text class="detail-label">备注</text>
+      <input class="detail-input" value="{{note}}" placeholder="添加备注" bind:input="onNoteInput" />
+    </view>
+  </view>
+
+  <view class="save-btn" bind:tap="onSave">完成</view>
+</view>

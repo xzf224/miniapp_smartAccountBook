@@ -184,7 +184,7 @@ Component({
     },
 
     onManual() {
-      wx.navigateTo({ url: '/pages/add-record/add-record' })
+      wx.switchTab({ url: '/pages/quick-add/quick-add' })
     },
 
     onVoice() {
@@ -193,6 +193,14 @@ Component({
 
     onPhoto() {
       wx.navigateTo({ url: '/pages/photo-scan/photo-scan' })
+    },
+
+    onViewAllRecords() {
+      wx.navigateTo({ url: '/pages/records/records' })
+    },
+
+    onOpenBudget() {
+      wx.switchTab({ url: '/pages/budget/budget' })
     },
   },
 })

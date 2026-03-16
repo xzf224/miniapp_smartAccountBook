@@ -1,41 +1,72 @@
 <view class="page-root">
-<navigation-bar title="类别管理" back="{{true}}" />
-<scroll-view scroll-y class="page-body">
+  <navigation-bar title="分类管理" back="{{true}}" />
+  <scroll-view scroll-y class="page-body">
+    <view class="type-tabs flex-row">
+      <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
+            wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
+            bind:tap="onTypeChange">{{item}}</view>
+    </view>
 
-  <view class="type-tabs flex-row">
-    <view class="type-tab {{typeIndex === index ? 'active' : ''}}"
-          wx:for="{{types}}" wx:key="*this" data-index="{{index}}"
-          bind:tap="onTypeChange">{{item}}</view>
-  </view>
-
-  <view class="card">
-    <view class="cat-item flex-row" wx:for="{{categories}}" wx:key="name">
-      <text class="cat-name flex-1">{{item.name}}</text>
-      <view class="default-badge" wx:if="{{item.isDefault}}">
-        <text class="badge-text">系统</text>
-      </view>
-      <view class="delete-btn" wx:else data-name="{{item.name}}" bind:tap="onDeleteCategory">
-        <text class="delete-icon">✕</text>
+    <view class="grid-card">
+      <view class="category-grid">
+        <view class="category-item" wx:for="{{categories}}" wx:key="name">
+          <view class="category-icon-wrap" style="background: {{item.bgColor}};">
+            <text class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
+            <view class="delete-badge" wx:if="{{!item.isDefault}}" data-name="{{item.name}}" bind:tap="onDeleteCategory">×</view>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
       </view>
     </view>
-  </view>
 
-  <view class="card add-card">
-    <view class="add-title">添加新分类</view>
-    <view class="add-row flex-row">
-      <input class="add-input flex-1"
-             placeholder="输入分类名称"
-             value="{{newName}}"
-             maxlength="10"
-             bind:input="onNameInput"
-             confirm-type="done"
-             bind:confirm="onAddCategory" />
-      <view class="add-btn" bind:tap="onAddCategory">
-        <text class="add-btn-text">添加</text>
+    <view class="add-trigger" bind:tap="onToggleAddBox">
+      <text class="add-trigger-text">{{showAddBox ? '收起' : '+ 添加自定义分类'}}</text>
+    </view>
+
+    <view class="add-panel" wx:if="{{showAddBox}}">
+      <!-- 预览 -->
+      <view class="add-preview">
+        <view class="preview-icon-wrap" style="background: #F8F4FF;">
+          <text class="preview-icon">{{selectedIcon}}</text>
+        </view>
+        <text class="preview-name">{{newName || '分类名称'}}</text>
+      </view>
+
+      <!-- 图标选择 -->
+      <text class="add-section-title">选择图标</text>
+      <view class="icon-grid">
+        <view class="icon-option {{selectedIcon === item ? 'icon-selected' : ''}}"
+              wx:for="{{iconOptions}}" wx:key="*this"
+              data-icon="{{item}}" bind:tap="onSelectIcon">{{item}}</view>
+      </view>
+
+      <!-- 颜色选择 -->
+      <text class="add-section-title">选择颜色</text>
+      <view class="color-grid">
+        <view class="color-dot {{selectedColor === item ? 'color-selected' : ''}}"
+              wx:for="{{colorOptions}}" wx:key="*this"
+              data-color="{{item}}" bind:tap="onSelectColor"
+              style="background: {{item}};">
+          <text wx:if="{{selectedColor === item}}" class="color-check">✓</text>
+        </view>
+      </view>
+
+      <!-- 名称输入 -->
+      <text class="add-section-title">分类名称</text>
+      <view class="add-row flex-row">
+        <input class="add-input flex-1"
+               placeholder="输入分类名称（最多6字）"
+               value="{{newName}}"
+               maxlength="6"
+               bind:input="onNameInput"
+               confirm-type="done"
+               bind:confirm="onAddCategory" />
+        <view class="add-btn" bind:tap="onAddCategory">
+          <text class="add-btn-text">添加</text>
+        </view>
       </view>
     </view>
-  </view>
 
-  <view style="height: 60rpx;"></view>
-</scroll-view>
+    <view style="height: 60rpx;"></view>
+  </scroll-view>
 </view>

@@ -1,12 +1,39 @@
 .page-body {
   height: 100vh;
-  background: var(--color-bg-page);
+  background: #f6f7f9;
+}
+
+.stats-row {
+  display: flex;
+  margin: 16rpx 24rpx 8rpx;
+  padding: 20rpx 0;
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ff8a00;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #9ca3af;
 }
 
 .section-header {
   font-size: 22rpx;
   color: var(--color-text-secondary);
-  padding: 48rpx 32rpx 12rpx;
+  padding: 28rpx 32rpx 12rpx;
   letter-spacing: 2rpx;
 }
 
@@ -96,4 +123,15 @@
 .app-version {
   font-size: 22rpx;
   color: var(--color-text-placeholder);
+}
+
+.logout-btn {
+  margin: 20rpx 24rpx 0;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 42rpx;
+  background: #fff;
+  color: #ff6b6b;
+  font-size: 28rpx;
 }

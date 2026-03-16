@@ -1,31 +1,31 @@
 <navigation-bar title="语音记账" />
 <view class="page-container">
-
-  <!-- 可滚动的结果区域 -->
   <scroll-view class="results-area" scroll-y="{{true}}">
-    <!-- 空状态 -->
-    <view wx:if="{{!showResult && !recognizedText && !isTranslating}}" class="empty-state">
-      <image class="empty-icon-img" src="/images/record-w.png" mode="aspectFit" />
-      <text class="empty-title">说出您的消费内容</text>
-      <text class="empty-hint">例如：午餐30元，打车15块</text>
+    <view wx:if="{{!showResult && !recognizedText && !isTranslating}}" class="hero-state">
+      <text class="hero-title">请说出您的消费记录</text>
+      <text class="hero-subtitle">点击麦克风或按住开始语音输入</text>
+      <view class="wave-bars">
+        <view class="wave-bar" wx:for="{{[16,30,44,26,38,18,48,24,34,20,42,14]}}" wx:key="index" style="height: {{item}}rpx;"></view>
+      </view>
+      <view class="example-list">
+        <view class="example-item" wx:for="{{examples}}" wx:key="*this">
+          <text class="example-text">“{{item}}”</text>
+        </view>
+      </view>
     </view>
 
-    <!-- 识别中占位 -->
-    <view wx:if="{{isTranslating && !recognizedText}}" class="empty-state">
-      <text class="empty-icon">⏳</text>
+    <view wx:if="{{isTranslating && !recognizedText}}" class="hero-state">
+      <view class="loading-ring"></view>
       <text class="empty-title">正在识别中…</text>
     </view>
 
-    <!-- 识别原文 -->
     <view wx:if="{{recognizedText}}" class="raw-text-card">
       <text class="raw-text-label">识别原文</text>
       <text class="raw-text">{{recognizedText}}</text>
     </view>
 
-    <!-- 解析结果草稿 -->
     <block wx:if="{{showResult}}">
       <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
-        <!-- 第一行：图标 + 类型 + 分类 + 删除 -->
         <view class="draft-row1">
           <text class="draft-icon-text">{{item.icon}}</text>
           <picker range="{{allTypes}}" value="{{item.typeIndex}}"
@@ -38,7 +38,6 @@
           </picker>
           <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
         </view>
-        <!-- 第二行：日期 + 备注 + 金额 -->
         <view class="draft-row2">
           <picker mode="date" value="{{item.date}}" bindchange="onEditDate" data-index="{{index}}">
             <view class="draft-date-chip">{{item.date}}</view>
@@ -61,14 +60,8 @@
     </block>
   </scroll-view>
 
-  <!-- 底部固定面板 -->
   <view class="bottom-panel">
-    <view class="status-bar">
-      <view class="status-dot {{isRecording ? 'dot-recording' : isTranslating ? 'dot-translating' : 'dot-ready'}}"></view>
-      <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '正在录音' : '准备就绪'}}</text>
-    </view>
-
-    <text class="mic-hint">{{isRecording ? '松开停止' : '按住说话'}}</text>
+    <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '松开结束录音' : '点击或按住开始说话'}}</text>
 
     <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
           bind:touchstart="onStartRecord"
@@ -78,7 +71,6 @@
       <image class="mic-icon-img" src="/images/record.png" mode="aspectFit" />
     </view>
 
-    <text class="disclaimer">本服务为AI生成内容，结果仅供参考</text>
+    <text class="disclaimer">本服务为 AI 生成内容，结果仅供参考</text>
   </view>
-
 </view>
