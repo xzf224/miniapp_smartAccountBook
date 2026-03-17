@@ -1,20 +1,25 @@
 <navigation-bar brand="{{true}}" back="{{false}}" />
 <scroll-view scroll-y class="page-body tab-scroll">
   <view class="profile-card">
-    <image
-      wx:if="{{profileAvatarUrl}}"
-      class="profile-avatar"
-      src="{{profileAvatarUrl}}"
-      mode="aspectFill"
-    />
-    <view wx:else class="profile-avatar profile-avatar-placeholder">
-      <image class="profile-avatar-icon" src="/images/new/user.png" mode="aspectFit" />
+    <view class="profile-avatar-shell">
+      <image
+        wx:if="{{profileAvatarUrl}}"
+        class="profile-avatar"
+        src="{{profileAvatarUrl}}"
+        mode="aspectFill"
+      />
+      <view wx:else class="profile-avatar profile-avatar-placeholder">
+        <image class="profile-avatar-icon" src="/images/new/user.png" mode="aspectFit" />
+      </view>
     </view>
     <view class="profile-copy">
+      <text class="profile-greeting">Hi，欢迎回来</text>
       <text class="profile-name">{{profileNickname || '微信用户'}}</text>
       <text class="profile-subtitle">{{profilePersonalized ? '点击右侧图标修改头像和昵称' : '匿名模式，点击右侧图标开启个性化'}}</text>
     </view>
-    <image class="profile-edit-icon" src="/images/note.png" mode="aspectFit" bind:tap="onProfileCardTap" />
+    <view class="profile-edit-chip" bind:tap="onProfileCardTap">
+      <image class="profile-edit-icon" src="/images/note.png" mode="aspectFit" />
+    </view>
   </view>
 
   <view class="profile-editor" wx:if="{{profileEditing}}">
@@ -53,79 +58,107 @@
     </view>
   </view>
   <view class="section-header overview-header">数据总览</view>
-  <view class="stats-row">
-    <view class="stat-item">
+  <view class="stats-row stats-row-primary">
+    <view class="stat-item stat-item-primary stat-accent-orange">
+      <text class="stat-kicker">本月</text>
       <text class="stat-value">{{statRecords}}</text>
-      <text class="stat-label">本月记账笔</text>
-      <text class="stat-label">笔</text>
+      <view class="stat-meta">
+        <text class="stat-label">记账笔数</text>
+        <text class="stat-unit">笔</text>
+      </view>
     </view>
-    <view class="stat-item">
+    <view class="stat-item stat-item-primary stat-accent-green">
+      <text class="stat-kicker">连续</text>
       <text class="stat-value">{{statConsecutiveDays}}</text>
-      <text class="stat-label">连续记账</text>
-      <text class="stat-label">天</text>
+      <view class="stat-meta">
+        <text class="stat-label">记账天数</text>
+        <text class="stat-unit">天</text>
+      </view>
     </view>
-    <view class="stat-item">
+    <view class="stat-item stat-item-primary stat-accent-purple">
+      <text class="stat-kicker">累计</text>
       <text class="stat-value">{{statTotalDays}}</text>
-      <text class="stat-label">总记账</text>
-      <text class="stat-label">笔</text>
+      <view class="stat-meta">
+        <text class="stat-label">记账天数</text>
+        <text class="stat-unit">天</text>
+      </view>
     </view>
-    <view class="stat-item">
-      <text class="stat-value">{{statTotalDays}}</text>
-      <text class="stat-label">累计记账</text>
-      <text class="stat-label">天</text>
+    <view class="stat-item stat-item-primary stat-accent-blue">
+      <text class="stat-kicker">当前</text>
+      <text class="stat-value">{{statPendingDrafts}}</text>
+      <view class="stat-meta">
+        <text class="stat-label">待确认草稿</text>
+        <text class="stat-unit">条</text>
+      </view>
     </view>
   </view>
 
-  <view class="stats-row">
-    <view class="stat-item">
-      <text class="stat-value">{{statCategories}}</text>
-      <text class="stat-label">分类总数</text>
-      <text class="stat-label">个</text>
+  <view class="stats-row stats-row-secondary">
+    <view class="stat-item stat-item-secondary">
+      <text class="stat-value stat-value-secondary">{{statCategories}}</text>
+      <view class="stat-meta">
+        <text class="stat-label">分类总数</text>
+        <text class="stat-unit">个</text>
+      </view>
     </view>
-    <view class="stat-item">
-      <text class="stat-value">{{statCategories}}</text>
-      <text class="stat-label">规则总数</text>
-      <text class="stat-label">个</text>
+    <view class="stat-item stat-item-secondary">
+      <text class="stat-value stat-value-secondary">{{statBudgets}}</text>
+      <view class="stat-meta">
+        <text class="stat-label">预算配置</text>
+        <text class="stat-unit">项</text>
+      </view>
     </view>
-     <view class="stat-item">
-      <text class="stat-value"></text>
-      <text class="stat-label"></text>
-      <text class="stat-label"></text>
+    <view class="stat-item stat-item-secondary">
+      <text class="stat-value stat-value-secondary">{{statRules}}</text>
+      <view class="stat-meta">
+        <text class="stat-label">定期规则</text>
+        <text class="stat-unit">个</text>
+      </view>
     </view>
-     <view class="stat-item">
-      <text class="stat-value"></text>
-      <text class="stat-label"></text>
-      <text class="stat-label"></text>
+    <view class="stat-item stat-item-secondary">
+      <text class="stat-value stat-value-secondary">{{statTotalRecords}}</text>
+      <view class="stat-meta">
+        <text class="stat-label">累计记账笔</text>
+        <text class="stat-unit">笔</text>
+      </view>
     </view>
   </view>
 
   <view class="section-header">数据管理</view>
   <view class="card settings-group">
     <view class="settings-item flex-row" bind:tap="onBackupData">
-      <image class="item-icon-img" src="/images/arrow-left-right.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-orange">
+        <image class="item-icon-img" src="/images/arrow-left-right.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">数据备份</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onRestoreData">
-      <image class="item-icon-img" src="/images/brush-cleaning.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-red">
+        <image class="item-icon-img" src="/images/brush-cleaning.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">数据恢复</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onExportData">
-      <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-blue">
+        <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">导出数据</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
   </view>
 
   <view class="section-header">个性化</view>
   <view class="card settings-group">
     <view class="settings-item flex-row" bind:tap="onCategoryManage">
-      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-purple">
+        <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">分类管理</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <!--
@@ -137,40 +170,52 @@
     -->
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onCurrency">
-      <image class="item-icon-img" src="/images/circle-dollar-sign.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-green">
+        <image class="item-icon-img" src="/images/circle-dollar-sign.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">货币设置</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onRecurring">
-      <image class="item-icon-img" src="/images/schedule.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-blue">
+        <image class="item-icon-img" src="/images/schedule.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">定期账单</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onReminder">
-      <image class="item-icon-img" src="/images/alarm-clock.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-orange">
+        <image class="item-icon-img" src="/images/alarm-clock.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">提醒设置</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
   </view>
 
   <view class="section-header">关于</view>
   <view class="card settings-group">
     <view class="settings-item flex-row" bind:tap="onAbout">
-      <image class="item-icon-img" src="/images/info.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-slate">
+        <image class="item-icon-img" src="/images/info.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">关于我们</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onFeedback">
-      <image class="item-icon-img" src="/images/message-circle.png" mode="aspectFit" />
+      <view class="item-icon-shell item-icon-shell-purple">
+        <image class="item-icon-img" src="/images/message-circle.png" mode="aspectFit" />
+      </view>
       <text class="item-label flex-1">意见反馈</text>
-      <text class="item-arrow">›</text>
+      <view class="item-arrow"></view>
     </view>
   </view>
 
+  <!--
   <view class="logout-btn" bind:tap="onClearAll">退出登录</view>
+  -->
 
   <view class="app-info">
     <text class="app-name">极简小帐</text>

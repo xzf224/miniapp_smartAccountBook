@@ -2,8 +2,11 @@ import {
   exportBackupJSON,
   exportRecordsCSV,
   clearAllRecords,
+  getBudgets,
   getCategories,
+  getPendingDrafts,
   getRecords,
+  getRecurringRules,
   getUserProfile,
   restoreBackupJSON,
   saveUserProfile,
@@ -13,9 +16,13 @@ Component({
   data: {
     version: (getApp() as any).globalData.version as string,
     statRecords: 0,
+    statTotalRecords: 0,
     statCategories: 0,
     statConsecutiveDays: 0,
     statTotalDays: 0,
+    statBudgets: 0,
+    statRules: 0,
+    statPendingDrafts: 0,
     profileAvatarUrl: '',
     profileNickname: '',
     profilePersonalized: false,
@@ -40,6 +47,9 @@ Component({
     loadStats() {
       const records = getRecords()
       const categories = getCategories()
+      const budgets = getBudgets()
+      const recurringRules = getRecurringRules()
+      const pendingDrafts = getPendingDrafts()
       const userProfile = getUserProfile()
       const now = new Date()
       const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -65,9 +75,13 @@ Component({
 
       this.setData({
         statRecords: monthCount,
+        statTotalRecords: records.length,
         statCategories: categoryCount,
         statConsecutiveDays,
         statTotalDays,
+        statBudgets: budgets.length,
+        statRules: recurringRules.length,
+        statPendingDrafts: pendingDrafts.length,
         profileAvatarUrl: userProfile.avatarUrl,
         profileNickname: userProfile.nickname,
         profilePersonalized: userProfile.personalized,
