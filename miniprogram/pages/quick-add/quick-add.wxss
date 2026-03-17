@@ -122,7 +122,7 @@
   height: 4rpx;
   margin: 10rpx auto 0;
   border-radius: 999rpx;
-  background: #ff8a00;
+  background: var(--color-primary);
 }
 
 .section-title {
@@ -185,7 +185,7 @@
 }
 
 .category-item.active .category-name {
-  color: #ff8a00;
+  color: var(--color-primary);
   font-weight: 600;
 }
 

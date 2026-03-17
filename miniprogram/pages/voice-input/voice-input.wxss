@@ -130,8 +130,8 @@ page {
 }
 
 .chip-income {
-  background: #eaf8f0;
-  color: #20a464;
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--color-income);
 }
 
 .chip-expense {

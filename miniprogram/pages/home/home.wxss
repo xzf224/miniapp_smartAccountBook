@@ -288,7 +288,7 @@
 
 .record-head-link {
   font-size: 22rpx;
-  color: #ff8a00;
+  color: var(--color-primary);
   font-weight: 600;
 }
 

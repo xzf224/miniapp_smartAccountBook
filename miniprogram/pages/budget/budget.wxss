@@ -98,7 +98,7 @@
 }
 
 .budget-foot-left {
-  color: #ff8a00;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
@@ -118,7 +118,7 @@
 .section-add {
   font-size: 24rpx;
   font-weight: 600;
-  color: #ff8a00;
+  color: var(--color-primary);
 }
 
 .budget-list {
