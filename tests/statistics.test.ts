@@ -3,6 +3,8 @@ import {
   calcCategoryRanking,
   calcDailyComparison,
   calcMonthlyComparison,
+  calcWeekdayComparison,
+  calcYearlyComparison,
 } from '../miniprogram/utils/statistics'
 import { IRecord } from '../miniprogram/models/record'
 
@@ -178,5 +180,56 @@ describe('calcMonthlyComparison', () => {
   test('无记录月份 value 为 0', () => {
     const data = calcMonthlyComparison([], '支出')
     data.forEach(d => expect(d.value).toBe(0))
+  })
+})
+
+// ─── calcWeekdayComparison ────────────────────────────────────────────────────
+
+describe('calcWeekdayComparison', () => {
+  const records = [
+    makeRecord({ type: '支出', amount: 3000, date: '2026-03-02' }), // 周一
+    makeRecord({ type: '支出', amount: 1200, date: '2026-03-09' }), // 周一
+    makeRecord({ type: '支出', amount: 5000, date: '2026-03-04' }), // 周三
+    makeRecord({ type: '收入', amount: 9900, date: '2026-03-02' }),
+  ]
+
+  test('固定返回 7 个工作日维度', () => {
+    const data = calcWeekdayComparison(records, 2026, 3, '支出')
+    expect(data.map(item => item.label)).toEqual(['一', '二', '三', '四', '五', '六', '日'])
+  })
+
+  test('同一星期几在当月内累计', () => {
+    const data = calcWeekdayComparison(records, 2026, 3, '支出')
+    expect(data[0].value).toBe(4200)
+    expect(data[2].value).toBe(5000)
+  })
+
+  test('只统计指定 type', () => {
+    const data = calcWeekdayComparison(records, 2026, 3, '支出')
+    expect(data[0].value).toBe(4200)
+  })
+})
+
+// ─── calcYearlyComparison ─────────────────────────────────────────────────────
+
+describe('calcYearlyComparison', () => {
+  const records = [
+    makeRecord({ type: '支出', amount: 1500, date: '2026-01-03' }),
+    makeRecord({ type: '支出', amount: 2600, date: '2026-03-18' }),
+    makeRecord({ type: '支出', amount: 3400, date: '2026-03-28' }),
+    makeRecord({ type: '支出', amount: 8000, date: '2025-03-28' }),
+  ]
+
+  test('固定返回 12 个月', () => {
+    const data = calcYearlyComparison(records, 2026, '支出')
+    expect(data).toHaveLength(12)
+    expect(data[0].label).toBe('1月')
+    expect(data[11].label).toBe('12月')
+  })
+
+  test('只统计选定年份', () => {
+    const data = calcYearlyComparison(records, 2026, '支出')
+    expect(data[2].value).toBe(6000)
+    expect(data[0].value).toBe(1500)
   })
 })

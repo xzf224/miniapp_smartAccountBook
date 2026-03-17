@@ -71,7 +71,7 @@
       </view>
       <text class="quick-action-label">语音记账</text>
     </view>
-    <view class="quick-action" bind:tap="onOpenStatistics">
+    <view class="quick-action" bind:tap="onPhoto">
       <view class="quick-action-badge badge-purple">
         <image class="quick-action-icon" src="/images/new/scan-line.png" mode="aspectFit" />
       </view>

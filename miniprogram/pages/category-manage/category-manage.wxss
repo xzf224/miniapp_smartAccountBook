@@ -1,5 +1,5 @@
 .page-root {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-page);
@@ -41,7 +41,7 @@
 
 .category-scroll {
   flex: 1;
-  min-height: 0;
+  height: 0;
 }
 
 .category-grid {
@@ -132,7 +132,7 @@
 
 .page-scroll {
   flex: 1;
-  min-height: 0;
+  height: 0;
 }
 
 .form-content {

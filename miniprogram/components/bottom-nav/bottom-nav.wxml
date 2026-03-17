@@ -1,0 +1,23 @@
+<view class="bottom-nav-shell">
+  <view class="bottom-nav-top-line"></view>
+  <view class="bottom-nav">
+    <view
+      wx:for="{{list}}"
+      wx:key="pagePath"
+      class="bottom-nav-item {{item.center ? 'bottom-nav-item-center' : ''}}"
+      data-index="{{index}}"
+      data-path="{{item.pagePath}}"
+      bindtap="onNavigate"
+    >
+      <block wx:if="{{item.center}}">
+        <view class="center-button">
+          <image class="center-icon" src="{{item.iconPath}}" mode="aspectFit" />
+        </view>
+      </block>
+      <block wx:else>
+        <image class="bottom-nav-icon" src="{{current === index ? item.activeIconPath : item.iconPath}}" mode="aspectFit" />
+        <text class="bottom-nav-text {{current === index ? 'bottom-nav-text-active' : ''}}">{{item.text}}</text>
+      </block>
+    </view>
+  </view>
+</view>

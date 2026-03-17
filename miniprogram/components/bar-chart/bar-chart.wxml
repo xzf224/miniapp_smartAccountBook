@@ -1,3 +1,13 @@
-<view class="bar-chart-container">
-  <canvas type="2d" id="barChart" class="bar-canvas"></canvas>
+<view class="bar-chart-wrap">
+  <view class="bars-row">
+    <view wx:for="{{computedBars}}" wx:key="label" class="bar-col">
+      <view class="bar-slot">
+        <view
+          class="bar-fill {{item.active ? 'bar-active' : ''}}"
+          style="height: {{item.value > 0 ? (item.heightPct < 6 ? 6 : item.heightPct) : 0}}%;"
+        ></view>
+      </view>
+      <text class="bar-label {{item.active ? 'bar-label-active' : ''}}">{{item.showLabel ? item.label : ''}}</text>
+    </view>
+  </view>
 </view>

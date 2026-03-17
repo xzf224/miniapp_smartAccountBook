@@ -1,9 +1,13 @@
-page {
+.page-root {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page);
 }
 
 .page-container {
-  min-height: 100vh;
+  flex: 1;
+  height: 0;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-page);

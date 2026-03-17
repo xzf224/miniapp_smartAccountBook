@@ -1,7 +1,6 @@
 .page-body {
-  min-height: 100vh;
+  height: 100vh;
   background: #f6f7f9;
-  padding: 10rpx 24rpx 0;
   box-sizing: border-box;
 }
 
@@ -112,7 +111,7 @@
 }
 
 .section-row {
-  margin: 32rpx 2rpx 18rpx;
+  margin: 24rpx 24rpx 16rpx;
 }
 
 .section-add {

@@ -1,6 +1,6 @@
 <view class="page-body">
   <navigation-bar title="" back="{{false}}" background="#ffffff">
-    <view slot="left" class="nav-side nav-close" bindtap="onClose">×</view>
+    <view slot="left" class="nav-side nav-back-btn" bindtap="onClose">‹</view>
     <view slot="center" class="nav-title">记一笔</view>
   </navigation-bar>
 

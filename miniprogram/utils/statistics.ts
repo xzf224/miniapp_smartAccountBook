@@ -15,6 +15,11 @@ export interface CategoryRankItem {
   color: string
 }
 
+export interface ComparisonDatum {
+  label: string
+  value: number
+}
+
 export const CHART_COLORS = [
   '#5B8FF9', '#5AD8A6', '#5D7092', '#F6BD16', '#E86452',
   '#6DC8EC', '#945FB9', '#FF9845', '#1E9493', '#FF99C3',
@@ -72,10 +77,10 @@ export function calcDailyComparison(
   year: number,
   month: number,
   type: RecordType,
-): Array<{ label: string; value: number }> {
+): ComparisonDatum[] {
   const monthRecords = filterMonthRecords(records, year, month).filter(r => r.type === type)
   const days = getDaysInMonth(year, month)
-  const result: Array<{ label: string; value: number }> = []
+  const result: ComparisonDatum[] = []
   for (let d = 1; d <= days; d++) {
     const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
     const total = monthRecords
@@ -90,8 +95,8 @@ export function calcDailyComparison(
 export function calcWeeklyComparison(
   records: IRecord[],
   type: RecordType,
-): Array<{ label: string; value: number }> {
-  const result: Array<{ label: string; value: number }> = []
+): ComparisonDatum[] {
+  const result: ComparisonDatum[] = []
   const now = new Date()
   // 找本周周一
   const day = now.getDay() || 7
@@ -124,7 +129,7 @@ export function calcWeeklyComparison(
 export function calcMonthlyComparison(
   records: IRecord[],
   type: RecordType,
-): Array<{ label: string; value: number }> {
+): ComparisonDatum[] {
   const months = getPreviousMonths(6)
   return months.map(([y, m]) => {
     const prefix = `${y}-${String(m).padStart(2, '0')}`
@@ -132,5 +137,41 @@ export function calcMonthlyComparison(
       .filter(r => r.type === type && r.date.startsWith(prefix))
       .reduce((sum, r) => sum + r.amount, 0)
     return { label: `${m}月`, value: total }
+  })
+}
+
+/** 选定月份内，按周一到周日聚合 */
+export function calcWeekdayComparison(
+  records: IRecord[],
+  year: number,
+  month: number,
+  type: RecordType,
+): ComparisonDatum[] {
+  const labels = ['一', '二', '三', '四', '五', '六', '日']
+  const totals = new Array<number>(7).fill(0)
+  const monthRecords = filterMonthRecords(records, year, month).filter(r => r.type === type)
+
+  for (const record of monthRecords) {
+    const weekday = new Date(`${record.date}T00:00:00`).getDay()
+    const index = weekday === 0 ? 6 : weekday - 1
+    totals[index] += record.amount
+  }
+
+  return labels.map((label, index) => ({ label, value: totals[index] }))
+}
+
+/** 选定年份内，按月份聚合 */
+export function calcYearlyComparison(
+  records: IRecord[],
+  year: number,
+  type: RecordType,
+): ComparisonDatum[] {
+  return Array.from({ length: 12 }, (_, index) => {
+    const month = index + 1
+    const prefix = `${year}-${String(month).padStart(2, '0')}`
+    const total = records
+      .filter(r => r.type === type && r.date.startsWith(prefix))
+      .reduce((sum, r) => sum + r.amount, 0)
+    return { label: `${month}月`, value: total }
   })
 }

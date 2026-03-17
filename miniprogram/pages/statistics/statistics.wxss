@@ -1,11 +1,15 @@
-.page-body {
+.stat-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--color-bg-page);
-  min-height: 100vh;
 }
 
+/* 顶部标题栏 */
 .page-header {
   background: var(--color-bg-card);
   padding: 0 32rpx 20rpx;
+  flex-shrink: 0;
 }
 
 .header-row {
@@ -44,11 +48,15 @@
   transform: translateY(-2rpx);
 }
 
-.page-content {
-  padding: 8rpx 0 0;
+/* 滚动区 */
+.page-scroll {
+  flex: 1;
+  height: 0;
+  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
-/* 收入/支出摘要卡片横排 */
+/* 收支摘要 */
 .summary-row {
   display: flex;
   gap: 16rpx;
@@ -91,7 +99,7 @@
   display: block;
 }
 
-/* 趋势类型切换 */
+/* 类型切换 */
 .type-switch {
   display: flex;
   flex-direction: row;
@@ -113,44 +121,44 @@
   font-weight: 600;
 }
 
-/* 图表卡片 */
+/* 通用卡片 */
 .section-card {
   background: var(--color-bg-card);
   border-radius: var(--radius-card);
   margin: 0 24rpx 16rpx;
   padding: 28rpx;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16rpx;
   margin-bottom: 20rpx;
-}
-
-.section-head-single {
-  margin-bottom: 16rpx;
 }
 
 .section-title {
   font-size: 30rpx;
   font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.2;
 }
 
+.section-total {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* 对比模式标签 */
 .compare-tabs {
   display: flex;
   align-items: center;
   padding: 4rpx;
   border-radius: 999rpx;
   background: var(--color-bg-page);
-  flex-shrink: 0;
 }
 
-/* 周/月/年 compare tabs */
 .compare-tab {
   font-size: 24rpx;
   color: var(--color-text-secondary);
@@ -167,63 +175,84 @@
   font-weight: 600;
 }
 
-.category-panel {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-
-.pie-wrap {
-  width: 180rpx;
-  flex-shrink: 0;
-}
-
-.legend-list {
-  flex: 1;
+/* 分类排行列表 */
+.rank-list {
+  margin-top: 20rpx;
   display: flex;
   flex-direction: column;
-  gap: 14rpx;
+  gap: 16rpx;
 }
 
-.legend-item {
+.rank-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12rpx;
 }
 
-.legend-item-main {
-  flex: 1;
-  min-width: 0;
+.rank-left {
   display: flex;
   align-items: center;
   gap: 10rpx;
+  width: 120rpx;
+  flex-shrink: 0;
 }
 
-.legend-dot {
-  width: 12rpx;
-  height: 12rpx;
+.rank-dot {
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 4rpx;
   flex-shrink: 0;
 }
 
-.legend-name {
-  flex: 1;
-  min-width: 0;
+.rank-name {
   font-size: 24rpx;
   color: var(--color-text-primary);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.legend-value {
+.rank-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.rank-bar-wrap {
+  flex: 1;
+  height: 10rpx;
+  background: #F0F0F0;
+  border-radius: 5rpx;
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  height: 100%;
+  border-radius: 5rpx;
+  min-width: 4rpx;
+}
+
+.rank-pct {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  width: 60rpx;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rank-amount {
   font-size: 24rpx;
   font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1;
+  width: 110rpx;
+  text-align: right;
+  flex-shrink: 0;
 }
 
+/* 空状态 */
 .empty-state {
   margin: 16rpx 24rpx;
   padding: 72rpx 32rpx;

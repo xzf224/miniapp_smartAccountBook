@@ -1,3 +1,14 @@
-<view class="pie-chart-container">
-  <canvas type="2d" id="pieChart" class="pie-canvas"></canvas>
+<view class="pie-wrap">
+  <view class="donut-col">
+    <view class="donut" style="background: {{gradientStyle}};">
+      <view class="donut-hole"></view>
+    </view>
+  </view>
+  <view class="legend-col">
+    <view class="legend-item" wx:for="{{computedSlices}}" wx:key="name">
+      <view class="legend-dot" style="background: {{item.color}};"></view>
+      <text class="legend-name">{{item.name}}</text>
+      <text class="legend-pct">{{item.pctText}}</text>
+    </view>
+  </view>
 </view>

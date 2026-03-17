@@ -87,8 +87,8 @@ page {
 
 /* ====== Tab 页面统一骨架 ====== */
 .tab-scroll {
-  min-height: 100vh;
-  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+  height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 

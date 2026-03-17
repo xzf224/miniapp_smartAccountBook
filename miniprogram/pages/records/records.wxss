@@ -1,7 +1,7 @@
 .page-body {
   background: var(--color-bg-page);
-  min-height: 100vh;
-  padding: 0 24rpx 32rpx;
+  height: 100vh;
+  padding: 0 24rpx calc(160rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
@@ -457,7 +457,7 @@
 
 .filter-scroll {
   flex: 1;
-  overflow: hidden;
+  height: 0;
 }
 
 .filter-scroll,

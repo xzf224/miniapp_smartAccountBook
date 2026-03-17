@@ -2,17 +2,61 @@
   display: block;
 }
 
-/* Bar chart wrapper — chart content is rendered on <canvas> via JS */
-.bar-chart-container {
+.bar-chart-wrap {
   width: 100%;
   padding: 4rpx 0;
-  background: transparent;
-  /* label / axis text color fallback for any non-canvas text nodes */
-  color: var(--color-text-secondary);
-  font-size: 20rpx;
 }
 
-.bar-canvas {
+.bars-row {
+  display: flex;
+  align-items: flex-end;
+  height: 260rpx;
+  padding-bottom: 36rpx;
+  box-sizing: border-box;
+  gap: 3rpx;
+}
+
+.bar-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bar-slot {
+  flex: 1;
   width: 100%;
-  height: 320rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar-fill {
+  width: 70%;
+  max-width: 28rpx;
+  min-height: 0;
+  border-radius: 6rpx 6rpx 2rpx 2rpx;
+  background: #FFE0B2;
+}
+
+.bar-active {
+  background: var(--color-primary);
+}
+
+.bar-label {
+  height: 32rpx;
+  line-height: 32rpx;
+  font-size: 18rpx;
+  color: #9CA3AF;
+  text-align: center;
+  margin-top: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.bar-label-active {
+  color: #1A1A1A;
+  font-weight: 600;
 }

@@ -2,28 +2,68 @@
   display: block;
 }
 
-/* Pie chart wrapper — chart content is rendered on <canvas> via JS */
-/* Slice colors are passed as data; only surrounding text/label styles use CSS variables */
-.pie-chart-container {
-  width: 100%;
+.pie-wrap {
   display: flex;
+  align-items: center;
+  gap: 28rpx;
+  padding: 4rpx 0 8rpx;
+}
+
+.donut-col {
+  flex-shrink: 0;
+}
+
+.donut {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  /* legend / total label fallback color for any non-canvas text nodes */
-  color: var(--color-text-secondary);
-  font-size: 20rpx;
 }
 
-/* Amount/total text (non-canvas) uses primary text color */
-.pie-total-text {
+.donut-hole {
+  position: absolute;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--color-bg-card);
+}
+
+.legend-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.legend-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  flex: 1;
+  font-size: 22rpx;
   color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Category label text uses secondary text color */
-.pie-label-text {
+.legend-pct {
+  font-size: 22rpx;
+  font-weight: 600;
   color: var(--color-text-secondary);
-}
-
-.pie-canvas {
-  width: 180rpx;
-  height: 180rpx;
+  flex-shrink: 0;
 }
