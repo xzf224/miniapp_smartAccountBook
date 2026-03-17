@@ -1,5 +1,5 @@
 .weui-navigation-bar {
-  --weui-FG-0:rgba(0,0,0,.9);
+  --weui-FG-0: var(--color-text-primary, rgba(0,0,0,.9));
   --height: 44px;
   --left: 16px;
 }
@@ -9,32 +9,39 @@
 
 .weui-navigation-bar {
   overflow: hidden;
-  color: var(--weui-FG-0);
+  color: var(--color-text-primary);
   flex: none;
+  background: #FFFFFF;
+  border-bottom: 1rpx solid var(--color-border);
 }
 
 .weui-navigation-bar__inner {
   position: relative;
   top: 0;
   left: 0;
-  height: calc(var(--height) + env(safe-area-inset-top));
+  height: calc(88rpx + env(safe-area-inset-top));
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   padding-top: env(safe-area-inset-top);
+  padding-left: 24rpx;
+  padding-right: 24rpx;
   width: 100%;
   box-sizing: border-box;
+  background: #FFFFFF;
 }
 
 .weui-navigation-bar__left {
   position: relative;
-  padding-left: var(--left);
+  width: 60rpx;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: flex-start;
   height: 100%;
   box-sizing: border-box;
+  padding-left: 0;
 }
 
 .weui-navigation-bar__btn_goback_wrapper {
@@ -54,20 +61,31 @@
   mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E  %3Cpath fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E") no-repeat 50% 50%;
   -webkit-mask-size: cover;
   mask-size: cover;
-  background-color: var(--weui-FG-0);
+  background-color: var(--color-text-primary);
 }
 
 .weui-navigation-bar__center {
-  font-size: 17px;
+  font-size: 36rpx;
+  font-weight: 600;
   text-align: center;
+  color: var(--color-text-primary);
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
   flex: 1;
   height: 100%;
+}
+
+.weui-navigation-bar__right {
+  width: 60rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .weui-navigation-bar__loading {
