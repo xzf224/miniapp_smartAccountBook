@@ -5,6 +5,35 @@
   box-sizing: border-box;
 }
 
+.nav-filter-btn {
+  position: relative;
+  padding: 8rpx 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  margin-right: 8rpx;
+}
+
+.nav-filter-btn-active {
+  background: rgba(255, 125, 0, 0.1);
+}
+
+.nav-filter-icon {
+  font-size: 32rpx;
+  color: var(--color-text-primary);
+}
+
+.nav-filter-dot {
+  position: absolute;
+  top: 4rpx;
+  right: 4rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
 .nav-title-wrap {
   display: flex;
   flex-direction: column;
@@ -208,8 +237,8 @@
 }
 
 .filter-pill.active {
-  background: #fff7ef;
-  color: #6b4a28;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .applied-tags {
@@ -297,12 +326,12 @@
 
 .group-total-expense {
   color: var(--color-primary);
-  background: #fff1e2;
+  background: var(--color-primary-light);
 }
 
 .group-total-income {
   color: var(--color-income);
-  background: #eaf9f0;
+  background: rgba(76, 175, 80, 0.12);
 }
 
 .group-balance {

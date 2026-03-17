@@ -3,6 +3,10 @@
     <text class="nav-title">交易记录</text>
     <text class="nav-subtitle">{{summaryCount}} 笔</text>
   </view>
+  <view slot="right" class="nav-filter-btn {{hasAdvancedFilter ? 'nav-filter-btn-active' : ''}}" bind:tap="onOpenFilter">
+    <text class="nav-filter-icon">⊟</text>
+    <view class="nav-filter-dot" wx:if="{{hasAdvancedFilter}}"></view>
+  </view>
 </navigation-bar>
 <scroll-view scroll-y class="page-body">
   <view class="hero-card">
