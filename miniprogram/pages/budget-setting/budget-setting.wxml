@@ -11,7 +11,7 @@
   <view class="card">
     <view class="switch-row flex-row">
       <text class="switch-label flex-1">按月设置</text>
-      <switch checked="{{useMonthly}}" bind:change="onMonthlyToggle" color="var(--color-primary, #07c160)" />
+      <switch checked="{{useMonthly}}" bind:change="onMonthlyToggle" color="var(--color-primary, #FF7D00)" />
     </view>
     <view wx:if="{{useMonthly}}" style="margin-top: 8rpx;">
       <view class="month-header flex-row">

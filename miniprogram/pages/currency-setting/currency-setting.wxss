@@ -1,5 +1,6 @@
 .page-body {
   padding: 0 0 40rpx;
+  background: var(--color-bg-page);
 }
 
 .current-card {
@@ -65,8 +66,8 @@
 
 .card {
   margin: 0 24rpx;
-  background: #FFFFFF;
-  border-radius: 20rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
   overflow: hidden;
   box-shadow: 0 2rpx 12rpx rgba(26, 25, 24, 0.05);
 }
@@ -80,7 +81,7 @@
   flex-direction: row;
   align-items: center;
   padding: 28rpx 28rpx;
-  border-bottom: 1rpx solid #F0EFEE;
+  border-bottom: 1rpx solid var(--color-border);
 }
 
 .currency-item:last-child {
@@ -116,7 +117,7 @@
 .check-icon {
   font-size: 32rpx;
   font-weight: 700;
-  color: #FF8A00;
+  color: var(--color-primary);
 }
 
 .note-tip {
