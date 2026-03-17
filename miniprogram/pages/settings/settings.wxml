@@ -3,7 +3,7 @@
   <view class="stats-row">
     <view class="stat-item">
       <text class="stat-value">{{statRecords}}</text>
-      <text class="stat-label">本月记录</text>
+      <text class="stat-label">本月记账笔数</text>
     </view>
     <view class="stat-item">
       <text class="stat-value">{{statCategories}}</text>
@@ -11,7 +11,7 @@
     </view>
     <view class="stat-item">
       <text class="stat-value">{{statBudgets}}</text>
-      <text class="stat-label">预算设置</text>
+      <text class="stat-label">已记账天</text>
     </view>
     <view class="stat-item">
       <text class="stat-value">{{statRules}}</text>
@@ -44,6 +44,12 @@
       <text class="item-label flex-1">定期账单</text>
       <text class="item-arrow">›</text>
     </view>
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onCategoryManage">
+      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      <text class="item-label flex-1">分类管理</text>
+      <text class="item-arrow">›</text>
+    </view>
   </view>
 
   <view class="section-header">个性化</view>
@@ -51,12 +57,6 @@
     <view class="settings-item flex-row" bind:tap="onBudgetSetting">
       <image class="item-icon-img" src="/images/target.png" mode="aspectFit" />
       <text class="item-label flex-1">预算管理</text>
-      <text class="item-arrow">›</text>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onCategoryManage">
-      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
-      <text class="item-label flex-1">分类管理</text>
       <text class="item-arrow">›</text>
     </view>
     <view class="divider"></view>
