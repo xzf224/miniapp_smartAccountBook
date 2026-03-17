@@ -399,7 +399,7 @@
   color: var(--color-income);
 }
 
-.text-neutral {
+.hero-text-neutral {
   color: #fffefb;
 }
 

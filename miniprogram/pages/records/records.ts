@@ -54,7 +54,7 @@ Component({
     summaryIncomeText: '0.00',
     summaryNetText: '0.00',
     summaryNetNegative: true,
-    summaryNetClass: 'text-neutral',
+    summaryNetClass: 'hero-text-neutral',
     appliedTags: [] as string[],
   },
 
@@ -160,7 +160,7 @@ Component({
         summaryExpenseText: fenToYuan(expense),
         summaryNetText: fenToYuan(Math.abs(net)),
         summaryNetNegative: net < 0,
-        summaryNetClass: net === 0 ? 'text-neutral' : (net < 0 ? 'text-expense' : 'text-income'),
+        summaryNetClass: net === 0 ? 'hero-text-neutral' : (net < 0 ? 'text-expense' : 'text-income'),
       }
     },
 
