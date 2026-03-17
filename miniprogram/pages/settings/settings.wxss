@@ -74,7 +74,7 @@
 
 .item-arrow {
   font-size: 32rpx;
-  color: #C8C8C8;
+  color: var(--color-text-placeholder);
 }
 
 .divider {
@@ -111,7 +111,7 @@
 
 .app-version {
   font-size: 22rpx;
-  color: #C8C8C8;
+  color: var(--color-text-placeholder);
   margin-top: 6rpx;
 }
 

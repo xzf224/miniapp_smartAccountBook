@@ -11,7 +11,7 @@
     </view>
     <view class="stat-item">
       <text class="stat-value">{{statBudgets}}</text>
-      <text class="stat-label">已记账天</text>
+      <text class="stat-label">已设预算</text>
     </view>
     <view class="stat-item">
       <text class="stat-value">{{statRules}}</text>
