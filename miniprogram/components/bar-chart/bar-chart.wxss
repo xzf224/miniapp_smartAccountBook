@@ -23,14 +23,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  padding: 0 2rpx;
+  box-sizing: border-box;
 }
 
 .bar-slot {
   flex: 1;
   width: 100%;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .bar-fill {
@@ -45,13 +48,25 @@
   background: var(--color-primary);
 }
 
+.bar-value {
+  margin-bottom: 10rpx;
+  padding: 6rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 138, 0, 0.12);
+  color: var(--color-primary);
+  font-size: 18rpx;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .bar-label {
   height: 32rpx;
   line-height: 32rpx;
-  font-size: 18rpx;
+  font-size: 20rpx;
   color: #9CA3AF;
   text-align: center;
-  margin-top: 4rpx;
+  margin-top: 8rpx;
   white-space: nowrap;
   overflow: hidden;
 }

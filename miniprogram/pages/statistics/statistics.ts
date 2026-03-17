@@ -1,4 +1,4 @@
-import { getRecords, getBudgetAmount } from '../../utils/storage'
+import { getRecords, getCurrencyCode } from '../../utils/storage'
 import {
   calcMonthSummary,
   calcCategoryRanking,
@@ -8,9 +8,10 @@ import {
   ComparisonDatum,
   CategoryRankItem,
 } from '../../utils/statistics'
-import { fenToYuan, RecordType, RECORD_TYPES } from '../../models/record'
+import { fenToYuan, RecordType } from '../../models/record'
 
 type CompareMode = 'daily' | 'weekly' | 'monthly'
+const STAT_TYPES: RecordType[] = ['支出', '收入']
 
 const now = new Date()
 const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
@@ -41,6 +42,18 @@ function getTrendColor(type: RecordType): string {
   return '#FF8A00'
 }
 
+function getCompareModeLabel(mode: CompareMode): string {
+  if (mode === 'daily') return '日'
+  if (mode === 'monthly') return '月'
+  return '周'
+}
+
+function getCompareModePeriodName(mode: CompareMode): string {
+  if (mode === 'daily') return '日期'
+  if (mode === 'monthly') return '月份'
+  return '星期'
+}
+
 Component({
   data: {
     statusBarHeight: 0,
@@ -49,12 +62,22 @@ Component({
     pickerRange: [PICKER_YEARS, PICKER_MONTHS] as string[][],
     pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
     typeIndex: 0,
-    types: ['支出', '收入', '不计入收支'],
+    types: STAT_TYPES,
     income: '¥ 0',
     expense: '¥ 0',
     typeTotalText: '0',
     pieData: [] as Array<{ name: string; value: number; color: string }>,
-    rankingList: [] as any[],
+    topCategories: [] as Array<{
+      rank: number
+      category: string
+      amountText: string
+      percentageText: string
+      color: string
+    }>,
+    selectedCategoryName: '',
+    selectedCategoryAmountText: '',
+    selectedCategoryPercentageText: '',
+    selectedCategoryColor: '',
     compareMode: 'weekly' as CompareMode,
     compareTabs: [
       { mode: 'weekly', label: '周' },
@@ -63,6 +86,15 @@ Component({
     ] as Array<{ mode: CompareMode; label: string }>,
     barData: [] as ComparisonDatum[],
     barColor: getTrendColor('支出'),
+    selectedBarIndex: -1,
+    trendSelectedLabel: '--',
+    trendSelectedValueText: '¥ 0',
+    trendPeakLabel: '',
+    trendPeakValueText: '',
+    trendAverageValueText: '',
+    trendActiveCountText: '0',
+    compareModeLabel: getCompareModeLabel('weekly'),
+    compareModePeriodName: getCompareModePeriodName('weekly'),
     hasPieData: false,
     hasBarData: false,
   },
@@ -84,29 +116,26 @@ Component({
     loadData() {
       const { year, month, typeIndex } = this.data
       const allRecords = getRecords()
-      const type = RECORD_TYPES[typeIndex] as RecordType
+      const type = this.data.types[typeIndex] as RecordType
+      const currentCurrencyCode = getCurrencyCode()
 
-      const summary = calcMonthSummary(allRecords, year, month)
-      const ranking = calcCategoryRanking(allRecords, year, month, type)
+      const summary = calcMonthSummary(allRecords, year, month, currentCurrencyCode)
+      const ranking = calcCategoryRanking(allRecords, year, month, type, currentCurrencyCode)
 
       const pieData = ranking.map(r => ({
         name: r.category,
         value: r.amount,
         color: r.color,
       }))
-
-      // Enrich ranking with budget info
-      const enrichedRanking = ranking.map((r: CategoryRankItem) => {
-        const budget = (type === '支出' || type === '收入')
-          ? getBudgetAmount(year, month, type, r.category)
-          : 0
-        return {
-          ...r,
-          budgetAmount: budget,
-          budgetText: budget > 0 ? fenToYuan(budget) : '',
-          overBudget: budget > 0 && r.amount > budget,
-        }
-      })
+      const topCategories = ranking.slice(0, 3).map((item, index) => ({
+        rank: index + 1,
+        category: item.category,
+        amountText: formatAmount(item.amount, true),
+        percentageText: `${item.percentage}%`,
+        color: item.color,
+      }))
+      const currentSelectedName = this.data.selectedCategoryName
+      const selectedCategory = topCategories.find(item => item.category === currentSelectedName) || topCategories[0]
 
       const typeTotal = ranking.reduce((s: number, r: CategoryRankItem) => s + r.amount, 0)
       const barColor = getTrendColor(type)
@@ -116,7 +145,11 @@ Component({
         expense: formatAmount(summary.expense, true),
         typeTotalText: formatAmount(typeTotal),
         pieData,
-        rankingList: enrichedRanking,
+        topCategories,
+        selectedCategoryName: selectedCategory?.category || '',
+        selectedCategoryAmountText: selectedCategory?.amountText || '',
+        selectedCategoryPercentageText: selectedCategory?.percentageText || '',
+        selectedCategoryColor: selectedCategory?.color || '',
         hasPieData: pieData.length > 0,
         barColor,
       })
@@ -125,7 +158,7 @@ Component({
 
     loadCompareData() {
       const { compareMode, typeIndex } = this.data
-      const type = RECORD_TYPES[typeIndex] as RecordType
+      const type = this.data.types[typeIndex] as RecordType
       const allRecords = getRecords()
       let barData: ComparisonDatum[] = []
 
@@ -137,7 +170,29 @@ Component({
         barData = calcYearlyComparison(allRecords, this.data.year, type)
       }
 
-      this.setData({ barData, hasBarData: barData.some(d => d.value > 0) })
+      const activeBars = barData.filter(d => d.value > 0)
+      const peakDatum = activeBars.reduce<ComparisonDatum | null>(
+        (best, item) => (!best || item.value > best.value ? item : best),
+        null,
+      )
+      const peakIndex = peakDatum ? barData.findIndex(item => item.label === peakDatum.label) : -1
+      const average = activeBars.length > 0
+        ? Math.round(activeBars.reduce((sum, item) => sum + item.value, 0) / activeBars.length)
+        : 0
+
+      this.setData({
+        barData,
+        selectedBarIndex: peakIndex,
+        trendSelectedLabel: peakDatum?.label || '--',
+        trendSelectedValueText: peakDatum ? formatAmount(peakDatum.value, true) : '¥ 0',
+        hasBarData: activeBars.length > 0,
+        trendPeakLabel: peakDatum?.label || '--',
+        trendPeakValueText: peakDatum ? formatAmount(peakDatum.value, true) : '¥ 0',
+        trendAverageValueText: formatAmount(average, true),
+        trendActiveCountText: `${activeBars.length}`,
+        compareModeLabel: getCompareModeLabel(compareMode),
+        compareModePeriodName: getCompareModePeriodName(compareMode),
+      })
     },
 
     onPickerChange(e: any) {
@@ -159,10 +214,57 @@ Component({
       this.loadData()
     },
 
+    onSummaryTypeTap(e: WechatMiniprogram.TouchEvent) {
+      const type = (e.currentTarget.dataset as { type?: RecordType }).type
+      if (!type) return
+      const idx = this.data.types.findIndex(item => item === type)
+      if (idx < 0 || idx === this.data.typeIndex) return
+      this.setData({ typeIndex: idx })
+      this.loadData()
+    },
+
     onCompareModeChange(e: any) {
       const mode = (e.currentTarget.dataset as any).mode as CompareMode
       this.setData({ compareMode: mode })
       this.loadCompareData()
+    },
+
+    onTopCategoryTap(e: WechatMiniprogram.TouchEvent) {
+      const index = Number((e.currentTarget.dataset as { index?: number }).index)
+      const item = this.data.topCategories[index]
+      if (!item) return
+      this.setData({
+        selectedCategoryName: item.category,
+        selectedCategoryAmountText: item.amountText,
+        selectedCategoryPercentageText: item.percentageText,
+        selectedCategoryColor: item.color,
+      })
+    },
+
+    onPieCategorySelect(
+      e: WechatMiniprogram.CustomEvent<{
+        name: string
+        amountText: string
+        percentageText: string
+        color: string
+      }>
+    ) {
+      const { name, amountText, percentageText, color } = e.detail
+      this.setData({
+        selectedCategoryName: name,
+        selectedCategoryAmountText: amountText,
+        selectedCategoryPercentageText: percentageText,
+        selectedCategoryColor: color,
+      })
+    },
+
+    onBarSelect(e: WechatMiniprogram.CustomEvent<{ index: number; label: string; value: number }>) {
+      const { index, label, value } = e.detail
+      this.setData({
+        selectedBarIndex: index,
+        trendSelectedLabel: label,
+        trendSelectedValueText: formatAmount(value, true),
+      })
     },
   },
 })

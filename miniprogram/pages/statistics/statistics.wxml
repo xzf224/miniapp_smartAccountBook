@@ -12,12 +12,22 @@
 
   <!-- 收支摘要 -->
   <view class="summary-row">
-    <view class="summary-card income-card">
+    <view
+      class="summary-card income-card {{typeIndex === 1 ? 'summary-card-active' : 'summary-card-muted'}}"
+      bind:tap="onSummaryTypeTap"
+      data-type="收入"
+    >
       <text class="summary-label income-label">本月收入</text>
+      <text class="summary-state">{{typeIndex === 1 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{income}}</text>
     </view>
-    <view class="summary-card expense-card">
+    <view
+      class="summary-card expense-card {{typeIndex === 0 ? 'summary-card-active' : 'summary-card-muted'}}"
+      bind:tap="onSummaryTypeTap"
+      data-type="支出"
+    >
       <text class="summary-label expense-label">本月支出</text>
+      <text class="summary-state">{{typeIndex === 0 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{expense}}</text>
     </view>
   </view>
@@ -38,7 +48,30 @@
         </view>
       </view>
     </view>
-    <bar-chart data="{{barData}}" barColor="{{barColor}}" />
+    <view class="trend-insights">
+      <view class="insight-pill">
+        <text class="insight-label">当前查看</text>
+        <text class="insight-value">{{trendSelectedLabel}}</text>
+        <text class="insight-meta">{{trendSelectedValueText}}</text>
+      </view>
+      <view class="insight-pill">
+        <text class="insight-label">峰值{{compareModeLabel}}</text>
+        <text class="insight-value">{{trendPeakLabel}}</text>
+        <text class="insight-meta">{{trendPeakValueText}}</text>
+      </view>
+      <view class="insight-pill">
+        <text class="insight-label">平均水平</text>
+        <text class="insight-value">{{trendAverageValueText}}</text>
+        <text class="insight-meta">活跃{{compareModePeriodName}} {{trendActiveCountText}}个</text>
+      </view>
+    </view>
+    <text class="trend-tip">点按柱子可查看对应{{compareModePeriodName}}金额</text>
+    <bar-chart
+      data="{{barData}}"
+      barColor="{{barColor}}"
+      activeIndex="{{selectedBarIndex}}"
+      bind:select="onBarSelect"
+    />
   </view>
 
   <!-- 分类构成 -->
@@ -48,8 +81,51 @@
       <text class="section-total">¥{{typeTotalText}}</text>
     </view>
 
-    <!-- 饼图 + 图例 -->
-    <pie-chart data="{{pieData}}" total="{{typeTotalText}}" />
+    <view class="category-focus" wx:if="{{selectedCategoryName}}">
+      <view class="category-focus-top">
+        <view class="category-focus-tag" style="background: {{selectedCategoryColor}};"></view>
+        <text class="category-focus-label">当前关注</text>
+      </view>
+      <view class="category-focus-main">
+        <text class="category-focus-name">{{selectedCategoryName}}</text>
+        <text class="category-focus-amount">{{selectedCategoryAmountText}}</text>
+      </view>
+      <text class="category-focus-meta">占本月{{types[typeIndex]}} {{selectedCategoryPercentageText}}</text>
+    </view>
+
+    <view class="pie-chart-shell">
+      <pie-chart
+        data="{{pieData}}"
+        total="{{typeTotalText}}"
+        title="{{types[typeIndex]}}总额"
+        activeName="{{selectedCategoryName}}"
+        bind:select="onPieCategorySelect"
+      />
+    </view>
+  </view>
+
+  <view class="section-card category-top-card" wx:if="{{hasPieData && topCategories.length}}">
+    <view class="section-head category-top-head">
+      <text class="section-title">TOP 3 分类</text>
+    </view>
+    <view class="category-summary">
+      <view
+        class="category-summary-card {{selectedCategoryName === item.category ? 'category-summary-card-active' : ''}}"
+        wx:for="{{topCategories}}"
+        wx:key="rank"
+        bind:tap="onTopCategoryTap"
+        data-index="{{index}}"
+      >
+        <view class="category-summary-top">
+          <view class="category-rank-badge" style="background: {{item.color}};">TOP {{item.rank}}</view>
+          <text class="category-summary-name">{{item.category}}</text>
+        </view>
+        <view class="category-summary-bottom">
+          <text class="category-summary-amount">{{item.amountText}}</text>
+          <text class="category-summary-pct">{{item.percentageText}}</text>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 空状态 -->
@@ -57,5 +133,6 @@
     <text class="empty-title">本月暂无{{types[typeIndex]}}记录</text>
     <text class="empty-desc">切换月份或先去记一笔，统计图会自动生成。</text>
   </view>
+  <view class="page-bottom-space"></view>
 </scroll-view>
 <bottom-nav current="{{3}}" />

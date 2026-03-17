@@ -1,33 +1,49 @@
 import { fenToYuan } from '../../models/record'
-import { getRecords } from '../../utils/storage'
-import { groupRecordsByDate } from '../../utils/date'
+import { getRecords, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
+import { getToday, getWeekRange, groupRecordsByDate } from '../../utils/date'
+
+const now = new Date()
+const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
+const PICKER_MONTHS: string[] = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+
+function formatRecordDateTime(record: any): string {
+  const timestamp = record.updateTime || record.createTime
+  if (!timestamp) return record.date || ''
+  const value = new Date(timestamp)
+  if (Number.isNaN(value.getTime())) return record.date || ''
+  const timeText = `${String(value.getHours()).padStart(2, '0')}:${String(value.getMinutes()).padStart(2, '0')}`
+  return `${record.date} ${timeText}`
+}
 
 Component({
   data: {
     groups: [] as any[],
     keyword: '',
-    activeFilter: 'all',
-    filters: [
-      { key: 'all', label: '全部' },
-      { key: 'expense', label: '支出' },
-      { key: 'income', label: '收入' },
-      { key: 'month', label: '本月' },
-    ],
+    // 月份日期控件
+    year: now.getFullYear(),
+    selectedMonth: now.getMonth() + 1,
+    pickerRange: [PICKER_YEARS, PICKER_MONTHS] as string[][],
+    pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
     // 高级筛选面板
     showFilter: false,
     hasAdvancedFilter: false,
+    filterPreviewCount: 0,
     // 面板内临时状态
     filterType: 'all',
     filterTime: 'all',
     filterAmountMin: '',
     filterAmountMax: '',
     filterSort: 'newest',
+    filterDateStart: '',
+    filterDateEnd: '',
     // 已应用的筛选状态
     appliedType: 'all',
     appliedTime: 'all',
     appliedAmountMin: '',
     appliedAmountMax: '',
     appliedSort: 'newest',
+    appliedDateStart: '',
+    appliedDateEnd: '',
     // 选项列表
     typeOptions: [
       { key: 'all', label: '全部' },
@@ -38,16 +54,13 @@ Component({
       { key: 'all', label: '不限' },
       { key: 'week', label: '本周' },
       { key: 'month', label: '本月' },
-      { key: 'year', label: '本年' },
     ],
     sortOptions: [
-      { key: 'newest', label: '最新优先' },
-      { key: 'oldest', label: '最早优先' },
-      { key: 'amountDesc', label: '金额最大' },
-      { key: 'amountAsc', label: '金额最小' },
+      { key: 'newest', label: '最新' },
+      { key: 'oldest', label: '最早' },
+      { key: 'amountDesc', label: '金额↓' },
+      { key: 'amountAsc', label: '金额↑' },
     ],
-    summaryTitle: '全部交易记录',
-    summarySubtitle: '整理每一笔收支流向',
     summaryCount: 0,
     summaryDays: 0,
     summaryExpenseText: '0.00',
@@ -55,7 +68,9 @@ Component({
     summaryNetText: '0.00',
     summaryNetNegative: true,
     summaryNetClass: 'hero-text-neutral',
-    appliedTags: [] as string[],
+    currencySymbol: '¥',
+    appliedTags: [] as Array<{ key: string; label: string }>,
+    mixedCurrencyCount: 0,
   },
 
   lifetimes: {
@@ -66,6 +81,7 @@ Component({
 
   pageLifetimes: {
     show() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
     },
   },
@@ -75,85 +91,58 @@ Component({
       return (options.find(item => item.key === key) || {}).label || ''
     },
 
+    countAdvancedFilters(state: Record<string, any>) {
+      let count = 0
+      if (state.appliedType !== 'all') count += 1
+      if (state.appliedTime !== 'all') count += 1
+      if (state.appliedDateStart || state.appliedDateEnd) count += 1
+      if (state.appliedAmountMin || state.appliedAmountMax) count += 1
+      if (state.appliedSort !== 'newest') count += 1
+      return count
+    },
+
     buildAppliedTags() {
-      const tags: string[] = []
+      const tags: Array<{ key: string; label: string }> = []
       const {
         keyword,
-        activeFilter,
-        filters,
-        appliedType,
-        appliedTime,
-        appliedAmountMin,
-        appliedAmountMax,
-        appliedSort,
-        typeOptions,
-        timeOptions,
-        sortOptions,
+        appliedType, appliedTime, appliedAmountMin, appliedAmountMax, appliedSort,
+        appliedDateStart, appliedDateEnd,
+        typeOptions, timeOptions, sortOptions,
       } = this.data
 
-      if (keyword.trim()) {
-        tags.push(`搜索:${keyword.trim()}`)
-      }
-
-      if (activeFilter !== 'all') {
-        const quickLabel = this.getOptionLabel(filters, activeFilter)
-        if (quickLabel) tags.push(`快捷:${quickLabel}`)
-      }
-
+      if (keyword.trim()) tags.push({ key: 'keyword', label: `搜索:${keyword.trim()}` })
       if (appliedType !== 'all') {
-        const typeLabel = this.getOptionLabel(typeOptions, appliedType)
-        if (typeLabel) tags.push(`类型:${typeLabel}`)
+        const label = this.getOptionLabel(typeOptions, appliedType)
+        if (label) tags.push({ key: 'type', label: `类型:${label}` })
       }
-
       if (appliedTime !== 'all') {
-        const timeLabel = this.getOptionLabel(timeOptions, appliedTime)
-        if (timeLabel) tags.push(`时间:${timeLabel}`)
+        const label = this.getOptionLabel(timeOptions, appliedTime)
+        if (label) tags.push({ key: 'time', label: `时间:${label}` })
       }
-
+      if (appliedDateStart || appliedDateEnd) {
+        tags.push({ key: 'dateRange', label: `${appliedDateStart || '...'} 至 ${appliedDateEnd || '...'}` })
+      }
       if (appliedAmountMin || appliedAmountMax) {
-        const min = appliedAmountMin || '0'
-        const max = appliedAmountMax || '不限'
-        tags.push(`金额:${min}-${max}`)
+        tags.push({ key: 'amount', label: `金额:${appliedAmountMin || '0'}-${appliedAmountMax || '不限'}` })
       }
-
       if (appliedSort !== 'newest') {
-        const sortLabel = this.getOptionLabel(sortOptions, appliedSort)
-        if (sortLabel) tags.push(`排序:${sortLabel}`)
+        const label = this.getOptionLabel(sortOptions, appliedSort)
+        if (label) tags.push({ key: 'sort', label: `排序:${label}` })
       }
-
       return tags
     },
 
-    buildSummary(list: any[], groups: any[]) {
+    buildSummary(list: any[], groups: any[], currentCurrencyCode: string) {
       let income = 0
       let expense = 0
-
+      let mixedCurrencyCount = 0
       list.forEach((item: any) => {
+        if ((item.currency ?? 'CNY') !== currentCurrencyCode) { mixedCurrencyCount++; return }
         if (item.type === '收入') income += item.amount
         if (item.type === '支出') expense += item.amount
       })
-
-      const hasFilters = !!this.data.keyword.trim()
-        || this.data.activeFilter !== 'all'
-        || this.data.appliedType !== 'all'
-        || this.data.appliedTime !== 'all'
-        || !!this.data.appliedAmountMin
-        || !!this.data.appliedAmountMax
-        || this.data.appliedSort !== 'newest'
-
-      const summaryTitle = list.length === 0
-        ? '暂无匹配记录'
-        : (hasFilters ? '筛选后的交易记录' : '全部交易记录')
-
-      const summarySubtitle = list.length === 0
-        ? '试试调整搜索词或筛选条件'
-        : `共 ${list.length} 笔记录，覆盖 ${groups.length} 天`
-
       const net = income - expense
-
       return {
-        summaryTitle,
-        summarySubtitle,
         summaryCount: list.length,
         summaryDays: groups.length,
         summaryIncomeText: fenToYuan(income),
@@ -161,64 +150,120 @@ Component({
         summaryNetText: fenToYuan(Math.abs(net)),
         summaryNetNegative: net < 0,
         summaryNetClass: net === 0 ? 'hero-text-neutral' : (net < 0 ? 'text-expense' : 'text-income'),
+        mixedCurrencyCount,
       }
     },
 
-    loadData() {
-      const all = getRecords()
-      const now = new Date()
-      const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-      let list = all.slice()
-      const keyword = this.data.keyword.trim().toLowerCase()
-      if (keyword) {
+    getFilteredList(filterState: Record<string, any>) {
+      const curNow = new Date()
+      const currentMonthStr = `${curNow.getFullYear()}-${String(curNow.getMonth() + 1).padStart(2, '0')}`
+      const [weekStart, weekEnd] = getWeekRange(getToday())
+      const {
+        year, selectedMonth, keyword,
+        typeKey, timeKey, amountMin, amountMax, sortKey,
+        dateStart, dateEnd,
+      } = filterState
+
+      let list = getRecords().slice()
+
+      const kw = (keyword || '').trim().toLowerCase()
+      if (kw) {
         list = list.filter((item: any) =>
-          item.note.toLowerCase().includes(keyword) ||
-          item.category.toLowerCase().includes(keyword)
+          item.note.toLowerCase().includes(kw) || item.category.toLowerCase().includes(kw)
         )
       }
 
-      // 快速 filter pills
-      if (this.data.activeFilter === 'expense') list = list.filter((item: any) => item.type === '支出')
-      if (this.data.activeFilter === 'income') list = list.filter((item: any) => item.type === '收入')
-      if (this.data.activeFilter === 'month') list = list.filter((item: any) => item.date.startsWith(monthStr))
-
-      // 高级筛选
-      const { appliedType, appliedTime, appliedAmountMin, appliedAmountMax, appliedSort } = this.data
-      if (appliedType === 'expense') list = list.filter((item: any) => item.type === '支出')
-      if (appliedType === 'income') list = list.filter((item: any) => item.type === '收入')
-
-      if (appliedTime === 'week') {
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 3600 * 1000)
-        list = list.filter((item: any) => new Date(item.date) >= weekAgo)
-      } else if (appliedTime === 'month') {
-        list = list.filter((item: any) => item.date.startsWith(monthStr))
-      } else if (appliedTime === 'year') {
-        list = list.filter((item: any) => item.date.startsWith(String(now.getFullYear())))
+      if (timeKey === 'all' && !dateStart && !dateEnd) {
+        const pickerMonthStr = `${year}-${String(selectedMonth).padStart(2, '0')}`
+        list = list.filter((item: any) => item.date.startsWith(pickerMonthStr))
       }
 
-      if (appliedAmountMin) {
-        const min = parseFloat(appliedAmountMin) * 100
-        list = list.filter((item: any) => item.amount >= min)
-      }
-      if (appliedAmountMax) {
-        const max = parseFloat(appliedAmountMax) * 100
-        list = list.filter((item: any) => item.amount <= max)
+      if (typeKey === 'expense') list = list.filter((item: any) => item.type === '支出')
+      if (typeKey === 'income') list = list.filter((item: any) => item.type === '收入')
+
+      if (timeKey === 'week') {
+        list = list.filter((item: any) => item.date >= weekStart && item.date <= weekEnd)
+      } else if (timeKey === 'month') {
+        list = list.filter((item: any) => item.date.startsWith(currentMonthStr))
       }
 
-      if (appliedSort === 'oldest') list.sort((a: any, b: any) => a.date.localeCompare(b.date))
-      else if (appliedSort === 'amountDesc') list.sort((a: any, b: any) => b.amount - a.amount)
-      else if (appliedSort === 'amountAsc') list.sort((a: any, b: any) => a.amount - b.amount)
-      // default newest: already sorted by getRecords
+      if (dateStart) list = list.filter((item: any) => item.date >= dateStart)
+      if (dateEnd) list = list.filter((item: any) => item.date <= dateEnd)
 
-      const groups = groupRecordsByDate(list)
-      const hasAdvanced = appliedType !== 'all' || appliedTime !== 'all' ||
-        !!appliedAmountMin || !!appliedAmountMax || appliedSort !== 'newest'
+      if (amountMin) list = list.filter((item: any) => item.amount >= parseFloat(amountMin) * 100)
+      if (amountMax) list = list.filter((item: any) => item.amount <= parseFloat(amountMax) * 100)
+
+      if (sortKey === 'oldest') list.sort((a: any, b: any) => a.date.localeCompare(b.date))
+      else if (sortKey === 'amountDesc') list.sort((a: any, b: any) => b.amount - a.amount)
+      else if (sortKey === 'amountAsc') list.sort((a: any, b: any) => a.amount - b.amount)
+
+      return list
+    },
+
+    syncFilterPreview(overrides: Record<string, any> = {}) {
+      const list = this.getFilteredList({
+        year: this.data.year,
+        selectedMonth: this.data.selectedMonth,
+        keyword: this.data.keyword,
+        typeKey: overrides.filterType ?? this.data.filterType,
+        timeKey: overrides.filterTime ?? this.data.filterTime,
+        amountMin: overrides.filterAmountMin ?? this.data.filterAmountMin,
+        amountMax: overrides.filterAmountMax ?? this.data.filterAmountMax,
+        sortKey: overrides.filterSort ?? this.data.filterSort,
+        dateStart: overrides.filterDateStart ?? this.data.filterDateStart,
+        dateEnd: overrides.filterDateEnd ?? this.data.filterDateEnd,
+      })
+      this.setData({ filterPreviewCount: list.length })
+    },
+
+    loadData() {
+      const {
+        year, selectedMonth, keyword,
+        appliedType, appliedTime, appliedAmountMin, appliedAmountMax, appliedSort,
+        appliedDateStart, appliedDateEnd,
+      } = this.data
+      const list = this.getFilteredList({
+        year,
+        selectedMonth,
+        keyword,
+        typeKey: appliedType,
+        timeKey: appliedTime,
+        amountMin: appliedAmountMin,
+        amountMax: appliedAmountMax,
+        sortKey: appliedSort,
+        dateStart: appliedDateStart,
+        dateEnd: appliedDateEnd,
+      })
+
+      const currentCurrencyCode = getCurrencyCode()
+      const groups = groupRecordsByDate(list.map((record: any) => ({
+        ...record,
+        dateTimeText: formatRecordDateTime(record),
+      })) as any, currentCurrencyCode)
+      const hasAdvanced = this.countAdvancedFilters(this.data) > 0
+
       this.setData({
         groups,
         hasAdvancedFilter: hasAdvanced,
         appliedTags: this.buildAppliedTags(),
-        ...this.buildSummary(list, groups),
+        ...this.buildSummary(list, groups, currentCurrencyCode),
       })
+    },
+
+    // 月份日期控件
+    onMonthPickerChange(e: any) {
+      const val = e.detail.value as [number, number]
+      const year = 2020 + val[0]
+      const selectedMonth = val[1] + 1
+      this.setData({
+        year,
+        selectedMonth,
+        pickerValue: val,
+        appliedTime: 'all',
+        appliedDateStart: '',
+        appliedDateEnd: '',
+      })
+      this.loadData()
     },
 
     onSearchInput(e: any) {
@@ -226,8 +271,8 @@ Component({
       this.loadData()
     },
 
-    onFilterTap(e: any) {
-      this.setData({ activeFilter: (e.currentTarget.dataset || {}).key })
+    onSearchClear() {
+      this.setData({ keyword: '' })
       this.loadData()
     },
 
@@ -240,7 +285,9 @@ Component({
         filterAmountMin: this.data.appliedAmountMin,
         filterAmountMax: this.data.appliedAmountMax,
         filterSort: this.data.appliedSort,
-      })
+        filterDateStart: this.data.appliedDateStart,
+        filterDateEnd: this.data.appliedDateEnd,
+      }, () => this.syncFilterPreview())
     },
 
     onCloseFilter() {
@@ -249,15 +296,38 @@ Component({
 
     onChipSelect(e: any) {
       const { key, field } = e.currentTarget.dataset
-      this.setData({ [field]: key })
+      const updates: Record<string, any> = { [field]: key }
+      if (field === 'filterTime' && key !== 'all') {
+        updates.filterDateStart = ''
+        updates.filterDateEnd = ''
+      }
+      this.setData(updates, () => this.syncFilterPreview(updates))
     },
 
     onAmountMinInput(e: any) {
-      this.setData({ filterAmountMin: e.detail.value })
+      const value = e.detail.value
+      this.setData({ filterAmountMin: value }, () => this.syncFilterPreview({ filterAmountMin: value }))
     },
 
     onAmountMaxInput(e: any) {
-      this.setData({ filterAmountMax: e.detail.value })
+      const value = e.detail.value
+      this.setData({ filterAmountMax: value }, () => this.syncFilterPreview({ filterAmountMax: value }))
+    },
+
+    onFilterDateStartChange(e: any) {
+      const value = e.detail.value as string
+      this.setData({
+        filterDateStart: value,
+        filterTime: 'all',
+      }, () => this.syncFilterPreview({ filterDateStart: value, filterTime: 'all' }))
+    },
+
+    onFilterDateEndChange(e: any) {
+      const value = e.detail.value as string
+      this.setData({
+        filterDateEnd: value,
+        filterTime: 'all',
+      }, () => this.syncFilterPreview({ filterDateEnd: value, filterTime: 'all' }))
     },
 
     onResetFilter() {
@@ -267,18 +337,60 @@ Component({
         filterAmountMin: '',
         filterAmountMax: '',
         filterSort: 'newest',
-      })
+        filterDateStart: '',
+        filterDateEnd: '',
+      }, () => this.syncFilterPreview({
+        filterType: 'all',
+        filterTime: 'all',
+        filterAmountMin: '',
+        filterAmountMax: '',
+        filterSort: 'newest',
+        filterDateStart: '',
+        filterDateEnd: '',
+      }))
     },
 
     onConfirmFilter() {
-      this.setData({
-        appliedType: this.data.filterType,
-        appliedTime: this.data.filterTime,
+      const nextType = this.data.filterType
+      const nextTime = this.data.filterTime
+      const updates: Record<string, any> = {
+        appliedType: nextType,
+        appliedTime: nextTime,
         appliedAmountMin: this.data.filterAmountMin,
         appliedAmountMax: this.data.filterAmountMax,
         appliedSort: this.data.filterSort,
+        appliedDateStart: this.data.filterDateStart,
+        appliedDateEnd: this.data.filterDateEnd,
         showFilter: false,
-      })
+      }
+      if (nextTime !== 'all') {
+        const current = new Date()
+        updates.year = current.getFullYear()
+        updates.selectedMonth = current.getMonth() + 1
+        updates.pickerValue = [current.getFullYear() - 2020, current.getMonth()]
+      }
+      this.setData(updates)
+      this.loadData()
+    },
+
+    onRemoveTag(e: any) {
+      const key = (e.currentTarget.dataset || {}).key as string
+      const updates: Record<string, any> = {}
+
+      if (key === 'keyword') updates.keyword = ''
+      if (key === 'type') updates.appliedType = 'all'
+      if (key === 'time') updates.appliedTime = 'all'
+      if (key === 'dateRange') {
+        updates.appliedDateStart = ''
+        updates.appliedDateEnd = ''
+      }
+      if (key === 'amount') {
+        updates.appliedAmountMin = ''
+        updates.appliedAmountMax = ''
+      }
+      if (key === 'sort') updates.appliedSort = 'newest'
+
+      this.setData(updates)
       this.loadData()
     },
   },

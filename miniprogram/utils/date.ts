@@ -40,7 +40,7 @@ export function getDaysInMonth(year: number, month: number): number {
 }
 
 /** 将记录按日期分组 */
-export function groupRecordsByDate(records: IRecord[]): Array<{
+export function groupRecordsByDate(records: IRecord[], currentCurrency?: string): Array<{
   date: string
   dateDisplay: string
   records: IRecord[]
@@ -48,6 +48,10 @@ export function groupRecordsByDate(records: IRecord[]): Array<{
   dayExpense: number
   dayIncomeText: string
   dayExpenseText: string
+  dayNet: number
+  dayNetText: string
+  dayNetNegative: boolean
+  dayHasMixed: boolean
 }> {
   const map = new Map<string, IRecord[]>()
   for (const r of records) {
@@ -61,7 +65,10 @@ export function groupRecordsByDate(records: IRecord[]): Array<{
     const dayRecords = map.get(date)!
     let dayIncome = 0
     let dayExpense = 0
+    let dayHasMixed = false
     for (const r of dayRecords) {
+      const matchesCurrency = !currentCurrency || (r.currency ?? 'CNY') === currentCurrency
+      if (!matchesCurrency) { dayHasMixed = true; continue }
       if (r.type === '收入') dayIncome += r.amount
       else if (r.type === '支出') dayExpense += r.amount
     }
@@ -77,6 +84,7 @@ export function groupRecordsByDate(records: IRecord[]): Array<{
       dayNet,
       dayNetText: fenToYuan(Math.abs(dayNet)),
       dayNetNegative: dayNet < 0,
+      dayHasMixed,
     }
   })
 }

@@ -1,80 +1,124 @@
 <view class="page-root">
-<navigation-bar title="语音记账" />
-<view class="page-container">
-  <scroll-view class="results-area" scroll-y="{{true}}">
-    <view wx:if="{{!showResult && !recognizedText && !isTranslating}}" class="hero-state">
-      <text class="hero-title">请说出您的消费记录</text>
-      <text class="hero-subtitle">点击麦克风或按住开始语音输入</text>
-      <view class="wave-bars">
-        <view class="wave-bar" wx:for="{{[16,30,44,26,38,18,48,24,34,20,42,14]}}" wx:key="index" style="height: {{item}}rpx;"></view>
-      </view>
-      <view class="example-list">
-        <view class="example-item" wx:for="{{examples}}" wx:key="*this">
-          <text class="example-text">“{{item}}”</text>
+  <navigation-bar title="" back="{{true}}">
+    <view slot="center" class="nav-title">语音记账</view>
+  </navigation-bar>
+
+  <view class="page-container">
+    <scroll-view class="results-area" scroll-y="{{true}}">
+      <view wx:if="{{!showResult}}" class="voice-hero-card">
+        <view class="hero-top-row">
+          <view class="hero-badge">{{isTranslating ? 'AI 正在识别' : 'AI 辅助记账'}}</view>
+          <picker mode="selector" range="{{currencyLabels}}" value="{{currencyPickerIndex}}" bindchange="onCurrencyChange">
+            <view class="currency-trigger">
+              <text class="currency-trigger-caption">当前币种</text>
+              <view class="currency-trigger-main">
+                <text class="currency-trigger-symbol">{{currencySymbol}}</text>
+                <text class="currency-trigger-code">{{currencyCode}}</text>
+                <view class="currency-arrow"></view>
+              </view>
+            </view>
+          </picker>
         </view>
-      </view>
-    </view>
+        <text class="hero-title">{{isTranslating ? '正在帮你整理语音内容' : '说一句话，帮你拆成账单'}}</text>
+        <text class="hero-subtitle">{{isTranslating ? '识别完成后会自动生成可编辑草稿' : '例如“午饭 35 元，打车 18 元”，识别后可逐条修改再保存'}}</text>
+        <text class="hero-currency-hint">当前这次语音记账将以 {{currencyCode}} 保存，不影响全局默认货币</text>
 
-    <view wx:if="{{isTranslating && !recognizedText}}" class="hero-state">
-      <view class="loading-ring"></view>
-      <text class="empty-title">正在识别中…</text>
-    </view>
-
-    <view wx:if="{{recognizedText}}" class="raw-text-card">
-      <text class="raw-text-label">识别原文</text>
-      <text class="raw-text">{{recognizedText}}</text>
-    </view>
-
-    <block wx:if="{{showResult}}">
-      <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
-        <view class="draft-row1">
-          <text class="draft-icon-text">{{item.icon}}</text>
-          <picker range="{{allTypes}}" value="{{item.typeIndex}}"
-                  bindchange="onEditType" data-index="{{index}}">
-            <view class="draft-chip {{item.type === '收入' ? 'chip-income' : item.type === '支出' ? 'chip-expense' : 'chip-neutral'}}">{{item.type}} ▾</view>
-          </picker>
-          <picker range="{{allCategories[item.type]}}" value="{{item.categoryIndex}}"
-                  bindchange="onEditCategory" data-index="{{index}}">
-            <view class="draft-chip chip-cat">{{item.category}} ▾</view>
-          </picker>
-          <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
+        <view wx:if="{{!recognizedText && !isTranslating}}" class="wave-bars">
+          <view class="wave-bar" wx:for="{{[16,30,44,26,38,18,48,24,34,20,42,14]}}" wx:key="index" style="height: {{item}}rpx;"></view>
         </view>
-        <view class="draft-row2">
-          <picker mode="date" value="{{item.date}}" bindchange="onEditDate" data-index="{{index}}">
-            <view class="draft-date-chip">{{item.date}}</view>
-          </picker>
-          <input class="draft-note-input" value="{{item.note}}"
-                 bind:input="onEditNote" data-index="{{index}}"
-                 placeholder="添加备注" placeholder-class="input-ph" />
-          <view class="draft-amount-area">
-            <text class="draft-currency">¥</text>
-            <input class="draft-amount-input" type="digit" value="{{item.amountYuan}}"
-                   bind:input="onEditAmount" data-index="{{index}}"
-                   placeholder="0.00" placeholder-class="input-ph" />
+
+        <view wx:if="{{isTranslating && !recognizedText}}" class="hero-loading">
+          <view class="loading-ring"></view>
+          <text class="empty-title">正在识别中…</text>
+          <text class="empty-hint">请稍候，马上为你生成草稿</text>
+        </view>
+
+        <view class="example-panel" wx:if="{{!isTranslating}}">
+          <text class="example-panel-title">你可以这样说</text>
+          <view class="example-list">
+            <view class="example-item" wx:for="{{examples}}" wx:key="*this">
+              <text class="example-text">“{{item}}”</text>
+            </view>
           </view>
         </view>
       </view>
 
-    </block>
-  </scroll-view>
+      <view wx:if="{{recognizedText}}" class="raw-text-card">
+        <view class="raw-text-head">
+          <text class="raw-text-label">识别原文</text>
+          <text class="raw-text-tip">可继续校对后保存</text>
+        </view>
+        <text class="raw-text">{{recognizedText}}</text>
+      </view>
 
-  <view class="bottom-panel" wx:if="{{!showResult}}">
-    <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '松开结束录音' : '点击或按住开始说话'}}</text>
+      <view wx:if="{{showResult}}" class="result-summary-card">
+        <view class="result-summary-main">
+          <text class="result-summary-title">识别完成</text>
+          <text class="result-summary-subtitle">共 {{drafts.length}} 条草稿，建议保存前逐条确认分类、金额和币种</text>
+        </view>
+        <view class="result-summary-side">
+          <view class="result-summary-currency">{{currencyCode}}</view>
+          <view class="result-summary-count">{{drafts.length}} 条</view>
+        </view>
+      </view>
 
-    <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
-          bind:touchstart="onStartRecord"
-          bind:touchend="onStopRecord"
-          bind:touchcancel="onStopRecord"
-          catch:touchmove="preventMove">
-      <image class="mic-icon-img" src="/images/new/mic-white.png" mode="aspectFit" />
+      <block wx:if="{{showResult}}">
+        <view class="draft-item" wx:for="{{drafts}}" wx:key="tempId">
+          <view class="draft-row1">
+            <view class="draft-head-main">
+              <view class="draft-icon-wrap">
+                <text class="draft-icon-text">{{item.icon}}</text>
+              </view>
+              <view class="draft-chip-group">
+                <picker range="{{allTypes}}" value="{{item.typeIndex}}" bindchange="onEditType" data-index="{{index}}">
+                  <view class="draft-chip {{item.type === '收入' ? 'chip-income' : item.type === '支出' ? 'chip-expense' : 'chip-neutral'}}">{{item.type}} ▾</view>
+                </picker>
+                <picker range="{{allCategories[item.type]}}" value="{{item.categoryIndex}}" bindchange="onEditCategory" data-index="{{index}}">
+                  <view class="draft-chip chip-cat">{{item.category}} ▾</view>
+                </picker>
+              </view>
+            </view>
+            <view class="remove-icon" bind:tap="onRemoveDraft" data-index="{{index}}">×</view>
+          </view>
+          <view class="draft-row2">
+            <picker mode="date" value="{{item.date}}" bindchange="onEditDate" data-index="{{index}}">
+              <view class="draft-date-chip">{{item.date}}</view>
+            </picker>
+            <input class="draft-note-input" value="{{item.note}}" bind:input="onEditNote" data-index="{{index}}" placeholder="添加备注" placeholder-class="input-ph" />
+          </view>
+          <view class="draft-amount-row">
+            <text class="draft-amount-label">金额</text>
+            <view class="draft-amount-area">
+              <text class="draft-currency">{{currencySymbol}}</text>
+              <input class="draft-amount-input" type="digit" value="{{item.amountYuan}}" bind:input="onEditAmount" data-index="{{index}}" placeholder="0.00" placeholder-class="input-ph" />
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <view class="results-bottom-space"></view>
+    </scroll-view>
+
+    <view class="bottom-panel" wx:if="{{!showResult}}">
+      <view class="bottom-panel-card">
+        <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '松开结束录音' : '点击或按住开始说话'}}</text>
+        <text class="status-hint">{{isRecording ? '保持安静环境，系统会自动拆分多条记录' : '支持点击或按住录音，识别后可手动修改'}}</text>
+
+        <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
+              bind:touchstart="onStartRecord"
+              bind:touchend="onStopRecord"
+              bind:touchcancel="onStopRecord"
+              catch:touchmove="preventMove">
+          <image class="mic-icon-img" src="/images/new/mic-white.png" mode="aspectFit" />
+        </view>
+      </view>
+
+      <text class="disclaimer">AI 生成内容仅供参考，请保存前确认金额、分类和日期</text>
     </view>
 
-    <text class="disclaimer">本服务为 AI 生成内容，结果仅供参考</text>
+    <view class="result-action-bar" wx:if="{{showResult}}">
+      <view class="result-retry-btn" bind:tap="onRetry">重新识别</view>
+      <view class="result-save-btn" bind:tap="onSaveAll">保存全部（{{drafts.length}} 条）</view>
+    </view>
   </view>
-
-  <view class="result-action-bar" wx:if="{{showResult}}">
-    <view class="result-retry-btn" bind:tap="onRetry">重新识别</view>
-    <view class="result-save-btn" bind:tap="onSaveAll">保存全部（{{drafts.length}} 条）</view>
-  </view>
-</view>
 </view>

@@ -1,5 +1,5 @@
 import { CATEGORY_ICONS, CATEGORY_COLORS, fenToYuan } from '../../models/record'
-import { getCategoryMeta } from '../../utils/storage'
+import { getCategoryMeta, getCurrencySymbol } from '../../utils/storage'
 
 function createSoftBackground(color: string): string {
   const normalized = color.replace('#', '')
@@ -32,12 +32,13 @@ Component({
       const iconColor = categoryMeta?.color || CATEGORY_COLORS[val.category] || '#95A5A6'
       const iconBg = categoryMeta?.bgColor || createSoftBackground(iconColor)
       const amountText = fenToYuan(val.amount)
+      const currencySymbol = getCurrencySymbol(val.currency)
       const displaySubText = subText || val.note || ''
       let colorClass = 'text-neutral'
       let sign = ''
       if (val.type === '支出') { colorClass = 'text-expense'; sign = '-' }
       else if (val.type === '收入') { colorClass = 'text-income'; sign = '+' }
-      this.setData({ icon, iconBg, iconColor, amountText, displaySubText, colorClass, sign })
+      this.setData({ icon, iconBg, iconColor, amountText, currencySymbol, displaySubText, colorClass, sign })
     },
   },
 
@@ -46,6 +47,7 @@ Component({
     iconBg: 'rgba(149, 165, 166, 0.14)',
     iconColor: '#95A5A6',
     amountText: '0.00',
+    currencySymbol: '¥',
     displaySubText: '',
     colorClass: 'text-neutral',
     sign: '',

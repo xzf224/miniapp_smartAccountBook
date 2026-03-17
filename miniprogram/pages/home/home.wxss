@@ -26,12 +26,15 @@
   letter-spacing: 2rpx;
 }
 
-.month-selector-arrow {
-  margin-left: 16rpx;
-  font-size: 30rpx;
-  color: #353c46;
-  line-height: 1;
-  transform: translateY(-5rpx);
+.month-arrow {
+  width: 14rpx;
+  height: 14rpx;
+  border-right: 3rpx solid #353c46;
+  border-bottom: 3rpx solid #353c46;
+  transform: rotate(45deg) translateY(-3rpx);
+  margin-left: 14rpx;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .header-icons {
@@ -148,9 +151,9 @@
 }
 
 .quick-action-badge {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 34rpx;
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,8 +176,8 @@
 }
 
 .quick-action-icon {
-  width: 44rpx;
-  height: 44rpx;
+  width: 52rpx;
+  height: 52rpx;
 }
 
 .quick-action-plus {
@@ -184,7 +187,7 @@
 
 .quick-action-label {
   margin-top: 14rpx;
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: #8a9099;
   line-height: 1.2;
   text-align: center;
@@ -255,9 +258,9 @@
 }
 
 .empty-icon {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 10px;
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto 10rpx;
   display: block;
 }
 
@@ -373,7 +376,7 @@
 
 /* 本月消费分析 */
 .analysis-section {
-  margin: 8rpx 24rpx 16rpx;
+  margin: 8rpx 24rpx 8rpx;
   background: var(--color-bg-card);
   border-radius: var(--radius-card);
   padding: 28rpx 28rpx 8rpx;

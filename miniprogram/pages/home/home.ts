@@ -1,4 +1,4 @@
-import { getRecords, deleteRecord, getBudgetAmount, getPendingDrafts } from '../../utils/storage'
+import { getRecords, deleteRecord, getBudgetAmount, getPendingDrafts, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
 import { checkRecurringRules } from '../../utils/recurring'
 import { groupRecordsByDate } from '../../utils/date'
 import { fenToYuan } from '../../models/record'
@@ -6,6 +6,15 @@ import { fenToYuan } from '../../models/record'
 const now = new Date()
 const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
 const PICKER_MONTHS: string[] = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+
+function formatRecordDateTime(record: any): string {
+  const timestamp = record.updateTime || record.createTime
+  if (!timestamp) return record.date || ''
+  const value = new Date(timestamp)
+  if (Number.isNaN(value.getTime())) return record.date || ''
+  const timeText = `${String(value.getHours()).padStart(2, '0')}:${String(value.getMinutes()).padStart(2, '0')}`
+  return `${record.date} ${timeText}`
+}
 
 Component({
   data: {
@@ -32,6 +41,8 @@ Component({
     dateEnd: '',
     pendingDraftCount: 0,
     analysisItems: [] as any[],
+    currencySymbol: '¥',
+    mixedCurrencyCount: 0,
   },
 
   lifetimes: {
@@ -43,6 +54,7 @@ Component({
   pageLifetimes: {
     show() {
       checkRecurringRules()
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
     },
   },
@@ -73,14 +85,20 @@ Component({
       if (dateStart) monthRecords = monthRecords.filter((r: any) => r.date >= dateStart)
       if (dateEnd) monthRecords = monthRecords.filter((r: any) => r.date <= dateEnd)
 
+      const currentCurrencyCode = getCurrencyCode()
       let incomeTotal = 0
       let expenseTotal = 0
+      let mixedCurrencyCount = 0
       monthRecords.forEach((r: any) => {
+        if ((r.currency ?? 'CNY') !== currentCurrencyCode) { mixedCurrencyCount++; return }
         if (r.type === '收入') incomeTotal += r.amount
         else if (r.type === '支出') expenseTotal += r.amount
       })
 
-      const groups = groupRecordsByDate(monthRecords)
+      const groups = groupRecordsByDate(monthRecords.map((record: any) => ({
+        ...record,
+        timeText: formatRecordDateTime(record),
+      })) as any, currentCurrencyCode)
       const expenseBudget = getBudgetAmount(year, month, '支出', '__total__')
 
       const pendingDraftCount = getPendingDrafts().length
@@ -120,6 +138,7 @@ Component({
         searchResultCount: monthRecords.length,
         pendingDraftCount,
         daysLeft,
+        mixedCurrencyCount,
       })
     },
 
@@ -137,13 +156,7 @@ Component({
     },
 
     onSearchToggle() {
-      const searchVisible = !this.data.searchVisible
-      if (!searchVisible) {
-        this.setData({ searchVisible, searchKeyword: '', searchTypeIndex: 0, amountMin: '', amountMax: '', dateStart: '', dateEnd: '' })
-      } else {
-        this.setData({ searchVisible })
-      }
-      this.loadData()
+      wx.navigateTo({ url: '/pages/records/records' })
     },
 
     onSearchInput(e: WechatMiniprogram.Input) {

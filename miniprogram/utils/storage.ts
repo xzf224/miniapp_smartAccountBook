@@ -268,3 +268,32 @@ export function savePendingDrafts(drafts: IPendingDraft[]): void {
 export function removePendingDraft(id: string): void {
   savePendingDrafts(getPendingDrafts().filter(d => d.id !== id))
 }
+
+// ---- 货币 ----
+
+const CURRENCY_KEY = 'app_currency'
+
+export const CURRENCIES = [
+  { code: 'CNY', symbol: '¥',   name: '人民币',   flag: '🇨🇳' },
+  { code: 'USD', symbol: '$',   name: '美元',     flag: '🇺🇸' },
+  { code: 'EUR', symbol: '€',   name: '欧元',     flag: '🇪🇺' },
+  { code: 'GBP', symbol: '£',   name: '英镑',     flag: '🇬🇧' },
+  { code: 'JPY', symbol: '¥',   name: '日元',     flag: '🇯🇵' },
+  { code: 'KRW', symbol: '₩',   name: '韩元',     flag: '🇰🇷' },
+  { code: 'HKD', symbol: 'HK$', name: '港币',     flag: '🇭🇰' },
+  { code: 'TWD', symbol: 'NT$', name: '新台币',   flag: '🇹🇼' },
+  { code: 'CAD', symbol: 'C$',  name: '加拿大元', flag: '🇨🇦' },
+]
+
+export function getCurrencyCode(): string {
+  return wx.getStorageSync(CURRENCY_KEY) || 'CNY'
+}
+
+export function setCurrencyCode(code: string): void {
+  wx.setStorageSync(CURRENCY_KEY, code)
+}
+
+export function getCurrencySymbol(code?: string): string {
+  const target = code || getCurrencyCode()
+  return CURRENCIES.find(c => c.code === target)?.symbol ?? '¥'
+}

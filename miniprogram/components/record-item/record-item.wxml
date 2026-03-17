@@ -6,5 +6,5 @@
     <text class="category">{{record.category}}</text>
     <text class="note" wx:if="{{displaySubText}}">{{displaySubText}}</text>
   </view>
-  <text class="amount {{colorClass}}">{{sign}}{{amountText}}</text>
+  <text class="amount {{colorClass}}">{{sign}}{{currencySymbol}}{{amountText}}</text>
 </view>

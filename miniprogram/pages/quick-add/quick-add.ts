@@ -1,4 +1,4 @@
-import { addRecord, getCategories } from '../../utils/storage'
+import { addRecord, getCategories, getCurrencyCode, getCurrencySymbol, CURRENCIES } from '../../utils/storage'
 import { CATEGORY_COLORS, CATEGORY_ICONS, generateId, yuanToFen } from '../../models/record'
 import { getToday } from '../../utils/date'
 
@@ -41,25 +41,61 @@ Component({
     categories: [] as string[],
     quickCategories: [] as QuickCategoryItem[],
     gridHeight: 286,
+    fullGridHeight: 286,
+    categoryGridExpanded: false,
+    hasMoreCategories: false,
     selectedCategory: '',
     amountDisplay: '0.00',
     date: getToday(),
     note: '',
+    currencySymbol: '¥',
+    currencyCode: 'CNY',
+    currencyName: '人民币',
+    currencyPickerIndex: 0,
+    currencyLabels: CURRENCIES.map(c => `${c.symbol}  ${c.name}（${c.code}）`),
+    quickAmounts: [10, 20, 50, 100],
+    canSave: false,
   },
 
   lifetimes: {
     attached() {
       this.loadCategories()
+      this.syncCurrencyState()
     },
   },
 
   pageLifetimes: {
     show() {
       this.loadCategories()
+      this.syncCurrencyState()
     },
   },
 
   methods: {
+    getCanSave(amountDisplay: string, selectedCategory: string): boolean {
+      const amount = parseFloat(amountDisplay)
+      return !!selectedCategory && !Number.isNaN(amount) && amount > 0
+    },
+
+    syncAmountState(amountDisplay: string, selectedCategory = this.data.selectedCategory) {
+      this.setData({
+        amountDisplay,
+        canSave: this.getCanSave(amountDisplay, selectedCategory),
+      })
+    },
+
+    syncCurrencyState() {
+      const code = getCurrencyCode()
+      const idx = CURRENCIES.findIndex(c => c.code === code)
+      const currency = CURRENCIES[idx >= 0 ? idx : 0]
+      this.setData({
+        currencySymbol: currency.symbol || getCurrencySymbol(code),
+        currencyCode: currency.code,
+        currencyName: currency.name,
+        currencyPickerIndex: idx >= 0 ? idx : 0,
+      })
+    },
+
     normalizeAmountInput(rawValue: string, padDecimal = false): string {
       const sanitized = rawValue.replace(/[^\d.]/g, '')
       const firstDotIndex = sanitized.indexOf('.')
@@ -95,27 +131,42 @@ Component({
         ? this.data.selectedCategory
         : (quickCategories[0]?.name || '')
 
-      // 2 rows default, up to 4 rows max; each row ≈ 134rpx + 18rpx top padding
-      const rowCount = Math.min(4, Math.max(2, Math.ceil(quickCategories.length / 4)))
-      const gridHeight = rowCount * 134 + 18
+      const collapsedRowCount = 2
+      const totalRowCount = Math.max(collapsedRowCount, Math.ceil(quickCategories.length / 4))
+      const collapsedGridHeight = collapsedRowCount * 134 + 18
+      const fullGridHeight = totalRowCount * 134 + 18
+      const hasMoreCategories = totalRowCount > collapsedRowCount
+      const categoryGridExpanded = hasMoreCategories ? this.data.categoryGridExpanded : false
+      const gridHeight = categoryGridExpanded ? fullGridHeight : Math.min(fullGridHeight, collapsedGridHeight)
 
       this.setData({
         categories,
         quickCategories,
         selectedCategory,
         gridHeight,
+        fullGridHeight,
+        hasMoreCategories,
+        categoryGridExpanded,
+        canSave: this.getCanSave(this.data.amountDisplay, selectedCategory),
       })
     },
 
     onTypeChange(e: WechatMiniprogram.TouchEvent) {
       const idx = Number((e.currentTarget.dataset || {}).index)
-      this.setData({ typeIndex: idx, selectedCategory: '' })
+      this.setData({
+        typeIndex: idx,
+        selectedCategory: '',
+        categoryGridExpanded: false,
+      })
       this.loadCategories()
     },
 
     onQuickCategoryTap(e: WechatMiniprogram.TouchEvent) {
       const { name } = e.currentTarget.dataset as { name: string }
-      this.setData({ selectedCategory: name })
+      this.setData({
+        selectedCategory: name,
+        canSave: this.getCanSave(this.data.amountDisplay, name),
+      })
     },
 
     onDateChange(e: WechatMiniprogram.PickerChange) {
@@ -127,19 +178,39 @@ Component({
     },
 
     onAmountInput(e: WechatMiniprogram.Input) {
-      ;(this as any)._amountDraft = this.normalizeAmountInput(e.detail.value, false)
+      const amountDisplay = this.normalizeAmountInput(e.detail.value, false)
+      ;(this as any)._amountDraft = amountDisplay
+      this.syncAmountState(amountDisplay)
     },
 
     onAmountFocus() {
       if (this.data.amountDisplay === '0.00') {
-        this.setData({ amountDisplay: '' })
+        this.syncAmountState('')
       }
     },
 
     onAmountBlur(e: WechatMiniprogram.InputBlur) {
       const amountDisplay = this.normalizeAmountInput(e.detail.value, true) || '0.00'
       ;(this as any)._amountDraft = amountDisplay
-      this.setData({ amountDisplay })
+      this.syncAmountState(amountDisplay)
+    },
+
+    onQuickAmountTap(e: WechatMiniprogram.TouchEvent) {
+      const value = Number((e.currentTarget.dataset || {}).value || 0)
+      const current = parseFloat((this as any)._amountDraft || this.data.amountDisplay || '0')
+      const nextAmount = (Number.isNaN(current) ? 0 : current) + value
+      const amountDisplay = nextAmount.toFixed(2)
+      ;(this as any)._amountDraft = amountDisplay
+      this.syncAmountState(amountDisplay)
+    },
+
+    onToggleCategoryGrid() {
+      const nextExpanded = !this.data.categoryGridExpanded
+      const collapsedGridHeight = 2 * 134 + 18
+      this.setData({
+        categoryGridExpanded: nextExpanded,
+        gridHeight: nextExpanded ? this.data.fullGridHeight : Math.min(this.data.fullGridHeight, collapsedGridHeight),
+      })
     },
 
     onClose() {
@@ -168,6 +239,7 @@ Component({
         amount: yuanToFen(amount),
         date,
         note,
+        currency: this.data.currencyCode,
         createTime: now,
         updateTime: now,
       })
@@ -175,11 +247,22 @@ Component({
       wx.showToast({ title: '已保存', icon: 'success' })
       ;(this as any)._amountDraft = '0.00'
       this.setData({
-        amountDisplay: '0.00',
         date: getToday(),
         note: '',
       })
+      this.syncAmountState('0.00')
       setTimeout(() => wx.reLaunch({ url: '/pages/home/home' }), 400)
+    },
+
+    onCurrencyChange(e: any) {
+      const idx = e.detail.value as number
+      const currency = CURRENCIES[idx]
+      this.setData({
+        currencySymbol: currency.symbol,
+        currencyCode: currency.code,
+        currencyName: currency.name,
+        currencyPickerIndex: idx,
+      })
     },
   },
 })

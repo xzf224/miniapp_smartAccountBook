@@ -7,6 +7,7 @@ export interface IRecord {
   amount: number       // 单位: 分（整数，避免浮点精度问题）
   date: string         // YYYY-MM-DD
   note: string
+  currency?: string    // 货币代码，如 'CNY'/'USD'，未设置时视为 'CNY'
   createTime: number
   updateTime: number
 }

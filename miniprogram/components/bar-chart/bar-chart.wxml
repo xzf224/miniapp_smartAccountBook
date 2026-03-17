@@ -1,7 +1,14 @@
 <view class="bar-chart-wrap">
   <view class="bars-row">
-    <view wx:for="{{computedBars}}" wx:key="label" class="bar-col">
+    <view
+      wx:for="{{computedBars}}"
+      wx:key="label"
+      class="bar-col"
+      bind:tap="onSelectBar"
+      data-index="{{index}}"
+    >
       <view class="bar-slot">
+        <text class="bar-value" wx:if="{{item.active && item.value > 0}}">¥{{item.valueText}}</text>
         <view
           class="bar-fill {{item.active ? 'bar-active' : ''}}"
           style="height: {{item.value > 0 ? (item.heightPct < 6 ? 6 : item.heightPct) : 0}}%;"

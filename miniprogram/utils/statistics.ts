@@ -32,11 +32,12 @@ function filterMonthRecords(records: IRecord[], year: number, month: number): IR
 }
 
 /** 计算月度收支汇总 */
-export function calcMonthSummary(records: IRecord[], year: number, month: number): MonthSummary {
+export function calcMonthSummary(records: IRecord[], year: number, month: number, currency?: string): MonthSummary {
   const monthRecords = filterMonthRecords(records, year, month)
   let income = 0
   let expense = 0
   for (const r of monthRecords) {
+    if (currency && (r.currency ?? 'CNY') !== currency) continue
     if (r.type === '收入') income += r.amount
     else if (r.type === '支出') expense += r.amount
   }
@@ -49,8 +50,11 @@ export function calcCategoryRanking(
   year: number,
   month: number,
   type: RecordType,
+  currency?: string,
 ): CategoryRankItem[] {
-  const monthRecords = filterMonthRecords(records, year, month).filter(r => r.type === type)
+  const monthRecords = filterMonthRecords(records, year, month)
+    .filter(r => r.type === type)
+    .filter(r => !currency || (r.currency ?? 'CNY') === currency)
   const totals = new Map<string, number>()
   let totalAll = 0
   for (const r of monthRecords) {
@@ -77,8 +81,11 @@ export function calcDailyComparison(
   year: number,
   month: number,
   type: RecordType,
+  currency?: string,
 ): ComparisonDatum[] {
-  const monthRecords = filterMonthRecords(records, year, month).filter(r => r.type === type)
+  const monthRecords = filterMonthRecords(records, year, month)
+    .filter(r => r.type === type)
+    .filter(r => !currency || (r.currency ?? 'CNY') === currency)
   const days = getDaysInMonth(year, month)
   const result: ComparisonDatum[] = []
   for (let d = 1; d <= days; d++) {

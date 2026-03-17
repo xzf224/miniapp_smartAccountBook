@@ -1,145 +1,142 @@
-<navigation-bar title="" back="{{true}}" background="#f7efe2">
-  <view slot="center" class="nav-title-wrap">
-    <text class="nav-title">交易记录</text>
-    <text class="nav-subtitle">{{summaryCount}} 笔</text>
-  </view>
-  <view slot="right" class="nav-filter-btn {{hasAdvancedFilter ? 'nav-filter-btn-active' : ''}}" bind:tap="onOpenFilter">
-    <text class="nav-filter-icon">⊟</text>
-    <view class="nav-filter-dot" wx:if="{{hasAdvancedFilter}}"></view>
-  </view>
+<navigation-bar title="" back="{{true}}">
+  <view slot="center" class="nav-title">交易记录</view>
 </navigation-bar>
-<scroll-view scroll-y class="page-body">
-  <view class="hero-card">
-    <view class="hero-copy">
-      <text class="hero-eyebrow">账单总览</text>
-      <text class="hero-title">{{summaryTitle}}</text>
-      <text class="hero-subtitle">{{summarySubtitle}}</text>
+
+<scroll-view scroll-y class="page-scroll">
+
+  <!-- 日期控件 + 筛选按钮 -->
+  <view class="month-header">
+    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onMonthPickerChange">
+      <view class="month-selector">
+        <text class="month-header-label">{{year}}年{{selectedMonth < 10 ? '0' + selectedMonth : selectedMonth}}月</text>
+        <view class="month-arrow"></view>
+      </view>
+    </picker>
+    <view class="filter-header-btn {{hasAdvancedFilter ? 'filter-header-btn-active' : ''}}" bind:tap="onOpenFilter">
+      <image class="filter-header-icon" src="/images/new/sliders-horizontal.png" mode="aspectFit" />
+      <view class="filter-header-dot" wx:if="{{hasAdvancedFilter}}"></view>
+    </view>
+  </view>
+
+  <view class="records-tools-card">
+    <!-- 搜索框 -->
+    <view class="search-wrap">
+      <image class="search-icon" src="/images/search.png" mode="aspectFit" />
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索交易记录..."
+        placeholder-class="search-ph"
+        bind:input="onSearchInput"
+      />
+      <text wx:if="{{keyword}}" class="search-clear" bind:tap="onSearchClear">×</text>
     </view>
 
-    <view class="summary-grid">
-      <view class="summary-stat summary-stat-expense">
-        <text class="summary-label">支出</text>
-        <text class="summary-value">¥{{summaryExpenseText}}</text>
-      </view>
-      <view class="summary-stat summary-stat-income">
-        <text class="summary-label">收入</text>
-        <text class="summary-value">¥{{summaryIncomeText}}</text>
-      </view>
-      <view class="summary-stat summary-stat-net">
-        <text class="summary-label">结余</text>
-        <text class="summary-value {{summaryNetClass}}">
-          {{summaryNetNegative ? '-' : '+'}}¥{{summaryNetText}}
-        </text>
-      </view>
-    </view>
-
-    <view class="search-box">
-      <view class="search-main">
-        <image class="search-icon" src="/images/search.png" mode="aspectFit" />
-        <input
-          class="search-input"
-          value="{{keyword}}"
-          placeholder="搜索类别或备注"
-          placeholder-class="search-placeholder"
-          bind:input="onSearchInput"
-        />
-      </view>
-      <view class="filter-btn {{hasAdvancedFilter ? 'filter-btn-active' : ''}}" bind:tap="onOpenFilter">
-        <text class="filter-btn-icon">⊟</text>
-        <text class="filter-btn-text">高级</text>
-        <view class="filter-dot" wx:if="{{hasAdvancedFilter}}"></view>
-      </view>
-    </view>
-
-    <scroll-view scroll-x class="quick-filter-scroll" enable-flex="true" show-scrollbar="{{false}}">
-      <view class="filter-row">
-        <view
-          class="filter-pill {{activeFilter === item.key ? 'active' : ''}}"
-          wx:for="{{filters}}"
-          wx:key="key"
-          data-key="{{item.key}}"
-          bind:tap="onFilterTap"
-        >
-          {{item.label}}
-        </view>
-      </view>
-    </scroll-view>
-
+    <!-- 已应用筛选标签 -->
     <view class="applied-tags" wx:if="{{appliedTags.length}}">
-      <view class="applied-tag" wx:for="{{appliedTags}}" wx:key="*this">{{item}}</view>
+      <view class="applied-tag" wx:for="{{appliedTags}}" wx:key="key" data-key="{{item.key}}" bind:tap="onRemoveTag">
+        <text class="applied-tag-text">{{item.label}}</text>
+        <text class="applied-tag-close">×</text>
+      </view>
     </view>
   </view>
 
-  <view class="result-bar" wx:if="{{groups.length > 0}}">
-    <text class="result-text">共 {{summaryCount}} 笔记录</text>
-    <text class="result-text">覆盖 {{summaryDays}} 天</text>
+  <!-- 统计摘要条 -->
+  <view class="stats-strip" wx:if="{{groups.length > 0}}">
+    <view class="stats-strip-head">
+      <text class="stats-strip-title">筛选结果</text>
+      <text class="stats-strip-meta">覆盖 {{summaryDays}} 天</text>
+    </view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-main">{{summaryCount}}</text>
+        <text class="stats-sub">笔记录</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-main text-expense">{{currencySymbol}}{{summaryExpenseText}}</text>
+        <text class="stats-sub">支出</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-main text-income">{{currencySymbol}}{{summaryIncomeText}}</text>
+        <text class="stats-sub">收入</text>
+      </view>
+    </view>
+    <view class="stats-mixed" wx:if="{{mixedCurrencyCount > 0}}">
+      <text class="stats-mixed-text">另有 {{mixedCurrencyCount}} 笔其他货币记录未计入</text>
+    </view>
   </view>
 
+  <!-- 空状态 -->
   <view class="empty-state" wx:if="{{groups.length === 0}}">
     <image class="empty-icon" src="/images/list.png" mode="aspectFit" />
     <text class="empty-title">没有找到匹配记录</text>
-    <text class="empty-desc">试试切换筛选条件，或者返回首页继续记一笔。</text>
+    <text class="empty-desc">试试切换筛选条件，或返回首页记一笔</text>
   </view>
-  <view class="group-wrapper" wx:else>
+
+  <!-- 记录列表 -->
+  <view class="group-list" wx:else>
     <view class="group-block" wx:for="{{groups}}" wx:key="date">
-      <view class="group-head">
-        <view class="group-head-main">
-          <text class="group-date">{{item.dateDisplay}}</text>
-          <text class="group-count">{{item.records.length}} 笔记录</text>
-        </view>
-        <view class="group-totals">
-          <view class="group-total-chip group-total-expense" wx:if="{{item.dayExpense > 0}}">支 ¥{{item.dayExpenseText}}</view>
-          <view class="group-total-chip group-total-income" wx:if="{{item.dayIncome > 0}}">收 ¥{{item.dayIncomeText}}</view>
-        </view>
+      <view class="group-label-row">
+        <text class="group-date">{{item.dateDisplay}}</text>
+        <view class="group-day-summary">{{item.dayExpense > 0 ? '支 ' + currencySymbol + item.dayExpenseText : ''}}{{item.dayExpense > 0 && item.dayIncome > 0 ? ' · ' : ''}}{{item.dayIncome > 0 ? '收 ' + currencySymbol + item.dayIncomeText : ''}}</view>
       </view>
-      <view class="group-balance">
-        <text class="group-balance-label">当日结余</text>
-        <text class="group-balance-value {{item.dayNetNegative ? 'text-expense' : 'text-income'}}">
-          {{item.dayNetNegative ? '-' : '+'}}¥{{item.dayNetText}}
-        </text>
-      </view>
-      <view class="group-list">
-        <record-item wx:for="{{item.records}}" wx:key="id" record="{{item}}" />
+      <view class="group-card">
+        <view wx:for="{{item.records}}" wx:key="id" wx:for-item="record">
+          <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.dateTimeText}}" />
+          <view class="record-divider" wx:if="{{index < item.records.length - 1}}"></view>
+        </view>
       </view>
     </view>
   </view>
-  <view class="page-safe-space"></view>
+
+  <view class="list-foot"></view>
 </scroll-view>
 
 <!-- 高级筛选面板 -->
 <view class="filter-overlay" wx:if="{{showFilter}}" bind:tap="onCloseFilter"></view>
 <view class="filter-panel {{showFilter ? 'filter-panel-show' : ''}}">
+  <view class="filter-handle"></view>
   <view class="filter-panel-header">
     <text class="filter-panel-title">筛选</text>
     <text class="filter-reset" bind:tap="onResetFilter">重置</text>
   </view>
 
   <scroll-view scroll-y class="filter-scroll">
-    <!-- 交易类型 -->
     <view class="filter-section">
       <text class="filter-section-title">交易类型</text>
-      <view class="filter-chips">
-        <view class="filter-chip {{filterType === item.key ? 'chip-active' : ''}}"
+      <view class="filter-equal-chips">
+        <view class="filter-equal-chip {{filterType === item.key ? 'chip-active' : ''}}"
               wx:for="{{typeOptions}}" wx:key="key"
               data-key="{{item.key}}" data-field="filterType"
               bind:tap="onChipSelect">{{item.label}}</view>
       </view>
     </view>
 
-    <!-- 时间范围 -->
     <view class="filter-section">
       <text class="filter-section-title">时间范围</text>
-      <view class="filter-chips">
-        <view class="filter-chip {{filterTime === item.key ? 'chip-active' : ''}}"
+      <view class="filter-equal-chips">
+        <view class="filter-equal-chip {{filterTime === item.key ? 'chip-active' : ''}}"
               wx:for="{{timeOptions}}" wx:key="key"
               data-key="{{item.key}}" data-field="filterTime"
               bind:tap="onChipSelect">{{item.label}}</view>
       </view>
+      <view class="date-range-row">
+        <picker mode="date" value="{{filterDateStart}}" bind:change="onFilterDateStartChange">
+          <view class="date-range-btn">
+            <text class="{{filterDateStart ? 'date-range-text' : 'date-range-ph'}}">{{filterDateStart || '开始日期'}}</text>
+          </view>
+        </picker>
+        <text class="date-range-sep">至</text>
+        <picker mode="date" value="{{filterDateEnd}}" bind:change="onFilterDateEndChange">
+          <view class="date-range-btn">
+            <text class="{{filterDateEnd ? 'date-range-text' : 'date-range-ph'}}">{{filterDateEnd || '结束日期'}}</text>
+          </view>
+        </picker>
+      </view>
     </view>
 
-    <!-- 金额区间 -->
     <view class="filter-section">
-      <text class="filter-section-title">金额区间</text>
+      <text class="filter-section-title">金额范围</text>
       <view class="amount-range-row">
         <input class="amount-range-input" type="digit" value="{{filterAmountMin}}"
                placeholder="最小金额" placeholder-class="range-ph"
@@ -152,11 +149,10 @@
       </view>
     </view>
 
-    <!-- 排序方式 -->
-    <view class="filter-section">
+    <view class="filter-section filter-section-last">
       <text class="filter-section-title">排序方式</text>
-      <view class="filter-chips">
-        <view class="filter-chip {{filterSort === item.key ? 'chip-active' : ''}}"
+      <view class="filter-equal-chips filter-equal-chips-last">
+        <view class="filter-equal-chip {{filterSort === item.key ? 'chip-active' : ''}}"
               wx:for="{{sortOptions}}" wx:key="key"
               data-key="{{item.key}}" data-field="filterSort"
               bind:tap="onChipSelect">{{item.label}}</view>
@@ -166,6 +162,6 @@
 
   <view class="filter-actions">
     <view class="filter-cancel-btn" bind:tap="onCloseFilter">取消</view>
-    <view class="filter-confirm-btn" bind:tap="onConfirmFilter">确认</view>
+    <view class="filter-confirm-btn" bind:tap="onConfirmFilter">查看 {{filterPreviewCount}} 条记录</view>
   </view>
 </view>

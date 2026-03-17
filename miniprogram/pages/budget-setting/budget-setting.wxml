@@ -2,6 +2,32 @@
   <navigation-bar title="预算设置" back="{{true}}" />
   <scroll-view scroll-y class="page-body">
 
+    <view class="bs-overview bs-overview-{{overviewStatusTone}}">
+      <view class="bs-overview-head">
+        <view>
+          <text class="bs-overview-title">本月预算配置</text>
+          <text class="bs-overview-hint">{{overviewHintText}}</text>
+        </view>
+        <text class="bs-overview-badge bs-overview-badge-{{overviewStatusTone}}">{{overviewStatusText}}</text>
+      </view>
+      <view class="bs-overview-grid">
+        <view class="bs-overview-metric">
+          <text class="bs-overview-label">总预算</text>
+          <text class="bs-overview-value">¥{{totalBudgetDisplay}}</text>
+        </view>
+        <view class="bs-overview-metric">
+          <text class="bs-overview-label">分类合计</text>
+          <text class="bs-overview-value">¥{{totalCatBudgetDisplay}}</text>
+        </view>
+        <view class="bs-overview-metric">
+          <text class="bs-overview-label">未分配</text>
+          <text class="bs-overview-value {{unallocatedPositive ? 'bs-overview-value-pos' : 'bs-overview-value-neg'}}">
+            {{unallocatedPositive ? '' : '-'}}¥{{unallocatedDisplay}}
+          </text>
+        </view>
+      </view>
+    </view>
+
     <!-- ===== Section 1: 总预算设置 ===== -->
     <view class="bs-card">
       <text class="bs-card-title">总预算设置</text>
@@ -31,8 +57,7 @@
       <view class="bs-row">
         <text class="bs-row-label">预算周期</text>
         <view class="bs-row-right">
-          <text class="bs-row-value">每月</text>
-          <text class="bs-chevron">›</text>
+          <text class="bs-row-value">当前仅支持每月</text>
         </view>
       </view>
     </view>
@@ -84,12 +109,19 @@
       <!-- Card header -->
       <view class="bs-row bs-cat-header">
         <text class="bs-card-title">分类预算</text>
-        <text class="bs-add-link" bind:tap="onToggleAddForm">+ 添加分类预算</text>
+        <view class="bs-add-link" bind:tap="onToggleAddForm">+ 添加分类预算</view>
       </view>
 
       <!-- Inline add form -->
       <view wx:if="{{showAddForm}}" class="bs-add-form">
-        <view class="bs-add-form-row">
+        <view class="bs-add-form-head">
+          <view>
+            <text class="bs-add-form-title">新增分类预算</text>
+            <text class="bs-add-form-desc">还可添加 {{availableCategories.length}} 个分类，建议优先补齐高频支出项。</text>
+          </view>
+        </view>
+
+        <view class="bs-add-field">
           <text class="bs-add-form-label">选择分类</text>
           <picker
             mode="selector"
@@ -97,15 +129,19 @@
             value="{{addPickerIndex}}"
             bind:change="onAddPickerChange"
           >
-            <view class="bs-picker-display">
-              <text class="bs-picker-value">{{availableCategories[addPickerIndex]}}</text>
+            <view class="bs-picker-display bs-picker-display-block">
+              <view class="bs-picker-copy">
+                <text class="bs-picker-value">{{availableCategories[addPickerIndex]}}</text>
+                <text class="bs-picker-hint">点击切换分类</text>
+              </view>
               <text class="bs-chevron">›</text>
             </view>
           </picker>
         </view>
-        <view class="bs-add-form-row">
+
+        <view class="bs-add-field">
           <text class="bs-add-form-label">预算金额</text>
-          <view class="bs-add-input-wrap">
+          <view class="bs-add-input-wrap bs-add-input-wrap-block">
             <text class="bs-currency bs-currency-sm">¥</text>
             <input
               class="bs-add-input"
@@ -116,6 +152,7 @@
             />
           </view>
         </view>
+
         <view class="bs-add-form-actions">
           <view class="bs-cancel-btn" bind:tap="onCancelAdd">
             <text class="bs-cancel-btn-text">取消</text>
@@ -129,20 +166,31 @@
       <!-- Category budget list -->
       <view class="bs-cat-list">
         <view
-          class="bs-cat-item"
+          class="bs-cat-item bs-cat-item-{{item.statusTone}}"
           wx:for="{{catBudgets}}"
           wx:key="category"
         >
           <!-- Top row: icon+name | amount+pencil -->
           <view class="bs-cat-top">
             <view class="bs-cat-left">
+              <view class="bs-cat-accent" style="background: {{item.accentColor}};"></view>
               <view
                 class="bs-cat-icon-wrap"
                 style="background: {{item.iconBgRgba}};"
               >
                 <text class="bs-cat-icon-text" style="color: {{item.iconColor}};">{{item.iconText}}</text>
               </view>
-              <text class="bs-cat-name">{{item.category}}</text>
+              <view class="bs-cat-copy">
+                <view class="bs-cat-title-row">
+                  <text class="bs-cat-name">{{item.category}}</text>
+                  <text
+                    class="bs-cat-rank"
+                    wx:if="{{item.isPriority}}"
+                    style="background: {{item.iconBgRgba}}; color: {{item.iconColor}};"
+                  >TOP {{item.rank}}</text>
+                </view>
+                <text class="bs-cat-status bs-cat-status-{{item.statusTone}}">{{item.statusText}}</text>
+              </view>
             </view>
             <view class="bs-cat-right">
               <text wx:if="{{!item.editingBudget}}" class="bs-cat-budget-num">¥{{item.budgetYuan}}</text>
@@ -173,11 +221,7 @@
           <!-- Bottom row: spent | delete -->
           <view class="bs-cat-bottom">
             <text class="bs-spent-text">已用 ¥{{item.spentYuan}} ({{item.spentPct}}%)</text>
-            <text
-              class="bs-delete-btn"
-              data-index="{{index}}"
-              bind:tap="onDeleteCatBudget"
-            >删除</text>
+            <view class="bs-delete-btn" data-index="{{index}}" bind:tap="onDeleteCatBudget">删除</view>
           </view>
         </view>
       </view>

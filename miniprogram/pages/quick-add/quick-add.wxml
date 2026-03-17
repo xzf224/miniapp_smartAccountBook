@@ -6,7 +6,8 @@
     <view slot="center" class="nav-title">记一笔</view>
   </navigation-bar>
 
-  <view class="page-content">
+  <scroll-view scroll-y class="page-scroll">
+    <view class="page-content">
     <view class="type-switch">
       <view
         class="type-pill {{typeIndex === index ? 'active' : ''}}"
@@ -20,16 +21,27 @@
     </view>
 
     <view class="amount-panel">
-      <text class="amount-label">金额</text>
+      <view class="amount-header">
+        <text class="amount-label">金额</text>
+        <picker mode="selector" range="{{currencyLabels}}" value="{{currencyPickerIndex}}" bindchange="onCurrencyChange">
+          <view class="currency-trigger">
+            <text class="currency-trigger-caption">当前货币</text>
+            <view class="currency-trigger-main">
+              <text class="currency-trigger-symbol">{{currencySymbol}}</text>
+              <text class="currency-trigger-code">{{currencyCode}}</text>
+              <view class="currency-arrow"></view>
+            </view>
+          </view>
+        </picker>
+      </view>
       <view class="amount-display">
-        <view class="currency-chip">
-          <text class="currency-symbol">¥</text>
-          <view class="currency-arrow"></view>
-        </view>
+        <text class="amount-prefix">{{currencySymbol}}</text>
         <input
           class="amount-input"
           type="digit"
           value="{{amountDisplay}}"
+          placeholder="0.00"
+          placeholder-class="amount-input-ph"
           maxlength="12"
           cursor-spacing="24"
           bindinput="onAmountInput"
@@ -38,10 +50,22 @@
         />
       </view>
       <view class="amount-line"></view>
+      <text class="amount-hint">当前这笔将以 {{currencyCode}} 记账，不影响全局默认货币</text>
+      <view class="quick-amount-row">
+        <view
+          class="quick-amount-chip"
+          wx:for="{{quickAmounts}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="onQuickAmountTap"
+        >
+          +{{item}}
+        </view>
+      </view>
     </view>
 
     <view class="section-title">选择分类</view>
-    <scroll-view scroll-y class="category-grid" style="height: {{gridHeight}}rpx;">
+    <view class="category-grid" style="height: {{gridHeight}}rpx; overflow: hidden;">
       <view class="category-grid-inner">
         <view
           class="category-item {{item.name === selectedCategory ? 'active' : ''}}"
@@ -56,7 +80,11 @@
           <text class="category-name">{{item.displayName}}</text>
         </view>
       </view>
-    </scroll-view>
+    </view>
+    <view class="category-toggle" wx:if="{{hasMoreCategories}}" bindtap="onToggleCategoryGrid">
+      <text class="category-toggle-text">{{categoryGridExpanded ? '收起分类' : '展开更多分类'}}</text>
+      <view class="category-toggle-arrow {{categoryGridExpanded ? 'category-toggle-arrow-up' : ''}}"></view>
+    </view>
 
     <view class="meta-list">
       <picker mode="date" value="{{date}}" bindchange="onDateChange">
@@ -95,9 +123,11 @@
         />
       </view>
     </view>
-  </view>
+    <view class="page-content-bottom-space"></view>
+    </view>
+  </scroll-view>
 
   <view class="save-bar">
-    <view class="save-button" bindtap="onSave">保存</view>
+    <view class="save-button {{canSave ? '' : 'save-button-disabled'}}" bindtap="onSave">保存</view>
   </view>
 </view>

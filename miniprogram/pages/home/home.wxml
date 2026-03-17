@@ -4,7 +4,7 @@
     <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
       <view class="month-selector">
         <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
-        <text class="month-selector-arrow">⌄</text>
+        <view class="month-arrow"></view>
       </view>
     </picker>
     <view class="header-icons flex-row">
@@ -56,7 +56,8 @@
   </view>
 
   <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
-                expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" daysLeft="{{daysLeft}}" />
+                expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" daysLeft="{{daysLeft}}"
+                mixedCount="{{mixedCurrencyCount}}" />
 
   <view wx:if="{{!searchVisible}}" class="quick-actions">
     <view class="quick-action" bind:tap="onManual">
@@ -101,7 +102,21 @@
     <text class="empty-text">{{searchVisible ? '未找到匹配记录' : '暂无记录，点击下方按钮开始添加'}}</text>
   </view>
 
-  <view class="record-groups" wx:else>
+  <!-- 本月消费分析 -->
+  <view class="analysis-section" wx:if="{{!searchVisible && analysisItems.length > 0}}">
+    <text class="analysis-title">本月消费分析</text>
+    <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category">
+      <view class="analysis-meta">
+        <text class="analysis-name">{{item.category}}</text>
+        <view class="analysis-bar-wrap">
+          <view class="analysis-bar-fill" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+        </view>
+      </view>
+      <text class="analysis-amount">{{currencySymbol}}{{item.amountText}}</text>
+    </view>
+  </view>
+
+  <view class="record-groups" wx:if="{{!isEmpty}}">
     <view class="record-head">
       <text class="record-head-title">最近交易</text>
       <text class="record-head-link" bind:tap="onViewAllRecords">查看全部</text>
@@ -121,25 +136,11 @@
       <view class="day-records" style="overflow: hidden;">
         <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap">
           <swipe-cell bind:edit="onRecordEdit" bind:delete="onRecordDelete" data-id="{{record.id}}">
-            <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.date}}" />
+            <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.timeText}}" />
           </swipe-cell>
           <view class="divider" wx:if="{{index < group.records.length - 1}}"></view>
         </view>
       </view>
-    </view>
-  </view>
-
-  <!-- 本月消费分析 -->
-  <view class="analysis-section" wx:if="{{!searchVisible && analysisItems.length > 0}}">
-    <text class="analysis-title">本月消费分析</text>
-    <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category">
-      <view class="analysis-meta">
-        <text class="analysis-name">{{item.category}}</text>
-        <view class="analysis-bar-wrap">
-          <view class="analysis-bar-fill" style="width: {{item.percent}}%; background: {{item.color}};"></view>
-        </view>
-      </view>
-      <text class="analysis-amount">¥{{item.amountText}}</text>
     </view>
   </view>
 

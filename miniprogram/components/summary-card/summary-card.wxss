@@ -4,10 +4,16 @@
 
 .summary-card {
   margin: 6rpx 24rpx 8rpx;
-  background: linear-gradient(45deg, #FFB347 0%, #FF8A00 100%);
+  background: linear-gradient(135deg, #FFB347 0%, #FF8A00 100%);
   border-radius: 28rpx;
   padding: 28rpx 28rpx 24rpx;
   box-shadow: 0 12rpx 30rpx rgba(255, 149, 0, 0.26);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.summary-card-over {
+  background: linear-gradient(135deg, #FF6B6B 0%, #E53935 100%);
+  box-shadow: 0 12rpx 30rpx rgba(229, 57, 53, 0.32);
 }
 
 .card-top-row {
@@ -36,6 +42,51 @@
   display: block;
   letter-spacing: -1rpx;
   margin-bottom: 28rpx;
+}
+
+/* 预算进度 */
+.budget-row {
+  margin-bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.budget-bar-bg {
+  height: 8rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  background: #fff;
+  border-radius: 4rpx;
+  transition: width 0.3s;
+}
+
+.budget-bar-over {
+  background: #FFD700;
+}
+
+@keyframes budget-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.budget-bar-pulse {
+  animation: budget-pulse 1.2s ease-in-out infinite;
+}
+
+.budget-hint {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.budget-hint-over {
+  color: #FFD700;
+  font-weight: 600;
 }
 
 .stats-row {
@@ -76,4 +127,13 @@
   font-weight: 700;
   color: #FFFFFF;
   letter-spacing: -0.5rpx;
+}
+
+.mixed-hint {
+  margin-bottom: 14rpx;
+}
+
+.mixed-hint-text {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.7);
 }

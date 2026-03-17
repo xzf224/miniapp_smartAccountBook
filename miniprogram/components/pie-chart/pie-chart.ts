@@ -2,6 +2,8 @@ Component({
   properties: {
     data: { type: Array, value: [] as Array<{ name: string; value: number; color: string }> },
     total: { type: String, value: '' },
+    title: { type: String, value: '' },
+    activeName: { type: String, value: '' },
   },
 
   data: {
@@ -10,12 +12,13 @@ Component({
       color: string
       pctText: string
       amountText: string
+      active: boolean
     }>,
     gradientStyle: '',
   },
 
   observers: {
-    data() {
+    'data, activeName'() {
       this._compute()
     },
   },
@@ -58,11 +61,28 @@ Component({
           color: item.color,
           pctText: pct >= 1 ? `${Math.round(pct)}%` : '<1%',
           amountText,
+          active: item.name === this.data.activeName,
         }
       })
 
       const gradientStyle = `conic-gradient(${segments.join(', ')})`
       this.setData({ computedSlices, gradientStyle })
+    },
+
+    onSelectSlice(e: WechatMiniprogram.TouchEvent) {
+      const detail = e.currentTarget.dataset as {
+        name?: string
+        amount?: string
+        pct?: string
+        color?: string
+      }
+      if (!detail.name) return
+      this.triggerEvent('select', {
+        name: detail.name,
+        amountText: detail.amount || '',
+        percentageText: detail.pct || '',
+        color: detail.color || '',
+      })
     },
   },
 })

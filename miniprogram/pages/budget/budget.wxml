@@ -11,14 +11,25 @@
       <image class="nav-action-icon" src="/images/settings-2.png" mode="aspectFit" />
     </view>
   </view>
-  <view class="budget-card">
+  <view class="budget-card budget-card-{{budgetStatusTone}}">
     <view class="budget-card-top">
-      <text class="budget-card-title">{{month}}月总预算</text>
-      <text class="budget-card-days">剩余{{daysLeft}}天</text>
+      <text class="budget-card-title">本月支出预算</text>
+      <text class="budget-card-badge budget-card-badge-{{budgetStatusTone}}">{{budgetStatusText}}</text>
     </view>
+    <text class="budget-card-label">{{summaryLabel}}</text>
     <view class="budget-main-row">
-      <text class="budget-main-amount">¥{{expenseText}}</text>
-      <text class="budget-main-sub">/ ¥{{totalBudgetText}}</text>
+      <text class="budget-main-amount">¥{{summaryValueText}}</text>
+    </view>
+    <text class="budget-card-days">{{budgetHintText}}</text>
+    <view class="budget-metrics-row">
+      <view class="budget-metric-card budget-metric-card-{{budgetStatusTone}}">
+        <text class="budget-metric-label">已花</text>
+        <text class="budget-metric-value">¥{{expenseText}}</text>
+      </view>
+      <view class="budget-metric-card budget-metric-card-{{budgetStatusTone}}">
+        <text class="budget-metric-label">预算</text>
+        <text class="budget-metric-value">¥{{totalBudgetText}}</text>
+      </view>
     </view>
     <view class="progress-track">
       <view class="progress-fill {{isOverBudget ? 'progress-fill-over' : ''}}" style="width: {{progressWidth}}%;"></view>
@@ -31,20 +42,29 @@
 
   <view class="section-row">
     <text class="section-title">分类预算</text>
-    <text class="section-add" bind:tap="onOpenBudgetSetting">＋ 添加</text>
+    <!--
+    <view class="section-add" bind:tap="onOpenBudgetSetting">＋ 添加预算</view>
+    -->
   </view>
 
   <view class="budget-list" wx:if="{{items.length > 0}}">
-    <view class="budget-item" wx:for="{{items}}" wx:key="category">
+    <view class="budget-item {{item.isPriority ? 'budget-item-priority' : ''}} {{item.overBudget ? 'budget-item-over' : ''}}" wx:for="{{items}}" wx:key="category">
       <view class="budget-item-head">
-        <view class="budget-item-main">
+        <view class="budget-item-main budget-item-main-{{item.statusTone}}" style="background: {{item.cardBg}};">
+          <view class="budget-item-accent" style="background: {{item.accentColor}};"></view>
           <view class="budget-item-icon" style="background: {{item.iconBg}}; color: {{item.color}};">{{item.iconText}}</view>
           <view class="budget-item-copy">
             <view class="budget-item-row">
-              <text class="budget-item-name">{{item.category}}</text>
+              <view class="budget-item-title-group">
+                <text class="budget-item-name">{{item.category}}</text>
+                <text class="budget-item-rank" wx:if="{{item.isPriority}}" style="background: {{item.iconBg}}; color: {{item.color}};">TOP {{item.rank}}</text>
+              </view>
               <text class="budget-item-percent {{item.overBudget ? 'budget-item-percent-over' : ''}}" style="color: {{item.accentColor}};">{{item.percent}}%</text>
             </view>
-            <text class="budget-item-sub">¥{{item.spentText}} / ¥{{item.budgetText}}</text>
+            <view class="budget-item-meta-row">
+              <text class="budget-item-sub">¥{{item.spentText}} / ¥{{item.budgetText}}</text>
+              <text class="budget-item-status budget-item-status-{{item.statusTone}}">{{item.statusText}}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -54,5 +74,6 @@
     </view>
   </view>
   <view class="empty-tip" wx:if="{{items.length === 0}}">还没有分类预算，点击右上角添加</view>
+  <view class="page-bottom-space"></view>
 </scroll-view>
 <bottom-nav current="{{1}}" />

@@ -1,13 +1,28 @@
 <view class="pie-wrap">
   <view class="donut-col">
     <view class="donut" style="background: {{gradientStyle}};">
-      <view class="donut-hole"></view>
+      <view class="donut-hole">
+        <view class="donut-center">
+          <text class="donut-center-label">{{title}}</text>
+          <text class="donut-center-total">¥{{total}}</text>
+        </view>
+      </view>
     </view>
   </view>
   <view class="legend-col">
-    <view class="legend-item" wx:for="{{computedSlices}}" wx:key="name">
+    <view
+      class="legend-item {{item.active ? 'legend-item-active' : ''}}"
+      wx:for="{{computedSlices}}"
+      wx:key="name"
+      bind:tap="onSelectSlice"
+      data-name="{{item.name}}"
+      data-amount="¥{{item.amountText}}"
+      data-pct="{{item.pctText}}"
+      data-color="{{item.color}}"
+    >
       <view class="legend-dot" style="background: {{item.color}};"></view>
       <text class="legend-name">{{item.name}}</text>
+      <text class="legend-amount">¥{{item.amountText}}</text>
       <text class="legend-pct">{{item.pctText}}</text>
     </view>
   </view>

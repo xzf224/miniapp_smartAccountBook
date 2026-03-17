@@ -1,12 +1,21 @@
 .page-body {
-  min-height: 100vh;
+  height: 100vh;
   background: #ffffff;
   display: flex;
   flex-direction: column;
 }
 
+.page-scroll {
+  flex: 1;
+  height: 0;
+}
+
 .page-content {
   padding: 6rpx 0 0;
+}
+
+.page-content-bottom-space {
+  height: calc(152rpx + env(safe-area-inset-bottom));
 }
 
 .nav-side {
@@ -63,60 +72,87 @@
 }
 
 .amount-panel {
-  padding: 22rpx 32rpx 0;
+  padding: 20rpx 32rpx 0;
+}
+
+.amount-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .amount-label {
   display: block;
-  text-align: center;
-  font-size: 18rpx;
-  color: #b5bcc7;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #5a6472;
+  line-height: 1.2;
 }
 
 .amount-display {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 10rpx;
+  margin-top: 18rpx;
 }
 
-.currency-chip {
-  height: 64rpx;
-  padding: 0 10rpx;
-  margin-right: 12rpx;
-  border-radius: 17rpx;
-  background: #f3f4f7;
+.currency-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
+.currency-trigger-caption {
+  font-size: 18rpx;
+  color: #a2aab6;
+  line-height: 1;
+}
+
+.currency-trigger-main {
+  min-height: 56rpx;
+  padding: 0 16rpx;
+  border-radius: 18rpx;
+  background: #f5f6f8;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6rpx;
+  gap: 8rpx;
 }
 
-.currency-symbol {
-  font-size: 18rpx;
-  color: #666f7d;
+.currency-trigger-symbol {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #21252b;
+}
+
+.currency-trigger-code {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #5c6674;
+  line-height: 1;
 }
 
 .currency-arrow {
-  width: 10rpx;
-  height: 10rpx;
+  width: 12rpx;
+  height: 12rpx;
   border-right: 2rpx solid #666f7d;
   border-bottom: 2rpx solid #666f7d;
-  transform: rotate(45deg) translateY(-1rpx);
+  transform: rotate(45deg) translateY(-2rpx);
   box-sizing: border-box;
 }
 
-.amount-value {
-  font-size: 72rpx;
+.amount-prefix {
+  margin-right: 12rpx;
+  font-size: 48rpx;
   font-weight: 700;
   color: #21252b;
-  letter-spacing: -2rpx;
-  min-width: 160rpx;
-  text-align: left;
+  line-height: 1;
 }
 
 .amount-input {
-  min-width: 190rpx;
+  min-width: 240rpx;
   height: 88rpx;
   font-size: 72rpx;
   font-weight: 700;
@@ -125,14 +161,54 @@
   letter-spacing: -2rpx;
   padding: 0;
   box-sizing: border-box;
+  text-align: left;
+}
+
+.amount-input-ph {
+  color: #d0d5dd;
+  font-size: 72rpx;
+  font-weight: 700;
+  letter-spacing: -2rpx;
 }
 
 .amount-line {
-  width: 248rpx;
+  width: 320rpx;
   height: 4rpx;
-  margin: 10rpx auto 0;
+  margin: 12rpx auto 0;
   border-radius: 999rpx;
   background: var(--color-primary);
+}
+
+.amount-hint {
+  display: block;
+  margin-top: 18rpx;
+  text-align: center;
+  font-size: 20rpx;
+  color: #98a1ae;
+  line-height: 1.4;
+}
+
+.quick-amount-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.quick-amount-chip {
+  min-width: 92rpx;
+  height: 54rpx;
+  padding: 0 18rpx;
+  border-radius: 27rpx;
+  background: #f5f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #5c6674;
+  box-sizing: border-box;
 }
 
 .section-title {
@@ -158,6 +234,35 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 28rpx;
+}
+
+.category-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  margin: 4rpx 32rpx 0;
+  height: 56rpx;
+}
+
+.category-toggle-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.category-toggle-arrow {
+  width: 12rpx;
+  height: 12rpx;
+  border-right: 2rpx solid var(--color-primary);
+  border-bottom: 2rpx solid var(--color-primary);
+  transform: rotate(45deg) translateY(-2rpx);
+  box-sizing: border-box;
+}
+
+.category-toggle-arrow-up {
+  transform: rotate(-135deg) translate(-2rpx, 2rpx);
 }
 
 .category-badge {
@@ -336,4 +441,10 @@
   color: #fff;
   font-size: 32rpx;
   font-weight: 600;
+}
+
+.save-button-disabled {
+  background: #e7eaf0;
+  color: #9aa3af;
+  box-shadow: none;
 }

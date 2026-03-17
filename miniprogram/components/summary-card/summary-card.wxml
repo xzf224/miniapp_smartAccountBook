@@ -1,9 +1,23 @@
-<view class="summary-card">
+<view class="summary-card {{budgetOver ? 'summary-card-over' : ''}}">
   <view class="card-top-row">
     <text class="card-label">本月余额</text>
     <text class="card-days" wx:if="{{daysLeft}}">剩余{{daysLeft}}天</text>
   </view>
-  <text class="card-balance">¥ {{balance}}</text>
+  <text class="card-balance">{{currencySymbol}}{{balance}}</text>
+
+  <!-- 预算进度条 -->
+  <view class="budget-row" wx:if="{{expenseBudget > 0}}">
+    <view class="budget-bar-bg">
+      <view class="budget-bar-fill {{budgetOver ? 'budget-bar-over budget-bar-pulse' : ''}}" style="width: {{budgetPercent}}%;"></view>
+    </view>
+    <text class="budget-hint {{budgetOver ? 'budget-hint-over' : ''}}">
+      {{budgetOver ? '已超出 ' + currencySymbol + overAmountText : '预算已用 ' + budgetPercent + '%'}}
+    </text>
+  </view>
+
+  <view class="mixed-hint" wx:if="{{mixedCount > 0}}">
+    <text class="mixed-hint-text">另有 {{mixedCount}} 笔其他货币记录未计入</text>
+  </view>
 
   <view class="stats-row">
     <view class="stat-card">
@@ -11,14 +25,14 @@
         <image class="stat-icon" src="/images/new/trending-up.png" mode="aspectFit" />
         <text class="stat-label">收入</text>
       </view>
-      <text class="stat-amount">¥ {{income}}</text>
+      <text class="stat-amount">{{currencySymbol}}{{income}}</text>
     </view>
     <view class="stat-card">
       <view class="stat-head">
         <image class="stat-icon" src="/images/new/trending-down.png" mode="aspectFit" />
         <text class="stat-label">支出</text>
       </view>
-      <text class="stat-amount">¥ {{expense}}</text>
+      <text class="stat-amount">{{currencySymbol}}{{expense}}</text>
     </view>
   </view>
 </view>

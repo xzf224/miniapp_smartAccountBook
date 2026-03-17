@@ -1,5 +1,5 @@
 import { parseVoiceText, parsedToRecord } from '../../utils/parser'
-import { addRecordsBatch, getCategories } from '../../utils/storage'
+import { addRecordsBatch, getCategories, getCurrencyCode, getCurrencySymbol, CURRENCIES } from '../../utils/storage'
 import { RECORD_TYPES, RecordType, CATEGORY_ICONS, yuanToFen } from '../../models/record'
 
 const recorderManager = wx.getRecorderManager()
@@ -26,6 +26,10 @@ Component({
     examples: ['午饭花了 35 元', '打车去公司 18 元', '买咖啡 26 元'],
     allTypes: RECORD_TYPES,
     allCategories: {} as Record<string, string[]>,
+    currencyCode: 'CNY',
+    currencySymbol: '¥',
+    currencyPickerIndex: 0,
+    currencyLabels: CURRENCIES.map(c => `${c.symbol}  ${c.name}（${c.code}）`),
   },
 
   lifetimes: {
@@ -38,7 +42,14 @@ Component({
 
     attached() {
       const cats = getCategories()
-      this.setData({ allCategories: cats as any })
+      const code = getCurrencyCode()
+      const idx = CURRENCIES.findIndex(c => c.code === code)
+      this.setData({
+        allCategories: cats as any,
+        currencyCode: code,
+        currencySymbol: getCurrencySymbol(code),
+        currencyPickerIndex: idx >= 0 ? idx : 0,
+      })
       const self = this
 
       recorderManager.onStop((res: WechatMiniprogram.OnStopCallbackResult) => {
@@ -245,18 +256,29 @@ Component({
         return
       }
 
-      const records = validDrafts.map((d: DraftRecord) =>
-        parsedToRecord({
+      const records = validDrafts.map((d: DraftRecord) => ({
+        ...parsedToRecord({
           type: d.type,
           category: d.category,
           amount: yuanToFen(parseFloat(d.amountYuan)),
           note: d.note,
           date: d.date,
         }),
-      )
+        currency: this.data.currencyCode,
+      }))
       addRecordsBatch(records)
       wx.showToast({ title: `已保存 ${records.length} 条记录` })
       setTimeout(() => wx.navigateBack(), 600)
+    },
+
+    onCurrencyChange(e: WechatMiniprogram.PickerChange) {
+      const idx = Number(e.detail.value)
+      const currency = CURRENCIES[idx] || CURRENCIES[0]
+      this.setData({
+        currencyCode: currency.code,
+        currencySymbol: currency.symbol,
+        currencyPickerIndex: idx,
+      })
     },
   },
 })
