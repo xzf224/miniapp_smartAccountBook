@@ -49,7 +49,7 @@ Component({
     },
 
     onBudgetSetting() {
-      wx.switchTab({ url: '/pages/budget/budget' })
+      wx.reLaunch({ url: '/pages/budget/budget' })
     },
 
     onCategoryManage() {

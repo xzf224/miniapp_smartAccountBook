@@ -1,5 +1,5 @@
 <navigation-bar title="我的" back="{{false}}" />
-<scroll-view scroll-y class="page-body">
+<scroll-view scroll-y class="page-body tab-scroll">
   <view class="stats-row">
     <view class="stat-item">
       <text class="stat-value">{{statRecords}}</text>
@@ -95,5 +95,5 @@
     <text class="app-version">{{version}}</text>
   </view>
 
-  <view style="height: 40rpx;"></view>
 </scroll-view>
+<bottom-nav current="{{4}}" />

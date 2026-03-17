@@ -1,7 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/navigation-bar"
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
   },
   "renderer": "skyline",
   "componentFramework": "glass-easel"
