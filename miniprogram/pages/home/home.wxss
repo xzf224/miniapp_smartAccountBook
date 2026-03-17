@@ -1,6 +1,6 @@
 .page-body {
   height: 100vh;
-  background: var(--color-bg-page);
+  background: #f7f8fa;
 }
 
 .month-header {
@@ -12,11 +12,24 @@
   background: var(--color-bg-page);
 }
 
+.month-selector {
+  display: flex;
+  align-items: center;
+}
+
 .month-header-label {
   font-size: 36rpx;
   font-weight: 600;
   color: var(--color-text-primary);
   letter-spacing: 2rpx;
+}
+
+.month-selector-arrow {
+  margin-left: 16rpx;
+  font-size: 30rpx;
+  color: #353c46;
+  line-height: 1;
+  transform: translateY(-5rpx);
 }
 
 .header-icons {
@@ -117,29 +130,62 @@
 
 .quick-actions {
   display: flex;
-  justify-content: space-between;
-  padding: 24rpx 24rpx 8rpx;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 20rpx 0 0;
+  padding: 0 24rpx;
+  box-sizing: border-box;
 }
 
 .quick-action {
-  width: 23%;
-  background: #f6f7fb;
-  border-radius: 18rpx;
-  padding: 18rpx 0;
+  width: 25%;
+  height: 144rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.quick-action-badge {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-orange {
+  background: #fff3e8;
+}
+
+.badge-blue {
+  background: #edf3ff;
+}
+
+.badge-purple {
+  background: #f2eefe;
+}
+
+.badge-green {
+  background: #ebfaef;
+}
+
 .quick-action-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.quick-action-plus {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .quick-action-label {
-  margin-top: 12rpx;
+  margin-top: 14rpx;
   font-size: 20rpx;
-  color: #6b7280;
+  color: #8a9099;
+  line-height: 1.2;
+  text-align: center;
 }
 
 /* 金额/日期筛选行 */
@@ -221,14 +267,17 @@
 }
 
 .day-group {
-  margin-bottom: 0;
+  margin: 0 24rpx 16rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
 }
 
 .record-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28rpx 32rpx 0;
+  padding: 28rpx 24rpx 12rpx;
 }
 
 .record-head-title {
@@ -244,7 +293,7 @@
 }
 
 .day-header {
-  padding: 28rpx 32rpx 12rpx;
+  padding: 24rpx 24rpx 12rpx;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -267,7 +316,7 @@
 .divider {
   height: 1rpx;
   background: var(--color-border);
-  margin: 0 32rpx;
+  margin: 0 24rpx;
 }
 
 /* 待确认草稿提示卡 */
@@ -276,21 +325,77 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin: 16rpx 24rpx 4rpx;
+  margin: 16rpx 24rpx 0;
   padding: 22rpx 28rpx;
-  background: #e8f9f0;
+  background: var(--color-primary-light);
   border-radius: 16rpx;
-  border-left: 8rpx solid #07c160;
+  border-left: 8rpx solid var(--color-primary);
 }
 
 .draft-hint-text {
   font-size: 26rpx;
-  color: #1a7a45;
+  color: #8B4513;
   font-weight: 500;
 }
 
 .draft-hint-arrow {
   font-size: 24rpx;
-  color: #07c160;
+  color: var(--color-primary);
   font-weight: 600;
+}
+
+.record-groups {
+  padding-top: 8rpx;
+}
+
+/* 本月消费分析 */
+.analysis-section {
+  margin: 8rpx 24rpx 16rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  padding: 28rpx 28rpx 8rpx;
+}
+
+.analysis-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 20rpx;
+}
+
+.analysis-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.analysis-name {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+  width: 120rpx;
+  flex-shrink: 0;
+}
+
+.analysis-bar-wrap {
+  flex: 1;
+  height: 12rpx;
+  background: #f0f0f0;
+  border-radius: 6rpx;
+  margin: 0 20rpx;
+  overflow: hidden;
+}
+
+.analysis-bar-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  background: var(--color-primary);
+}
+
+.analysis-amount {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  width: 100rpx;
+  text-align: right;
+  flex-shrink: 0;
 }

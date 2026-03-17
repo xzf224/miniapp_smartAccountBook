@@ -4,6 +4,6 @@
     "summary-card": "/components/summary-card/summary-card",
     "record-item": "/components/record-item/record-item",
     "swipe-cell": "/components/swipe-cell/swipe-cell",
-    "fab-button": "/components/fab-button/fab-button"
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
   }
 }

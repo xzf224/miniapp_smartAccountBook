@@ -31,6 +31,7 @@ Component({
     dateStart: '',
     dateEnd: '',
     pendingDraftCount: 0,
+    analysisItems: [] as any[],
   },
 
   lifetimes: {
@@ -89,6 +90,24 @@ Component({
       const currentMonth = nowDate.getMonth() + 1
       const daysInMonth = new Date(currentYear, currentMonth, 0).getDate()
       const daysLeft = daysInMonth - nowDate.getDate()
+
+      // 按分类汇总支出，取前5，计算百分比
+      const categoryMap: Record<string, number> = {}
+      monthRecords.filter((r: any) => r.type === '支出').forEach((r: any) => {
+        categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount
+      })
+      const total = Object.values(categoryMap).reduce((a: number, b: number) => a + b, 0)
+      const colours = ['#FF7D00', '#4CAF50', '#2196F3', '#9C27B0', '#FF5722']
+      const analysisItems = Object.entries(categoryMap)
+        .sort((a, b) => (b[1] as number) - (a[1] as number))
+        .slice(0, 5)
+        .map(([category, amount], i) => ({
+          category,
+          amountText: fenToYuan(amount as number),
+          percent: total > 0 ? Math.round(((amount as number) / total) * 100) : 0,
+          color: colours[i % colours.length],
+        }))
+      this.setData({ analysisItems })
 
       this.setData({
         income: fenToYuan(incomeTotal),
