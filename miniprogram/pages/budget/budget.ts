@@ -1,18 +1,58 @@
-import { CATEGORY_COLORS, fenToYuan } from '../../models/record'
+import { CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
 import { getBudgetAmount, getCategories, getRecords } from '../../utils/storage'
 
 const now = new Date()
+
+function formatCurrency(fen: number): string {
+  const amount = fen / 100
+  const hasDecimal = Math.abs(amount % 1) > 0.0001
+  return amount.toLocaleString('zh-CN', {
+    minimumFractionDigits: hasDecimal ? 2 : 0,
+    maximumFractionDigits: 2,
+  })
+}
+
+function hexToRgba(color: string, alpha: number): string {
+  const normalized = color.replace('#', '')
+  const hex = normalized.length === 3
+    ? normalized.split('').map((item) => item + item).join('')
+    : normalized
+
+  if (hex.length !== 6) return `rgba(255, 138, 0, ${alpha})`
+
+  const red = parseInt(hex.slice(0, 2), 16)
+  const green = parseInt(hex.slice(2, 4), 16)
+  const blue = parseInt(hex.slice(4, 6), 16)
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`
+}
+
+interface BudgetItem {
+  category: string
+  spentText: string
+  budgetText: string
+  percent: number
+  progressWidth: number
+  color: string
+  accentColor: string
+  iconText: string
+  iconBg: string
+  overBudget: boolean
+}
 
 Component({
   data: {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
-    totalBudgetText: '0.00',
-    expenseText: '0.00',
-    remainText: '0.00',
+    totalBudgetText: '0',
+    expenseText: '0',
+    remainText: '0',
     progress: 0,
+    progressWidth: 0,
     daysLeft: 0,
-    items: [] as Array<{ category: string; spentText: string; budgetText: string; percent: number; color: string }>,
+    isOverBudget: false,
+    remainLabel: '剩余',
+    items: [] as BudgetItem[],
   },
 
   lifetimes: {
@@ -37,30 +77,46 @@ Component({
       let expense = 0
       records.forEach((item: any) => { expense += item.amount })
 
-      const items = categories.map((category: string) => {
+      const items = categories.map((category: string): BudgetItem | null => {
         const budget = getBudgetAmount(year, month, '支出', category)
         if (!budget) return null
         let spent = 0
         records.forEach((item: any) => {
           if (item.category === category) spent += item.amount
         })
+        const percent = budget > 0 ? Math.round((spent / budget) * 100) : 0
+        const color = CATEGORY_COLORS[category] || '#FF8A00'
+        const overBudget = percent > 100
         return {
           category,
-          spentText: fenToYuan(spent),
-          budgetText: fenToYuan(budget),
-          percent: budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : 0,
-          color: CATEGORY_COLORS[category] || '#FF8A00',
+          spentText: formatCurrency(spent),
+          budgetText: formatCurrency(budget),
+          percent,
+          progressWidth: Math.min(100, Math.max(0, percent)),
+          color,
+          accentColor: overBudget ? '#FA5151' : color,
+          iconText: CATEGORY_ICONS[category] || category.slice(0, 1),
+          iconBg: hexToRgba(color, 0.14),
+          overBudget,
         }
-      }).filter(Boolean) as any[]
+      }).filter((item): item is BudgetItem => item !== null)
+        .sort((a, b) => b.percent - a.percent)
 
       const lastDay = new Date(year, month, 0).getDate()
       const today = new Date().getDate()
+      const progress = totalBudget > 0 ? Math.round((expense / totalBudget) * 100) : 0
+      const remain = totalBudget - expense
+      const isOverBudget = remain < 0
+
       this.setData({
-        totalBudgetText: fenToYuan(totalBudget),
-        expenseText: fenToYuan(expense),
-        remainText: fenToYuan(Math.max(0, totalBudget - expense)),
-        progress: totalBudget > 0 ? Math.min(100, Math.round((expense / totalBudget) * 100)) : 0,
+        totalBudgetText: formatCurrency(totalBudget),
+        expenseText: formatCurrency(expense),
+        remainText: formatCurrency(Math.abs(remain)),
+        progress,
+        progressWidth: Math.min(100, Math.max(0, progress)),
         daysLeft: Math.max(0, lastDay - today),
+        isOverBudget,
+        remainLabel: isOverBudget ? '超出' : '剩余',
         items,
       })
     },
