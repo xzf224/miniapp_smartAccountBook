@@ -1,3 +1,4 @@
+import { fenToYuan } from '../../models/record'
 import { getRecords } from '../../utils/storage'
 import { groupRecordsByDate } from '../../utils/date'
 
@@ -45,6 +46,16 @@ Component({
       { key: 'amountDesc', label: '金额最大' },
       { key: 'amountAsc', label: '金额最小' },
     ],
+    summaryTitle: '全部交易记录',
+    summarySubtitle: '整理每一笔收支流向',
+    summaryCount: 0,
+    summaryDays: 0,
+    summaryExpenseText: '0.00',
+    summaryIncomeText: '0.00',
+    summaryNetText: '0.00',
+    summaryNetNegative: true,
+    summaryNetClass: 'text-neutral',
+    appliedTags: [] as string[],
   },
 
   lifetimes: {
@@ -60,6 +71,99 @@ Component({
   },
 
   methods: {
+    getOptionLabel(options: Array<{ key: string; label: string }>, key: string) {
+      return (options.find(item => item.key === key) || {}).label || ''
+    },
+
+    buildAppliedTags() {
+      const tags: string[] = []
+      const {
+        keyword,
+        activeFilter,
+        filters,
+        appliedType,
+        appliedTime,
+        appliedAmountMin,
+        appliedAmountMax,
+        appliedSort,
+        typeOptions,
+        timeOptions,
+        sortOptions,
+      } = this.data
+
+      if (keyword.trim()) {
+        tags.push(`搜索:${keyword.trim()}`)
+      }
+
+      if (activeFilter !== 'all') {
+        const quickLabel = this.getOptionLabel(filters, activeFilter)
+        if (quickLabel) tags.push(`快捷:${quickLabel}`)
+      }
+
+      if (appliedType !== 'all') {
+        const typeLabel = this.getOptionLabel(typeOptions, appliedType)
+        if (typeLabel) tags.push(`类型:${typeLabel}`)
+      }
+
+      if (appliedTime !== 'all') {
+        const timeLabel = this.getOptionLabel(timeOptions, appliedTime)
+        if (timeLabel) tags.push(`时间:${timeLabel}`)
+      }
+
+      if (appliedAmountMin || appliedAmountMax) {
+        const min = appliedAmountMin || '0'
+        const max = appliedAmountMax || '不限'
+        tags.push(`金额:${min}-${max}`)
+      }
+
+      if (appliedSort !== 'newest') {
+        const sortLabel = this.getOptionLabel(sortOptions, appliedSort)
+        if (sortLabel) tags.push(`排序:${sortLabel}`)
+      }
+
+      return tags
+    },
+
+    buildSummary(list: any[], groups: any[]) {
+      let income = 0
+      let expense = 0
+
+      list.forEach((item: any) => {
+        if (item.type === '收入') income += item.amount
+        if (item.type === '支出') expense += item.amount
+      })
+
+      const hasFilters = !!this.data.keyword.trim()
+        || this.data.activeFilter !== 'all'
+        || this.data.appliedType !== 'all'
+        || this.data.appliedTime !== 'all'
+        || !!this.data.appliedAmountMin
+        || !!this.data.appliedAmountMax
+        || this.data.appliedSort !== 'newest'
+
+      const summaryTitle = list.length === 0
+        ? '暂无匹配记录'
+        : (hasFilters ? '筛选后的交易记录' : '全部交易记录')
+
+      const summarySubtitle = list.length === 0
+        ? '试试调整搜索词或筛选条件'
+        : `共 ${list.length} 笔记录，覆盖 ${groups.length} 天`
+
+      const net = income - expense
+
+      return {
+        summaryTitle,
+        summarySubtitle,
+        summaryCount: list.length,
+        summaryDays: groups.length,
+        summaryIncomeText: fenToYuan(income),
+        summaryExpenseText: fenToYuan(expense),
+        summaryNetText: fenToYuan(Math.abs(net)),
+        summaryNetNegative: net < 0,
+        summaryNetClass: net === 0 ? 'text-neutral' : (net < 0 ? 'text-expense' : 'text-income'),
+      }
+    },
+
     loadData() {
       const all = getRecords()
       const now = new Date()
@@ -106,9 +210,15 @@ Component({
       else if (appliedSort === 'amountAsc') list.sort((a: any, b: any) => a.amount - b.amount)
       // default newest: already sorted by getRecords
 
+      const groups = groupRecordsByDate(list)
       const hasAdvanced = appliedType !== 'all' || appliedTime !== 'all' ||
         !!appliedAmountMin || !!appliedAmountMax || appliedSort !== 'newest'
-      this.setData({ groups: groupRecordsByDate(list), hasAdvancedFilter: hasAdvanced })
+      this.setData({
+        groups,
+        hasAdvancedFilter: hasAdvanced,
+        appliedTags: this.buildAppliedTags(),
+        ...this.buildSummary(list, groups),
+      })
     },
 
     onSearchInput(e: any) {

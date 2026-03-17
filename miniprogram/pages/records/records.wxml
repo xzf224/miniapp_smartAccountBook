@@ -1,33 +1,105 @@
-<navigation-bar title="交易记录" back="{{true}}">
-  <view slot="right" class="filter-btn {{hasAdvancedFilter ? 'filter-btn-active' : ''}}" bind:tap="onOpenFilter">
-    <text class="filter-btn-icon">⊟</text>
-    <text class="filter-btn-text">筛选</text>
-    <view class="filter-dot" wx:if="{{hasAdvancedFilter}}"></view>
+<navigation-bar title="" back="{{true}}" background="#f7efe2">
+  <view slot="center" class="nav-title-wrap">
+    <text class="nav-title">交易记录</text>
+    <text class="nav-subtitle">{{summaryCount}} 笔</text>
   </view>
 </navigation-bar>
 <scroll-view scroll-y class="page-body">
-  <view class="search-box">
-    <image class="search-icon" src="/images/search.png" mode="aspectFit" />
-    <input class="search-input" value="{{keyword}}" placeholder="搜索交易记录..." bind:input="onSearchInput" />
+  <view class="hero-card">
+    <view class="hero-copy">
+      <text class="hero-eyebrow">账单总览</text>
+      <text class="hero-title">{{summaryTitle}}</text>
+      <text class="hero-subtitle">{{summarySubtitle}}</text>
+    </view>
+
+    <view class="summary-grid">
+      <view class="summary-stat summary-stat-expense">
+        <text class="summary-label">支出</text>
+        <text class="summary-value">¥{{summaryExpenseText}}</text>
+      </view>
+      <view class="summary-stat summary-stat-income">
+        <text class="summary-label">收入</text>
+        <text class="summary-value">¥{{summaryIncomeText}}</text>
+      </view>
+      <view class="summary-stat summary-stat-net">
+        <text class="summary-label">结余</text>
+        <text class="summary-value {{summaryNetClass}}">
+          {{summaryNetNegative ? '-' : '+'}}¥{{summaryNetText}}
+        </text>
+      </view>
+    </view>
+
+    <view class="search-box">
+      <view class="search-main">
+        <image class="search-icon" src="/images/search.png" mode="aspectFit" />
+        <input
+          class="search-input"
+          value="{{keyword}}"
+          placeholder="搜索类别或备注"
+          placeholder-class="search-placeholder"
+          bind:input="onSearchInput"
+        />
+      </view>
+      <view class="filter-btn {{hasAdvancedFilter ? 'filter-btn-active' : ''}}" bind:tap="onOpenFilter">
+        <text class="filter-btn-icon">⊟</text>
+        <text class="filter-btn-text">高级</text>
+        <view class="filter-dot" wx:if="{{hasAdvancedFilter}}"></view>
+      </view>
+    </view>
+
+    <scroll-view scroll-x class="quick-filter-scroll" enable-flex="true" show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <view
+          class="filter-pill {{activeFilter === item.key ? 'active' : ''}}"
+          wx:for="{{filters}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bind:tap="onFilterTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="applied-tags" wx:if="{{appliedTags.length}}">
+      <view class="applied-tag" wx:for="{{appliedTags}}" wx:key="*this">{{item}}</view>
+    </view>
   </view>
 
-  <view class="filter-row">
-    <view class="filter-pill {{activeFilter === item.key ? 'active' : ''}}"
-          wx:for="{{filters}}" wx:key="key" data-key="{{item.key}}" bind:tap="onFilterTap">{{item.label}}</view>
+  <view class="result-bar" wx:if="{{groups.length > 0}}">
+    <text class="result-text">共 {{summaryCount}} 笔记录</text>
+    <text class="result-text">覆盖 {{summaryDays}} 天</text>
   </view>
 
-  <view class="empty-state" wx:if="{{groups.length === 0}}">暂无符合条件的记录</view>
-  <view wx:else>
+  <view class="empty-state" wx:if="{{groups.length === 0}}">
+    <image class="empty-icon" src="/images/list.png" mode="aspectFit" />
+    <text class="empty-title">没有找到匹配记录</text>
+    <text class="empty-desc">试试切换筛选条件，或者返回首页继续记一笔。</text>
+  </view>
+  <view class="group-wrapper" wx:else>
     <view class="group-block" wx:for="{{groups}}" wx:key="date">
       <view class="group-head">
-        <text class="group-date">{{item.dateDisplay}}</text>
+        <view class="group-head-main">
+          <text class="group-date">{{item.dateDisplay}}</text>
+          <text class="group-count">{{item.records.length}} 笔记录</text>
+        </view>
+        <view class="group-totals">
+          <view class="group-total-chip group-total-expense" wx:if="{{item.dayExpense > 0}}">支 ¥{{item.dayExpenseText}}</view>
+          <view class="group-total-chip group-total-income" wx:if="{{item.dayIncome > 0}}">收 ¥{{item.dayIncomeText}}</view>
+        </view>
+      </view>
+      <view class="group-balance">
+        <text class="group-balance-label">当日结余</text>
+        <text class="group-balance-value {{item.dayNetNegative ? 'text-expense' : 'text-income'}}">
+          {{item.dayNetNegative ? '-' : '+'}}¥{{item.dayNetText}}
+        </text>
       </view>
       <view class="group-list">
         <record-item wx:for="{{item.records}}" wx:key="id" record="{{item}}" />
       </view>
     </view>
   </view>
-  <view style="height: 40rpx;"></view>
+  <view class="page-safe-space"></view>
 </scroll-view>
 
 <!-- 高级筛选面板 -->
