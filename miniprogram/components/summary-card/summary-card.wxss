@@ -3,7 +3,7 @@
 }
 
 .summary-card {
-  margin: 16rpx 24rpx 8rpx;
+  margin: 6rpx 24rpx 8rpx;
   background: linear-gradient(45deg, #FFB347 0%, #FF8A00 100%);
   border-radius: 28rpx;
   padding: 28rpx 28rpx 24rpx;

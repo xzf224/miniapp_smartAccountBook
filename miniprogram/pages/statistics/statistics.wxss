@@ -1,10 +1,22 @@
 .page-body {
+  height: 100vh;
+  background: var(--color-bg-page);
+  box-sizing: border-box;
+}
+
+.month-header {
+  padding: 20rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   background: var(--color-bg-page);
 }
 
-.stat-month-header {
-  background: var(--color-bg-card);
-  padding: 20rpx 32rpx 12rpx;
+.month-header-spacer {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
 }
 
 .month-selector {
@@ -31,7 +43,7 @@
 .summary-row {
   display: flex;
   gap: 16rpx;
-  margin: 16rpx 24rpx;
+  margin: 6rpx 24rpx 16rpx;
 }
 
 .summary-card {

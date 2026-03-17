@@ -47,7 +47,7 @@
 }
 
 .budget-card {
-  margin: 24rpx 24rpx 16rpx;
+  margin: 14rpx 24rpx 16rpx;
   background: var(--color-bg-card);
   border-radius: var(--radius-card);
   padding: 32rpx;
