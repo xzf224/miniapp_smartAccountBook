@@ -80,7 +80,7 @@
 }
 
 .expense-label {
-  color: var(--color-primary);
+  color: var(--color-expense);
 }
 
 .summary-value {
