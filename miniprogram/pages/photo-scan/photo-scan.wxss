@@ -4,7 +4,7 @@ page {
 
 .page-container {
   min-height: 100vh;
-  background: #f7f8fa;
+  background: var(--color-bg-page);
 }
 
 .results-area {
@@ -18,53 +18,46 @@ page {
 
 .scan-frame {
   position: relative;
-  height: 360rpx;
-  border-radius: 28rpx;
-  background: #181818;
+  height: 400rpx;
+  border-radius: var(--radius-card);
+  background: #1a1a1a;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .scan-corner {
   position: absolute;
-  width: 44rpx;
-  height: 44rpx;
-  border-color: #ff9800;
+  width: 40rpx;
+  height: 40rpx;
+  border-color: var(--color-primary);
+  border-style: solid;
 }
 
 .corner-left-top {
-  top: 18rpx;
-  left: 18rpx;
-  border-left-width: 4rpx;
-  border-top-width: 4rpx;
-  border-left-style: solid;
-  border-top-style: solid;
+  top: 20rpx;
+  left: 20rpx;
+  border-width: 4rpx 0 0 4rpx;
 }
 
 .corner-right-top {
-  top: 18rpx;
-  right: 18rpx;
-  border-right-width: 4rpx;
-  border-top-width: 4rpx;
-  border-right-style: solid;
-  border-top-style: solid;
+  top: 20rpx;
+  right: 20rpx;
+  border-width: 4rpx 4rpx 0 0;
 }
 
 .corner-left-bottom {
-  bottom: 18rpx;
-  left: 18rpx;
-  border-left-width: 4rpx;
-  border-bottom-width: 4rpx;
-  border-left-style: solid;
-  border-bottom-style: solid;
+  bottom: 20rpx;
+  left: 20rpx;
+  border-width: 0 0 4rpx 4rpx;
 }
 
 .corner-right-bottom {
-  right: 18rpx;
-  bottom: 18rpx;
-  border-right-width: 4rpx;
-  border-bottom-width: 4rpx;
-  border-right-style: solid;
-  border-bottom-style: solid;
+  right: 20rpx;
+  bottom: 20rpx;
+  border-width: 0 4rpx 4rpx 0;
 }
 
 .scan-line {
@@ -73,7 +66,7 @@ page {
   left: 48rpx;
   right: 48rpx;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, #ff9800 20%, #ff9800 80%, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-primary) 20%, var(--color-primary) 80%, transparent);
 }
 
 .scan-camera {
@@ -101,22 +94,22 @@ page {
   height: 88rpx;
   line-height: 88rpx;
   text-align: center;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #ffb545, #ff8a00);
+  border-radius: var(--radius-btn);
+  background: var(--color-primary);
   color: #fff;
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 600;
 }
 
 .secondary-action {
-  margin-top: 18rpx;
-  height: 84rpx;
-  line-height: 84rpx;
+  margin-top: 16rpx;
+  height: 88rpx;
+  line-height: 88rpx;
   text-align: center;
-  border-radius: 22rpx;
-  background: #fff;
-  color: #5f6773;
-  font-size: 28rpx;
+  border-radius: var(--radius-btn);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-size: 30rpx;
 }
 
 .preview-card,
@@ -124,8 +117,8 @@ page {
 .notice-card {
   margin-bottom: 18rpx;
   padding: 24rpx;
-  border-radius: 24rpx;
-  background: #fff;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
 }
 
 .preview-card {
@@ -143,8 +136,8 @@ page {
   height: 88rpx;
   line-height: 88rpx;
   text-align: center;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #ffb545, #ff8a00);
+  border-radius: var(--radius-btn);
+  background: var(--color-primary);
   color: #fff;
   font-size: 30rpx;
 }
@@ -161,8 +154,8 @@ page {
   height: 36rpx;
   margin-right: 16rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(255, 138, 0, 0.2);
-  border-top-color: #ff8a00;
+  border: 4rpx solid var(--color-primary-light);
+  border-top-color: var(--color-primary);
   animation: spin 0.8s linear infinite;
 }
 
@@ -184,8 +177,8 @@ page {
   border-radius: 34rpx;
   text-align: center;
   font-size: 32rpx;
-  background: #fff7eb;
-  color: #ff8a00;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .draft-content {
@@ -209,8 +202,8 @@ page {
 }
 
 .type-tag {
-  background: #eaf8f0;
-  color: #20a464;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .cat-tag {
@@ -231,7 +224,7 @@ page {
 
 .draft-currency {
   font-size: 24rpx;
-  color: #232831;
+  color: var(--color-text-primary);
 }
 
 .draft-amount-input {
@@ -239,7 +232,7 @@ page {
   text-align: right;
   font-size: 34rpx;
   font-weight: 700;
-  color: #232831;
+  color: var(--color-text-primary);
 }
 
 .remove-icon {
@@ -257,8 +250,8 @@ page {
   height: 92rpx;
   line-height: 92rpx;
   text-align: center;
-  border-radius: 999rpx;
-  background: linear-gradient(135deg, #ffb545, #ff8a00);
+  border-radius: var(--radius-btn);
+  background: var(--color-primary);
   color: #fff;
   font-size: 30rpx;
   font-weight: 600;
@@ -269,13 +262,18 @@ page {
 }
 
 .recent-head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 12rpx;
   margin: 8rpx 0 16rpx;
 }
 
 .recent-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  color: #232831;
+  color: var(--color-text-primary);
 }
 
 .recent-card {
@@ -283,8 +281,8 @@ page {
   align-items: center;
   margin-bottom: 14rpx;
   padding: 22rpx 24rpx;
-  border-radius: 22rpx;
-  background: #fff;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
 }
 
 .recent-icon {
@@ -293,8 +291,8 @@ page {
   line-height: 60rpx;
   border-radius: 18rpx;
   text-align: center;
-  background: #f2f4f7;
-  color: #8d95a2;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
   font-size: 26rpx;
 }
 
@@ -306,7 +304,7 @@ page {
 .recent-name {
   display: block;
   font-size: 26rpx;
-  color: #232831;
+  color: var(--color-text-primary);
 }
 
 .recent-date {
@@ -322,14 +320,14 @@ page {
 }
 
 .notice-card {
-  background: #fff7eb;
+  background: var(--color-primary-light);
 }
 
 .notice-title {
   display: block;
   font-size: 26rpx;
   font-weight: 600;
-  color: #ff8a00;
+  color: var(--color-primary);
 }
 
 .notice-text {
