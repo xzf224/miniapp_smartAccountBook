@@ -1,6 +1,7 @@
 .page-body {
   background: var(--color-bg-page);
   min-height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
 }
 
 .form-card {
@@ -31,9 +32,13 @@
   margin-right: 8rpx;
 }
 
+/* 金额输入 */
 .amount-input {
-  font-size: 48rpx;
-  font-weight: 600;
+  font-size: 64rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+  flex: 1;
   letter-spacing: -1rpx;
 }
 
@@ -61,4 +66,9 @@
   width: 36rpx;
   height: 36rpx;
   flex-shrink: 0;
+}
+
+/* 分类选中高亮 */
+.category-item.active .category-badge {
+  box-shadow: 0 0 0 4rpx var(--color-primary);
 }
