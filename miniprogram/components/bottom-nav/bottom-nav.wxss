@@ -18,8 +18,8 @@
 
 .bottom-nav {
   display: flex;
-  align-items: flex-end;
-  height: calc(100rpx + env(safe-area-inset-bottom));
+  align-items: center;
+  height: calc(120rpx + env(safe-area-inset-bottom));
   padding: 0 8rpx env(safe-area-inset-bottom);
   background: #ffffff;
   border-top: 1rpx solid var(--color-border);
@@ -36,8 +36,7 @@
 }
 
 .bottom-nav-item-center {
-  justify-content: flex-start;
-  transform: translateY(-6rpx);
+  justify-content: center;
 }
 
 .bottom-nav-icon {
@@ -57,17 +56,17 @@
 }
 
 .center-button {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
   background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 16rpx 34rpx rgba(255, 125, 0, 0.32);
+  box-shadow: 0 12rpx 28rpx rgba(255, 125, 0, 0.32);
 }
 
 .center-icon {
-  width: 48rpx;
-  height: 48rpx;
+  width: 44rpx;
+  height: 44rpx;
 }

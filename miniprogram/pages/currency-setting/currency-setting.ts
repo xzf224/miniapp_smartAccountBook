@@ -1,14 +1,15 @@
 const CURRENCY_KEY = 'app_currency'
 
 const CURRENCIES = [
-  { code: 'CNY', symbol: '¥', name: '人民币' },
-  { code: 'USD', symbol: '$', name: '美元' },
-  { code: 'EUR', symbol: '€', name: '欧元' },
-  { code: 'JPY', symbol: '¥', name: '日元' },
-  { code: 'HKD', symbol: 'HK$', name: '港币' },
-  { code: 'GBP', symbol: '£', name: '英镑' },
-  { code: 'KRW', symbol: '₩', name: '韩元' },
-  { code: 'SGD', symbol: 'S$', name: '新加坡元' },
+  { code: 'CNY', symbol: '¥',   name: '人民币',    flag: '🇨🇳' },
+  { code: 'USD', symbol: '$',   name: '美元',      flag: '🇺🇸' },
+  { code: 'EUR', symbol: '€',   name: '欧元',      flag: '🇪🇺' },
+  { code: 'GBP', symbol: '£',   name: '英镑',      flag: '🇬🇧' },
+  { code: 'JPY', symbol: '¥',   name: '日元',      flag: '🇯🇵' },
+  { code: 'KRW', symbol: '₩',   name: '韩元',      flag: '🇰🇷' },
+  { code: 'HKD', symbol: 'HK$', name: '港币',      flag: '🇭🇰' },
+  { code: 'TWD', symbol: 'NT$', name: '新台币',    flag: '🇹🇼' },
+  { code: 'CAD', symbol: 'C$',  name: '加拿大元',  flag: '🇨🇦' },
 ]
 
 Component({

@@ -39,26 +39,22 @@
     </view>
 
     <view class="section-title">选择分类</view>
-    <view class="category-grid">
-      <view
-        class="category-item {{item.isMore ? 'category-item-more' : ''}} {{item.name === selectedCategory ? 'active' : ''}}"
-        wx:for="{{quickCategories}}"
-        wx:key="name"
-        data-name="{{item.name}}"
-        data-more="{{item.isMore}}"
-        bindtap="onQuickCategoryTap"
-      >
-        <view class="category-badge" style="{{item.isMore ? '' : 'background:' + item.bgColor + ';'}}">
-          <text wx:if="{{!item.isMore}}" class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
-          <view wx:else class="category-more-dots">
-            <view class="category-more-dot"></view>
-            <view class="category-more-dot"></view>
-            <view class="category-more-dot"></view>
+    <scroll-view scroll-y class="category-grid" style="height: {{gridHeight}}rpx;">
+      <view class="category-grid-inner">
+        <view
+          class="category-item {{item.name === selectedCategory ? 'active' : ''}}"
+          wx:for="{{quickCategories}}"
+          wx:key="name"
+          data-name="{{item.name}}"
+          bindtap="onQuickCategoryTap"
+        >
+          <view class="category-badge" style="background: {{item.bgColor}};">
+            <text class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
           </view>
+          <text class="category-name">{{item.displayName}}</text>
         </view>
-        <text class="category-name">{{item.displayName}}</text>
       </view>
-    </view>
+    </scroll-view>
 
     <view class="meta-list">
       <picker mode="date" value="{{date}}" bindchange="onDateChange">

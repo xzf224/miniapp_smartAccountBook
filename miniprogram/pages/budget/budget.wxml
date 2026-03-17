@@ -1,9 +1,16 @@
-<navigation-bar title="预算管理" back="{{false}}">
-  <view slot="right" class="nav-action" bind:tap="onOpenBudgetSetting">
-    <image class="nav-action-icon" src="/images/settings-2.png" mode="aspectFit" />
-  </view>
-</navigation-bar>
+<navigation-bar brand="{{true}}" back="{{false}}" />
 <scroll-view scroll-y class="page-body tab-scroll">
+  <view class="month-header">
+    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+      <view class="month-selector">
+        <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+        <text class="month-selector-arrow">⌄</text>
+      </view>
+    </picker>
+    <view class="nav-action" bind:tap="onOpenBudgetSetting">
+      <image class="nav-action-icon" src="/images/settings-2.png" mode="aspectFit" />
+    </view>
+  </view>
   <view class="budget-card">
     <view class="budget-card-top">
       <text class="budget-card-title">{{month}}月总预算</text>
@@ -24,7 +31,7 @@
 
   <view class="section-row">
     <text class="section-title">分类预算</text>
-    <text class="section-add" bind:tap="onOpenBudgetSetting">+ 添加</text>
+    <text class="section-add" bind:tap="onOpenBudgetSetting">＋ 添加</text>
   </view>
 
   <view class="budget-list" wx:if="{{items.length > 0}}">

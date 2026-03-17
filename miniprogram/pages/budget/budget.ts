@@ -2,12 +2,13 @@ import { CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
 import { getBudgetAmount, getCategories, getRecords } from '../../utils/storage'
 
 const now = new Date()
+const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
+const PICKER_MONTHS: string[] = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 
 function formatCurrency(fen: number): string {
   const amount = fen / 100
-  const hasDecimal = Math.abs(amount % 1) > 0.0001
   return amount.toLocaleString('zh-CN', {
-    minimumFractionDigits: hasDecimal ? 2 : 0,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
 }
@@ -44,6 +45,8 @@ Component({
   data: {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
+    pickerRange: [PICKER_YEARS, PICKER_MONTHS] as string[][],
+    pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
     totalBudgetText: '0',
     expenseText: '0',
     remainText: '0',
@@ -119,6 +122,14 @@ Component({
         remainLabel: isOverBudget ? '超出' : '剩余',
         items,
       })
+    },
+
+    onPickerChange(e: any) {
+      const val = e.detail.value as [number, number]
+      const year = 2020 + val[0]
+      const month = val[1] + 1
+      this.setData({ year, month, pickerValue: val })
+      this.loadData()
     },
 
     onOpenBudgetSetting() {

@@ -1,34 +1,45 @@
-<navigation-bar title="货币设置" back="{{true}}" />
-<scroll-view scroll-y class="page-body">
+<view class="page-root">
+  <navigation-bar title="货币设置" back="{{true}}" />
+  <scroll-view scroll-y class="page-body">
 
-  <view class="current-card">
-    <view class="current-left">
-      <text class="current-symbol">{{currentCurrency.symbol}}</text>
+    <!-- 当前货币卡片 -->
+    <view class="current-card">
+      <text class="current-flag">{{currentCurrency.flag}}</text>
       <view class="current-info">
-        <text class="current-name">{{currentCurrency.name}}</text>
-        <text class="current-code">{{currentCurrency.code}}</text>
+        <text class="current-code-name">{{currentCurrency.code}} - {{currentCurrency.name}}</text>
+        <text class="current-symbol-name">{{currentCurrency.symbol}} {{currentCurrency.name}}</text>
+      </view>
+      <view class="current-check">
+        <text class="current-check-mark">✓</text>
       </view>
     </view>
-    <text class="current-badge">当前货币</text>
-  </view>
 
-  <text class="section-title">选择默认货币</text>
+    <!-- 列表标题 -->
+    <text class="section-title">选择默认货币</text>
 
-  <view class="card currency-list">
-    <view class="currency-item flex-row"
-          wx:for="{{currencies}}" wx:key="code"
-          data-code="{{item.code}}"
-          bind:tap="onSelect">
-      <text class="currency-symbol-col">{{item.symbol}}</text>
-      <view class="currency-meta flex-1">
-        <text class="currency-name">{{item.name}}</text>
-        <text class="currency-code">{{item.code}}</text>
+    <!-- 货币列表 -->
+    <view class="currency-list">
+      <view
+        class="currency-row"
+        wx:for="{{currencies}}"
+        wx:key="code"
+        data-code="{{item.code}}"
+        bind:tap="onSelect"
+      >
+        <text class="row-flag">{{item.flag}}</text>
+        <view class="row-info">
+          <text class="row-code">{{item.code}}</text>
+          <text class="row-name">{{item.name}}</text>
+        </view>
+        <text class="row-symbol">{{item.symbol}}</text>
+        <view class="row-check {{item.code === selectedCode ? 'row-check-on' : 'row-check-off'}}">
+          <text class="row-check-mark {{item.code === selectedCode ? 'row-check-mark-on' : ''}}">{{item.code === selectedCode ? '✓' : ''}}</text>
+        </view>
       </view>
-      <view class="check-icon" wx:if="{{item.code === selectedCode}}">✓</view>
     </view>
-  </view>
 
-  <text class="note-tip">默认货币将应用于新建交易，已有交易不受影响</text>
+    <text class="footer-note">默认货币将应用于新建交易，已有交易不受影响</text>
 
-  <view style="height: 60rpx;"></view>
-</scroll-view>
+    <view style="height: 60rpx;"></view>
+  </scroll-view>
+</view>

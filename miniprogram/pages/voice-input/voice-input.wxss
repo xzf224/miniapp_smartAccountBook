@@ -44,9 +44,11 @@
 .wave-bars {
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   gap: 8rpx;
   margin-top: 60rpx;
   height: 56rpx;
+  width: 100%;
 }
 
 .wave-bar {
@@ -211,6 +213,40 @@
   font-size: 30rpx;
   font-weight: 600;
   box-shadow: 0 10rpx 24rpx rgba(255, 125, 0, 0.28);
+}
+
+.result-action-bar {
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: var(--color-bg-card);
+  border-top: 1rpx solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.result-retry-btn {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 22rpx;
+  border: 1rpx solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 28rpx;
+  background: var(--color-bg-card);
+}
+
+.result-save-btn {
+  flex: 2;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 22rpx;
+  background: linear-gradient(135deg, var(--color-primary-gradient-start), var(--color-primary-gradient-end));
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 20rpx rgba(255, 125, 0, 0.28);
 }
 
 .bottom-panel {

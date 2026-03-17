@@ -1,6 +1,9 @@
 {
-  "component": true,
+  "navigationStyle": "custom",
   "usingComponents": {
     "navigation-bar": "/components/navigation-bar/navigation-bar"
-  }
+  },
+  "backgroundColor": "#F5F6F8",
+  "renderer": "skyline",
+  "componentFramework": "glass-easel"
 }

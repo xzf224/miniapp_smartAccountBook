@@ -1,22 +1,49 @@
-<navigation-bar title="我的" back="{{false}}" />
+<navigation-bar brand="{{true}}" back="{{false}}" />
 <scroll-view scroll-y class="page-body tab-scroll">
   <view class="section-header overview-header">数据总览</view>
   <view class="stats-row">
     <view class="stat-item">
       <text class="stat-value">{{statRecords}}</text>
-      <text class="stat-label">本月记账笔数</text>
+      <text class="stat-label">本月记账笔</text>
+      <text class="stat-label">笔</text>
     </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statConsecutiveDays}}</text>
+      <text class="stat-label">连续记账</text>
+      <text class="stat-label">天</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statTotalDays}}</text>
+      <text class="stat-label">总记账</text>
+      <text class="stat-label">笔</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statTotalDays}}</text>
+      <text class="stat-label">累计记账</text>
+      <text class="stat-label">天</text>
+    </view>
+  </view>
+
+  <view class="stats-row">
     <view class="stat-item">
       <text class="stat-value">{{statCategories}}</text>
       <text class="stat-label">分类总数</text>
+      <text class="stat-label">个</text>
     </view>
     <view class="stat-item">
-      <text class="stat-value">{{statBudgets}}</text>
-      <text class="stat-label">已设预算</text>
+      <text class="stat-value">{{statCategories}}</text>
+      <text class="stat-label">规则总数</text>
+      <text class="stat-label">个</text>
     </view>
-    <view class="stat-item">
-      <text class="stat-value">{{statRules}}</text>
-      <text class="stat-label">已设规则</text>
+     <view class="stat-item">
+      <text class="stat-value"></text>
+      <text class="stat-label"></text>
+      <text class="stat-label"></text>
+    </view>
+     <view class="stat-item">
+      <text class="stat-value"></text>
+      <text class="stat-label"></text>
+      <text class="stat-label"></text>
     </view>
   </view>
 
@@ -39,6 +66,29 @@
       <text class="item-label flex-1">导出数据</text>
       <text class="item-arrow">›</text>
     </view>
+  </view>
+
+  <view class="section-header">个性化</view>
+  <view class="card settings-group">
+    <view class="settings-item flex-row" bind:tap="onCategoryManage">
+      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      <text class="item-label flex-1">分类管理</text>
+      <text class="item-arrow">›</text>
+    </view>
+    <view class="divider"></view>
+    <!--
+    <view class="settings-item flex-row" bind:tap="onBudgetSetting">
+      <image class="item-icon-img" src="/images/wallet.png" mode="aspectFit" />
+      <text class="item-label flex-1">预算管理</text>
+      <text class="item-arrow">›</text>
+    </view>
+    -->
+    <view class="divider"></view>
+    <view class="settings-item flex-row" bind:tap="onCurrency">
+      <image class="item-icon-img" src="/images/circle-dollar-sign.png" mode="aspectFit" />
+      <text class="item-label flex-1">货币设置</text>
+      <text class="item-arrow">›</text>
+    </view>
     <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onRecurring">
       <image class="item-icon-img" src="/images/schedule.png" mode="aspectFit" />
@@ -46,30 +96,9 @@
       <text class="item-arrow">›</text>
     </view>
     <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onCategoryManage">
-      <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
-      <text class="item-label flex-1">分类管理</text>
-      <text class="item-arrow">›</text>
-    </view>
-  </view>
-
-  <view class="section-header">个性化</view>
-  <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onBudgetSetting">
-      <image class="item-icon-img" src="/images/target.png" mode="aspectFit" />
-      <text class="item-label flex-1">预算管理</text>
-      <text class="item-arrow">›</text>
-    </view>
-    <view class="divider"></view>
     <view class="settings-item flex-row" bind:tap="onReminder">
       <image class="item-icon-img" src="/images/alarm-clock.png" mode="aspectFit" />
       <text class="item-label flex-1">提醒设置</text>
-      <text class="item-arrow">›</text>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onCurrency">
-      <image class="item-icon-img" src="/images/target.png" mode="aspectFit" />
-      <text class="item-label flex-1">货币设置</text>
       <text class="item-arrow">›</text>
     </view>
   </view>

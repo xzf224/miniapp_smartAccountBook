@@ -1,139 +1,172 @@
-.page-body {
-  padding: 0 0 40rpx;
+.page-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--color-bg-page);
 }
 
-.current-card {
-  margin: 24rpx 24rpx 8rpx;
-  background: linear-gradient(135deg, #FF8A00 0%, #FFB347 100%);
-  border-radius: 24rpx;
-  padding: 28rpx 28rpx;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4rpx 20rpx rgba(255, 138, 0, 0.3);
+.page-body {
+  flex: 1;
+  height: 0;
+  background: var(--color-bg-page);
 }
 
-.current-left {
+/* 当前货币卡片 */
+.current-card {
+  margin: 24rpx 24rpx 0;
+  background: rgba(255, 125, 0, 0.07);
+  border: 1rpx solid var(--color-primary);
+  border-radius: var(--radius-card);
+  padding: 28rpx 28rpx;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 20rpx;
 }
 
-.current-symbol {
+.current-flag {
   font-size: 52rpx;
-  font-weight: 700;
-  color: #FFFFFF;
-  min-width: 60rpx;
-  text-align: center;
+  flex-shrink: 0;
 }
 
 .current-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 6rpx;
 }
 
-.current-name {
+.current-code-name {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #FFFFFF;
-  margin-bottom: 4rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
-.current-code {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.8);
+.current-symbol-name {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
-.current-badge {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 20rpx;
-  padding: 6rpx 18rpx;
+.current-check {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 22rpx;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
+.current-check-mark {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* 列表标题 */
 .section-title {
   display: block;
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--color-text-secondary, #888);
+  color: var(--color-text-secondary);
   margin: 28rpx 24rpx 12rpx;
   letter-spacing: 1rpx;
 }
 
-.card {
+/* 货币列表 */
+.currency-list {
   margin: 0 24rpx;
   background: var(--color-bg-card);
   border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(26, 25, 24, 0.05);
 }
 
-.currency-list {
-  padding: 0;
-}
-
-.currency-item {
+.currency-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 28rpx 28rpx;
   border-bottom: 1rpx solid var(--color-border);
+  gap: 16rpx;
 }
 
-.currency-item:last-child {
+.currency-row:last-child {
   border-bottom: none;
 }
 
-.currency-symbol-col {
+.row-flag {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--color-text-primary, #1A1918);
-  min-width: 56rpx;
-  margin-right: 20rpx;
+  flex-shrink: 0;
+  min-width: 44rpx;
   text-align: center;
 }
 
-.currency-meta {
+.row-info {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
 }
 
-.currency-name {
+.row-code {
   font-size: 28rpx;
-  font-weight: 500;
-  color: var(--color-text-primary, #1A1918);
-  margin-bottom: 4rpx;
-}
-
-.currency-code {
-  font-size: 22rpx;
-  color: var(--color-text-secondary, #888);
-}
-
-.check-icon {
-  font-size: 32rpx;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
-.note-tip {
+.row-name {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.row-symbol {
+  font-size: 26rpx;
+  color: #b3bac5;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.row-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row-check-on {
+  background: var(--color-primary);
+}
+
+.row-check-off {
+  border: 2rpx solid #d0d5dd;
+}
+
+.row-check-mark {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: transparent;
+}
+
+.row-check-mark-on {
+  color: #fff;
+}
+
+/* 底部说明 */
+.footer-note {
   display: block;
   font-size: 22rpx;
-  color: var(--color-text-secondary, #AAA);
+  color: var(--color-text-secondary);
   text-align: center;
   margin: 28rpx 48rpx 0;
   line-height: 1.6;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-1 {
-  flex: 1;
 }

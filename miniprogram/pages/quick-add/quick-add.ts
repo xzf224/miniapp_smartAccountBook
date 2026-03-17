@@ -13,11 +13,6 @@ interface QuickCategoryItem {
   isMore?: boolean
 }
 
-const QUICK_CATEGORY_PRESET: Record<QuickType, string[]> = {
-  '支出': ['餐饮', '交通', '购物', '娱乐', '生活缴费', '医疗', '教育'],
-  '收入': ['工资', '奖金', '兼职', '报销', '退款', '投资', '红包'],
-}
-
 const DISPLAY_NAME_MAP: Record<string, string> = {
   '生活缴费': '水电',
 }
@@ -45,6 +40,7 @@ Component({
     types: ['支出', '收入'],
     categories: [] as string[],
     quickCategories: [] as QuickCategoryItem[],
+    gridHeight: 286,
     selectedCategory: '',
     amountDisplay: '0.00',
     date: getToday(),
@@ -87,31 +83,27 @@ Component({
       const cats = getCategories()
       const type = this.data.types[this.data.typeIndex] as QuickType
       const categories = cats[type] || []
-      const preferred = QUICK_CATEGORY_PRESET[type].filter(name => categories.includes(name))
-      const quickCategories: QuickCategoryItem[] = preferred.map((name: string): QuickCategoryItem => ({
+      const quickCategories: QuickCategoryItem[] = categories.map((name: string): QuickCategoryItem => ({
         name,
         displayName: DISPLAY_NAME_MAP[name] || name,
-        icon: CATEGORY_ICONS[name] || '他',
+        icon: CATEGORY_ICONS[name] || name.slice(0, 1),
         color: CATEGORY_COLORS[name] || '#FF8A00',
         bgColor: BG_COLOR_MAP[name] || '#F5F6F8',
       }))
-      quickCategories.push({
-        name: '__more__',
-        displayName: '更多',
-        icon: '',
-        color: '#9AA2AF',
-        bgColor: '#F5F6F8',
-        isMore: true,
-      })
 
       const selectedCategory = quickCategories.some(item => item.name === this.data.selectedCategory)
         ? this.data.selectedCategory
         : (quickCategories[0]?.name || '')
 
+      // 2 rows default, up to 4 rows max; each row ≈ 134rpx + 18rpx top padding
+      const rowCount = Math.min(4, Math.max(2, Math.ceil(quickCategories.length / 4)))
+      const gridHeight = rowCount * 134 + 18
+
       this.setData({
         categories,
         quickCategories,
         selectedCategory,
+        gridHeight,
       })
     },
 
@@ -122,11 +114,7 @@ Component({
     },
 
     onQuickCategoryTap(e: WechatMiniprogram.TouchEvent) {
-      const { name, more } = e.currentTarget.dataset as { name: string; more: boolean }
-      if (more) {
-        wx.navigateTo({ url: '/pages/category-manage/category-manage' })
-        return
-      }
+      const { name } = e.currentTarget.dataset as { name: string }
       this.setData({ selectedCategory: name })
     },
 

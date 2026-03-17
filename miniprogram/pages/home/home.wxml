@@ -1,4 +1,4 @@
-<navigation-bar title="首页" back="{{false}}" />
+<navigation-bar brand="{{true}}" back="{{false}}" />
 <scroll-view scroll-y class="page-body tab-scroll">
   <view class="month-header flex-row">
     <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">

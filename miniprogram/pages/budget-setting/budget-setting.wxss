@@ -1,7 +1,9 @@
+/* ===== Page root ===== */
 .page-root {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--color-bg-page);
 }
 
 .page-body {
@@ -10,84 +12,447 @@
   background: var(--color-bg-page);
 }
 
-.month-header {
-  padding: 16rpx 32rpx;
-  align-items: center;
-  justify-content: space-between;
+/* ===== Card ===== */
+.bs-card {
   background: var(--color-bg-card);
-  border-bottom: 1rpx solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: 20rpx 24rpx 0;
+  padding: 32rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: column;
 }
 
-.month-header-label {
-  font-size: 32rpx;
+.bs-card-title {
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--color-text-primary);
-  letter-spacing: 2rpx;
+  padding-bottom: 8rpx;
 }
 
-.month-picker-btn {
+/* ===== Shared row ===== */
+.bs-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  width: 64rpx;
-  height: 64rpx;
-}
-
-.month-picker-icon {
-  width: 40rpx;
-  height: 40rpx;
-}
-
-
-
-.switch-row {
-  align-items: center;
-  padding: 4rpx 0;
-}
-
-.switch-label {
-  font-size: 30rpx;
-  color: var(--color-text-primary);
-}
-
-.card-title {
-  font-size: 22rpx;
-  color: var(--color-text-secondary);
-  margin-bottom: 20rpx;
-  letter-spacing: 2rpx;
-}
-
-.budget-row {
-  align-items: center;
-  padding: 24rpx 0;
+  justify-content: space-between;
+  padding: 28rpx 0;
   border-bottom: 1rpx solid var(--color-border);
 }
 
-.budget-row:last-child {
+.bs-row:last-child {
   border-bottom: none;
 }
 
-.budget-label {
-  font-size: 30rpx;
-  color: var(--color-text-primary);
-}
-
-.budget-input-wrap {
-  align-items: center;
-  background: var(--color-bg-page);
-  border-bottom: 1rpx solid var(--color-border);
-  padding: 8rpx 0;
-}
-
-.currency-sign {
+.bs-row-label {
   font-size: 28rpx;
   color: var(--color-text-secondary);
-  margin-right: 4rpx;
+  flex: 1;
 }
 
-.budget-input {
-  width: 160rpx;
-  font-size: 30rpx;
+.bs-row-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.bs-row-value {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bs-chevron {
+  font-size: 32rpx;
+  color: #C8C8C8;
+  line-height: 1;
+}
+
+/* ===== Total budget amount row ===== */
+.bs-amount-left {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.bs-currency {
+  font-size: 36rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.bs-amount-num {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.bs-amount-input {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  width: 280rpx;
+  border-bottom: 2rpx solid var(--color-primary);
+  padding-bottom: 4rpx;
+  white-space: nowrap;
+}
+
+.bs-edit-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bs-pencil-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.45;
+}
+
+/* ===== Alert threshold ===== */
+.bs-threshold-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.bs-threshold-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.bs-threshold-edit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.bs-threshold-input {
+  width: 80rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  border-bottom: 2rpx solid var(--color-primary);
+  text-align: right;
+  padding-bottom: 2rpx;
+}
+
+.bs-threshold-pct {
+  font-size: 28rpx;
+  color: var(--color-primary);
+}
+
+.bs-alert-desc {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  padding: 0 0 20rpx;
+}
+
+/* ===== Category budget card header ===== */
+.bs-add-link {
+  font-size: 26rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* ===== Inline add form ===== */
+.bs-add-form {
+  background: var(--color-bg-page);
+  border-radius: var(--radius-card);
+  padding: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  margin-bottom: 8rpx;
+}
+
+.bs-add-form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 0;
+}
+
+.bs-add-form-label {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.bs-picker-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.bs-picker-value {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bs-add-input-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.bs-currency-sm {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+}
+
+.bs-add-input {
+  width: 180rpx;
+  font-size: 28rpx;
   color: var(--color-text-primary);
   text-align: right;
+  border-bottom: 1rpx solid var(--color-border);
+  padding-bottom: 4rpx;
+}
+
+.bs-add-form-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.bs-cancel-btn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 36rpx;
+  border: 1rpx solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bs-cancel-btn-text {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.bs-confirm-btn {
+  flex: 2;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bs-confirm-btn-text {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ===== Category budget list ===== */
+.bs-cat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding-bottom: 16rpx;
+}
+
+.bs-cat-item {
+  background: var(--color-bg-page);
+  border-radius: var(--radius-card);
+  padding: 24rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+/* Top row */
+.bs-cat-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bs-cat-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.bs-cat-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bs-cat-icon-text {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.bs-cat-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-cat-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.bs-cat-budget-num {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.bs-cat-budget-input {
+  width: 140rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+  border-bottom: 2rpx solid var(--color-primary);
+  padding-bottom: 2rpx;
+}
+
+/* Progress bar */
+.bs-progress-track {
+  height: 8rpx;
+  background: var(--color-border);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.bs-progress-fill {
+  height: 100%;
+  border-radius: 4rpx;
+  min-width: 0;
+}
+
+.bs-progress-over {
+  background: var(--color-expense) !important;
+}
+
+/* Bottom row */
+.bs-cat-bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bs-spent-text {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.bs-delete-btn {
+  font-size: 22rpx;
+  color: var(--color-expense);
+  padding: 4rpx 8rpx;
+}
+
+/* ===== Summary rows ===== */
+.bs-summary-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0 8rpx;
+  border-top: 1rpx solid var(--color-border);
+  margin-top: 4rpx;
+}
+
+.bs-summary-left {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.bs-summary-right {
+  font-size: 24rpx;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.bs-unallocated-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  padding-bottom: 8rpx;
+}
+
+.bs-unallocated-label {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.bs-unallocated-amount {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.bs-unallocated-pos {
+  color: var(--color-income);
+}
+
+.bs-unallocated-neg {
+  color: var(--color-expense);
+}
+
+/* ===== Save button ===== */
+.bs-save-btn {
+  margin: 32rpx 24rpx 0;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 20rpx rgba(255, 125, 0, 0.3);
+}
+
+.bs-save-btn-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 2rpx;
+}
+
+/* ===== Bottom gap ===== */
+.bs-bottom-gap {
+  height: 60rpx;
 }

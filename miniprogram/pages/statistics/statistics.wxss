@@ -1,59 +1,30 @@
-.stat-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+.page-body {
   background: var(--color-bg-page);
 }
 
-/* 顶部标题栏 */
-.page-header {
+.stat-month-header {
   background: var(--color-bg-card);
-  padding: 0 32rpx 20rpx;
-  flex-shrink: 0;
+  padding: 20rpx 32rpx 12rpx;
 }
 
-.header-row {
-  height: 92rpx;
+.month-selector {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.page-title {
+.month-header-label {
   font-size: 36rpx;
   font-weight: 600;
   color: var(--color-text-primary);
+  letter-spacing: 2rpx;
 }
 
-.month-chip {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  padding: 12rpx 18rpx;
-  border-radius: 32rpx;
-  background: var(--color-bg-page);
-}
-
-.month-chip-text {
-  font-size: 24rpx;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+.month-selector-arrow {
+  margin-left: 16rpx;
+  font-size: 30rpx;
+  color: #353c46;
   line-height: 1;
-}
-
-.month-chip-arrow {
-  font-size: 24rpx;
-  color: var(--color-text-secondary);
-  line-height: 1;
-  transform: translateY(-2rpx);
-}
-
-/* 滚动区 */
-.page-scroll {
-  flex: 1;
-  height: 0;
-  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
-  box-sizing: border-box;
+  transform: translateY(-5rpx);
 }
 
 /* 收支摘要 */
@@ -126,16 +97,15 @@
   background: var(--color-bg-card);
   border-radius: var(--radius-card);
   margin: 0 24rpx 16rpx;
-  padding: 28rpx;
+  padding: 20rpx 24rpx;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .section-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20rpx;
+  margin-bottom: 12rpx;
 }
 
 .section-title {

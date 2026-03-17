@@ -2,10 +2,8 @@ import {
   exportBackupJSON,
   exportRecordsCSV,
   clearAllRecords,
-  getBudgets,
   getCategories,
   getRecords,
-  getRecurringRules,
   restoreBackupJSON,
 } from '../../utils/storage'
 
@@ -14,8 +12,8 @@ Component({
     version: (getApp() as any).globalData.version as string,
     statRecords: 0,
     statCategories: 0,
-    statBudgets: 0,
-    statRules: 0,
+    statConsecutiveDays: 0,
+    statTotalDays: 0,
   },
 
   lifetimes: {
@@ -33,18 +31,34 @@ Component({
   methods: {
     loadStats() {
       const records = getRecords()
-      const budgets = getBudgets()
-      const rules = getRecurringRules()
       const categories = getCategories()
       const now = new Date()
       const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
       const monthCount = records.filter((item: any) => item.date.startsWith(monthStr)).length
       const categoryCount = categories['支出'].length + categories['收入'].length
+
+      // 已记账天数：有记录的不同日期总数
+      const daySet = new Set<string>(records.map((r: any) => r.date as string))
+      const statTotalDays = daySet.size
+
+      // 连续记账天数：从今天起倒数连续有记录的天数
+      let statConsecutiveDays = 0
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(now)
+        d.setDate(d.getDate() - i)
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        if (daySet.has(dateStr)) {
+          statConsecutiveDays++
+        } else {
+          break
+        }
+      }
+
       this.setData({
         statRecords: monthCount,
         statCategories: categoryCount,
-        statBudgets: budgets.length,
-        statRules: rules.length,
+        statConsecutiveDays,
+        statTotalDays,
       })
     },
 

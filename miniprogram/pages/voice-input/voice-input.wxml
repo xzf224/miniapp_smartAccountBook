@@ -55,13 +55,10 @@
         </view>
       </view>
 
-      <view class="save-all-btn" bind:tap="onSaveAll">
-        <text>保存全部（{{drafts.length}} 条）</text>
-      </view>
     </block>
   </scroll-view>
 
-  <view class="bottom-panel">
+  <view class="bottom-panel" wx:if="{{!showResult}}">
     <text class="status-label">{{isTranslating ? '识别中…' : isRecording ? '松开结束录音' : '点击或按住开始说话'}}</text>
 
     <view class="mic-btn {{isRecording ? 'mic-recording' : ''}} {{isTranslating ? 'mic-translating' : ''}}"
@@ -73,6 +70,11 @@
     </view>
 
     <text class="disclaimer">本服务为 AI 生成内容，结果仅供参考</text>
+  </view>
+
+  <view class="result-action-bar" wx:if="{{showResult}}">
+    <view class="result-retry-btn" bind:tap="onRetry">重新识别</view>
+    <view class="result-save-btn" bind:tap="onSaveAll">保存全部（{{drafts.length}} 条）</view>
   </view>
 </view>
 </view>

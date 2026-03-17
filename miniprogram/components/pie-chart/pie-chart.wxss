@@ -4,18 +4,18 @@
 
 .pie-wrap {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 28rpx;
-  padding: 4rpx 0 8rpx;
 }
 
 .donut-col {
   flex-shrink: 0;
+  padding-top: 4rpx;
 }
 
 .donut {
-  width: 160rpx;
-  height: 160rpx;
+  width: 200rpx;
+  height: 200rpx;
   border-radius: 50%;
   position: relative;
   display: flex;
@@ -25,8 +25,8 @@
 
 .donut-hole {
   position: absolute;
-  width: 88rpx;
-  height: 88rpx;
+  width: 110rpx;
+  height: 110rpx;
   border-radius: 50%;
   background: var(--color-bg-card);
 }

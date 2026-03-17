@@ -1,5 +1,7 @@
 {
+  "navigationStyle": "custom",
   "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar",
     "pie-chart": "/components/pie-chart/pie-chart",
     "bar-chart": "/components/bar-chart/bar-chart",
     "bottom-nav": "/components/bottom-nav/bottom-nav"

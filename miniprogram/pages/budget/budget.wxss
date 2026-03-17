@@ -4,6 +4,35 @@
   box-sizing: border-box;
 }
 
+.month-header {
+  padding: 20rpx 32rpx 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-page);
+}
+
+.month-selector {
+  display: flex;
+  align-items: center;
+}
+
+.month-header-label {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 2rpx;
+}
+
+.month-selector-arrow {
+  margin-left: 16rpx;
+  font-size: 30rpx;
+  color: #353c46;
+  line-height: 1;
+  transform: translateY(-5rpx);
+}
+
 .nav-action {
   width: 64rpx;
   height: 64rpx;
@@ -111,11 +140,12 @@
 }
 
 .section-row {
-  margin: 24rpx 24rpx 16rpx;
+  margin: 24rpx 32rpx 16rpx;
+  justify-content: space-between;
 }
 
 .section-add {
-  font-size: 24rpx;
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--color-primary);
 }

@@ -14,6 +14,10 @@ Component({
       type: String,
       value: ''
     },
+    brand: {
+      type: Boolean,
+      value: false
+    },
     background: {
       type: String,
       value: ''

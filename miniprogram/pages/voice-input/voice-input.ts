@@ -221,6 +221,10 @@ Component({
       this.setData({ drafts })
     },
 
+    onRetry() {
+      this.setData({ showResult: false, drafts: [], recognizedText: '' })
+    },
+
     onRemoveDraft(e: WechatMiniprogram.TouchEvent) {
       const idx = (e.currentTarget.dataset as any).index as number
       const drafts = this.data.drafts.filter((_: DraftRecord, i: number) => i !== idx)

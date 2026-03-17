@@ -13,30 +13,28 @@
   background: var(--color-bg-page);
 }
 
-.type-tabs {
-  margin: 18rpx 24rpx 0;
-  padding: 4rpx;
-  border-radius: 24rpx;
-  background: var(--color-border);
+.type-switch {
   display: flex;
+  background: #f0f0f0;
+  border-radius: 40rpx;
+  margin: 24rpx 32rpx;
+  padding: 6rpx;
 }
 
-.type-tab {
+.type-pill {
   flex: 1;
-  height: 64rpx;
-  line-height: 64rpx;
+  height: 68rpx;
+  line-height: 68rpx;
   text-align: center;
-  font-size: 24rpx;
+  border-radius: 36rpx;
+  font-size: 28rpx;
   color: var(--color-text-secondary);
-  border-radius: 20rpx;
-  font-weight: 500;
 }
 
-.type-tab.active {
-  background: var(--color-bg-card);
-  color: var(--color-primary);
+.type-pill.active {
+  background: var(--color-primary);
+  color: #fff;
   font-weight: 600;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 .category-scroll {
@@ -139,17 +137,6 @@
   padding: 16rpx 20rpx calc(24rpx + env(safe-area-inset-bottom));
 }
 
-.type-tabs-form {
-  margin: 0;
-  border-radius: 999rpx;
-  background: var(--color-border);
-}
-
-.type-tab-form.active {
-  background: var(--color-primary);
-  color: #ffffff;
-  box-shadow: 0 8rpx 16rpx rgba(255, 125, 0, 0.18);
-}
 
 .form-section {
   margin-top: 24rpx;

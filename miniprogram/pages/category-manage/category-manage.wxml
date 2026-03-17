@@ -2,9 +2,9 @@
   <block wx:if="{{!showAddForm}}">
     <navigation-bar title="分类管理" back="{{true}}" background="#F6F7F9" />
     <view class="page-body">
-      <view class="type-tabs">
+      <view class="type-switch">
         <view
-          class="type-tab {{typeIndex === index ? 'active' : ''}}"
+          class="type-pill {{typeIndex === index ? 'active' : ''}}"
           wx:for="{{types}}"
           wx:key="*this"
           data-index="{{index}}"
@@ -51,9 +51,9 @@
 
     <scroll-view scroll-y class="page-scroll">
       <view class="form-content">
-        <view class="type-tabs type-tabs-form">
+        <view class="type-switch">
           <view
-            class="type-tab type-tab-form {{typeIndex === index ? 'active' : ''}}"
+            class="type-pill {{typeIndex === index ? 'active' : ''}}"
             wx:for="{{types}}"
             wx:key="*this"
             data-index="{{index}}"

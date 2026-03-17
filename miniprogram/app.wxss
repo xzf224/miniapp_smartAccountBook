@@ -88,13 +88,13 @@ page {
 /* ====== Tab 页面统一骨架 ====== */
 .tab-scroll {
   height: 100vh;
-  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(180rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
 .tab-page {
   min-height: 100vh;
-  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(168rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
