@@ -5,6 +5,10 @@ Component({
     balance: { type: String, value: '0.00' },
     expenseBudget: { type: Number, value: 0 },
     expenseRaw: { type: Number, value: 0 },
+    daysLeft: {
+      type: Number,
+      value: 0,
+    },
   },
 
   data: {

@@ -4,104 +4,76 @@
 
 .summary-card {
   margin: 16rpx 24rpx 8rpx;
-  background: linear-gradient(135deg, #FF8A00 0%, #FFB347 100%);
-  border-radius: 32rpx;
-  padding: 36rpx 32rpx 32rpx;
-  box-shadow: 0 8rpx 32rpx rgba(255, 138, 0, 0.35);
+  background: linear-gradient(45deg, #FFB347 0%, #FF8A00 100%);
+  border-radius: 28rpx;
+  padding: 28rpx 28rpx 24rpx;
+  box-shadow: 0 12rpx 30rpx rgba(255, 149, 0, 0.26);
+}
+
+.card-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
 }
 
 .card-label {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.92);
   display: block;
-  margin-bottom: 12rpx;
-  letter-spacing: 1rpx;
+}
+
+.card-days {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .card-balance {
-  font-size: 64rpx;
+  font-size: 60rpx;
   font-weight: 700;
   color: #FFFFFF;
   display: block;
-  letter-spacing: -2rpx;
-  margin-bottom: 32rpx;
+  letter-spacing: -1rpx;
+  margin-bottom: 28rpx;
 }
 
 .stats-row {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  gap: 16rpx;
 }
 
-.stat-item {
+.stat-card {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.stat-divider {
-  width: 1rpx;
-  height: 60rpx;
-  background: rgba(255, 255, 255, 0.35);
-  margin-top: 8rpx;
+  padding: 18rpx 20rpx 18rpx 26rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8rpx);
 }
 
 .stat-icon {
-  width: 44rpx;
-  height: 44rpx;
-  border-radius: 22rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20rpx;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 8rpx;
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 8rpx;
+  flex-shrink: 0;
 }
 
-.income-icon  { background: rgba(255, 255, 255, 0.25); }
-.expense-icon { background: rgba(255, 255, 255, 0.25); }
+.stat-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
 
 .stat-label {
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 6rpx;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .stat-amount {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: #FFFFFF;
-  letter-spacing: -1rpx;
-}
-
-.budget-bar-wrap {
-  margin-top: 10rpx;
-  width: 100%;
-  align-items: center;
-}
-
-.budget-bar-track {
-  width: 100%;
-  height: 4rpx;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.budget-bar-fill {
-  height: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 4rpx;
-}
-
-.budget-bar-fill.over {
-  background: #FFE0E0;
-}
-
-.budget-label {
-  font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.75);
-  margin-top: 6rpx;
+  letter-spacing: -0.5rpx;
 }

@@ -1,13 +1,13 @@
-<navigation-bar title="记账本" back="{{false}}" />
-<scroll-view scroll-y class="page-body">
+<navigation-bar title="首页" back="{{false}}" />
+<scroll-view scroll-y class="page-body tab-scroll">
   <view class="month-header flex-row">
-    <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+    <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
+      <view class="month-selector">
+        <text class="month-header-label">{{year}}年{{month < 10 ? '0' + month : month}}月</text>
+        <text class="month-selector-arrow">⌄</text>
+      </view>
+    </picker>
     <view class="header-icons flex-row">
-      <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
-        <view class="icon-btn">
-          <image class="header-icon" src="/images/calendar.png" mode="aspectFit" />
-        </view>
-      </picker>
       <view class="icon-btn" bind:tap="onSearchToggle">
         <image class="header-icon" src="{{searchVisible ? '/images/search-active.png' : '/images/search.png'}}" mode="aspectFit" />
       </view>
@@ -56,23 +56,31 @@
   </view>
 
   <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
-                expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" />
+                expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" daysLeft="{{daysLeft}}" />
 
   <view wx:if="{{!searchVisible}}" class="quick-actions">
     <view class="quick-action" bind:tap="onManual">
-      <image class="quick-action-icon" src="/images/record-a.png" mode="aspectFit" />
+      <view class="quick-action-badge badge-orange">
+        <image class="quick-action-icon" src="/images/new/notebook-pen.png" mode="aspectFit" />
+      </view>
       <text class="quick-action-label">记一笔</text>
     </view>
     <view class="quick-action" bind:tap="onVoice">
-      <image class="quick-action-icon" src="/images/mic.svg" mode="aspectFit" />
+      <view class="quick-action-badge badge-blue">
+        <image class="quick-action-icon" src="/images/new/mic.png" mode="aspectFit" />
+      </view>
       <text class="quick-action-label">语音记账</text>
     </view>
-    <view class="quick-action" bind:tap="onViewAllRecords">
-      <image class="quick-action-icon" src="/images/list.png" mode="aspectFit" />
-      <text class="quick-action-label">交易记录</text>
+    <view class="quick-action" bind:tap="onOpenStatistics">
+      <view class="quick-action-badge badge-purple">
+        <image class="quick-action-icon" src="/images/new/scan-line.png" mode="aspectFit" />
+      </view>
+      <text class="quick-action-label">拍照扫描</text>
     </view>
     <view class="quick-action" bind:tap="onOpenBudget">
-      <image class="quick-action-icon" src="/images/wallet.png" mode="aspectFit" />
+      <view class="quick-action-badge badge-green">
+        <image class="quick-action-icon" src="/images/new/wallet-cards.png" mode="aspectFit" />
+      </view>
       <text class="quick-action-label">预算</text>
     </view>
   </view>
@@ -90,7 +98,7 @@
 
   <view class="empty-state" wx:if="{{isEmpty}}">
     <image class="empty-icon" src="../../images/list.png"></image>
-    <text class="empty-text">{{searchVisible ? '未找到匹配记录' : '暂无记录，点击右下角按钮开始记账'}}</text>
+    <text class="empty-text">{{searchVisible ? '未找到匹配记录' : '暂无记录，点击下方按钮开始添加'}}</text>
   </view>
 
   <view class="record-groups" wx:else>
@@ -116,7 +124,5 @@
     </view>
   </view>
 
-  <view style="height: 200rpx;"></view>
 </scroll-view>
-
-<fab-button bind:manual="onManual" bind:voice="onVoice" bind:photo="onPhoto" />
+<bottom-nav current="{{0}}" />

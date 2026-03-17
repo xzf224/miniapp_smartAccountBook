@@ -11,6 +11,7 @@ Component({
   data: {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
+    daysLeft: 0,
     income: '0.00',
     expense: '0.00',
     balance: '0.00',
@@ -83,6 +84,12 @@ Component({
 
       const pendingDraftCount = getPendingDrafts().length
 
+      const nowDate = new Date()
+      const currentYear = nowDate.getFullYear()
+      const currentMonth = nowDate.getMonth() + 1
+      const daysInMonth = new Date(currentYear, currentMonth, 0).getDate()
+      const daysLeft = daysInMonth - nowDate.getDate()
+
       this.setData({
         income: fenToYuan(incomeTotal),
         expense: fenToYuan(expenseTotal),
@@ -93,6 +100,7 @@ Component({
         isEmpty: monthRecords.length === 0,
         searchResultCount: monthRecords.length,
         pendingDraftCount,
+        daysLeft,
       })
     },
 
@@ -184,7 +192,7 @@ Component({
     },
 
     onManual() {
-      wx.switchTab({ url: '/pages/quick-add/quick-add' })
+      wx.reLaunch({ url: '/pages/quick-add/quick-add' })
     },
 
     onVoice() {
@@ -199,8 +207,12 @@ Component({
       wx.navigateTo({ url: '/pages/records/records' })
     },
 
+    onOpenStatistics() {
+      wx.reLaunch({ url: '/pages/statistics/statistics' })
+    },
+
     onOpenBudget() {
-      wx.switchTab({ url: '/pages/budget/budget' })
+      wx.reLaunch({ url: '/pages/budget/budget' })
     },
   },
 })
