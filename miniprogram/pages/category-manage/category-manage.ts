@@ -1,8 +1,9 @@
-import { getCategories, addCategory, deleteCategory, getCategoryMeta, setCategoryMeta } from '../../utils/storage'
-import { CATEGORY_COLORS, CATEGORY_ICONS, ICategories, DEFAULT_CATEGORIES } from '../../models/record'
+import { addCategory, getCategories, deleteCategory, getCategoryMeta, setCategoryMeta, upsertBudget } from '../../utils/storage'
+import { CATEGORY_COLORS, CATEGORY_ICONS, DEFAULT_CATEGORIES, ICategories, IBudget, yuanToFen } from '../../models/record'
 
 interface CategoryDisplayItem {
   name: string
+  displayName: string
   icon: string
   isDefault: boolean
   color: string
@@ -14,33 +15,60 @@ const PASTEL_BACKGROUNDS = [
   '#EDF5FF', '#FFF0F4', '#FFF8E5', '#EEFBEF',
 ]
 
-const ICON_OPTIONS = ['🍔', '🚗', '👗', '🛍️', '🏠', '🎮', '📚', '💊',
-  '✈️', '🐶', '💰', '🎁', '🏋️', '☕', '🎵', '🌿',
-  '🔧', '💡', '🌈', '⭐', '❤️', '🎯', '🍕', '🚀']
+const DISPLAY_NAME_MAP: Record<string, string> = {
+  '生活缴费': '水电',
+  '其他人情': '人情',
+  '发红包': '红包',
+}
 
-const COLOR_OPTIONS = [
-  '#FF8A00', '#FF6B9D', '#E74C3C', '#F39C12',
-  '#27AE60', '#2ECC71', '#1ABC9C', '#3498DB',
-  '#4A9EFF', '#9B59B6', '#E84393', '#95A5A6',
+const FORM_ICON_OPTIONS = [
+  '⌂', '车', '礼', '音', '相',
+  '剪', '宠', '医', '花', '伞',
+  '镜', '耳', '旅', '心', '冠',
+  '钥', '锚', '羽', '星', '游',
 ]
+
+const FORM_COLOR_OPTIONS = [
+  '#FF4D4F', '#FF8A00', '#34C759', '#3B82F6',
+  '#8B5CF6', '#EC4899', '#F59E0B', '#6B7280',
+]
+
+function createSoftBackground(color: string): string {
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return '#FFF5E8'
+
+  const red = parseInt(hex.slice(0, 2), 16)
+  const green = parseInt(hex.slice(2, 4), 16)
+  const blue = parseInt(hex.slice(4, 6), 16)
+  const mix = (channel: number) => Math.round(channel * 0.12 + 255 * 0.88)
+
+  return `rgb(${mix(red)}, ${mix(green)}, ${mix(blue)})`
+}
 
 Component({
   data: {
     typeIndex: 0,
     types: ['支出', '收入'],
     categories: [] as CategoryDisplayItem[],
+    showAddForm: false,
+    selectedIcon: FORM_ICON_OPTIONS[0],
+    selectedColor: FORM_COLOR_OPTIONS[1],
     newName: '',
-    showAddBox: false,
-    selectedIcon: '⭐',
-    selectedColor: '#FF8A00',
-    iconOptions: ICON_OPTIONS,
-    colorOptions: COLOR_OPTIONS,
+    budgetYuan: '',
+    iconOptions: FORM_ICON_OPTIONS,
+    colorOptions: FORM_COLOR_OPTIONS,
   },
 
   lifetimes: {
     attached() {
       this.loadCategories()
     }
+  },
+
+  pageLifetimes: {
+    show() {
+      this.loadCategories()
+    },
   },
 
   methods: {
@@ -54,6 +82,7 @@ Component({
         const customMeta = meta[name]
         return {
           name,
+          displayName: DISPLAY_NAME_MAP[name] || name,
           icon: customMeta?.icon || CATEGORY_ICONS[name] || '他',
           isDefault: defaults.includes(name),
           color: customMeta?.color || CATEGORY_COLORS[name] || '#FF8A00',
@@ -65,50 +94,105 @@ Component({
 
     onTypeChange(e: WechatMiniprogram.CustomEvent) {
       const typeIndex = Number(e.currentTarget.dataset.index)
-      this.setData({ typeIndex, newName: '' }, () => this.loadCategories())
-    },
-
-    onNameInput(e: WechatMiniprogram.CustomEvent) {
-      this.setData({ newName: e.detail.value })
-    },
-
-    onSelectIcon(e: WechatMiniprogram.CustomEvent) {
-      this.setData({ selectedIcon: e.currentTarget.dataset.icon })
-    },
-
-    onSelectColor(e: WechatMiniprogram.CustomEvent) {
-      this.setData({ selectedColor: e.currentTarget.dataset.color })
+      this.setData({ typeIndex }, () => this.loadCategories())
     },
 
     onAddCategory() {
-      const { newName, typeIndex, selectedIcon, selectedColor } = this.data
+      this.setData({
+        showAddForm: true,
+        selectedIcon: FORM_ICON_OPTIONS[0],
+        selectedColor: FORM_COLOR_OPTIONS[1],
+        newName: '',
+        budgetYuan: '',
+      })
+    },
+
+    onCloseAddForm() {
+      this.setData({ showAddForm: false })
+    },
+
+    onSelectIcon(e: WechatMiniprogram.TouchEvent) {
+      const selectedIcon = (e.currentTarget.dataset || {}).icon as string
+      this.setData({ selectedIcon })
+    },
+
+    onSelectColor(e: WechatMiniprogram.TouchEvent) {
+      const selectedColor = (e.currentTarget.dataset || {}).color as string
+      this.setData({ selectedColor })
+    },
+
+    onNameInput(e: WechatMiniprogram.Input) {
+      this.setData({ newName: e.detail.value })
+    },
+
+    onBudgetInput(e: WechatMiniprogram.Input) {
+      const raw = e.detail.value.replace(/[^\d.]/g, '')
+      const normalized = raw
+        .replace(/^\./, '')
+        .replace(/(\..*)\./g, '$1')
+        .replace(/^(\d+)\.(\d{0,2}).*$/, '$1.$2')
+      this.setData({ budgetYuan: normalized })
+    },
+
+    onSaveCategory() {
+      const { newName, typeIndex, selectedIcon, selectedColor, budgetYuan } = this.data
       const trimmed = newName.trim()
       if (!trimmed) {
-        wx.showToast({ title: '请输入分类名', icon: 'none' })
+        wx.showToast({ title: '请输入分类名称', icon: 'none' })
         return
       }
+
       const type: keyof ICategories = typeIndex === 0 ? '支出' : '收入'
-      const allCats = getCategories()
-      const list: string[] = allCats[type]
-      if (list.includes(trimmed)) {
+      const categories = getCategories()
+      if ((categories[type] || []).includes(trimmed)) {
         wx.showToast({ title: '分类已存在', icon: 'none' })
         return
       }
-      addCategory(type, trimmed)
+
+      if (budgetYuan !== '') {
+        const value = parseFloat(budgetYuan)
+        if (Number.isNaN(value) || value < 0) {
+          wx.showToast({ title: '预算金额无效', icon: 'none' })
+          return
+        }
+      }
+
+      const added = addCategory(type, trimmed)
+      if (!added) {
+        wx.showToast({ title: '分类已存在', icon: 'none' })
+        return
+      }
+
       setCategoryMeta(trimmed, {
         icon: selectedIcon,
         color: selectedColor,
-        bgColor: '#F8F4FF',
+        bgColor: createSoftBackground(selectedColor),
       })
-      this.setData({ newName: '', showAddBox: false, selectedIcon: '⭐', selectedColor: '#FF8A00' })
+
+      if (budgetYuan !== '') {
+        const value = parseFloat(budgetYuan)
+        const budget: IBudget = {
+          year: 0,
+          month: 0,
+          type,
+          category: trimmed,
+          amount: yuanToFen(value),
+        }
+        upsertBudget(budget)
+      }
+
+      this.setData({
+        showAddForm: false,
+        selectedIcon: FORM_ICON_OPTIONS[0],
+        selectedColor: FORM_COLOR_OPTIONS[1],
+        newName: '',
+        budgetYuan: '',
+      })
       this.loadCategories()
+      wx.showToast({ title: '分类已添加', icon: 'success' })
     },
 
-    onToggleAddBox() {
-      this.setData({ showAddBox: !this.data.showAddBox })
-    },
-
-    onDeleteCategory(e: WechatMiniprogram.CustomEvent) {
+    onCategoryLongPress(e: WechatMiniprogram.CustomEvent) {
       const name = e.currentTarget.dataset.name as string
       const { typeIndex } = this.data
       const cats = this.data.categories
@@ -117,20 +201,26 @@ Component({
         wx.showToast({ title: '系统分类不可删除', icon: 'none' })
         return
       }
-      wx.showModal({
-        title: '确认删除',
-        content: `删除分类"${name}"？该分类下的记录不受影响。`,
-        confirmText: '删除',
-        confirmColor: '#ff4d4f',
+      wx.showActionSheet({
+        itemList: ['删除分类'],
+        itemColor: '#ff4d4f',
         success: (res) => {
-          if (res.confirm) {
-            const cats2 = getCategories()
-            const type2: keyof typeof cats2 = typeIndex === 0 ? '支出' : '收入'
-            deleteCategory(type2, name)
-            this.loadCategories()
-          }
+          if (res.tapIndex !== 0) return
+          wx.showModal({
+            title: '确认删除',
+            content: `删除分类“${name}”？该分类下的记录不受影响。`,
+            confirmText: '删除',
+            confirmColor: '#ff4d4f',
+            success: (modalRes) => {
+              if (!modalRes.confirm) return
+              const cats2 = getCategories()
+              const type2: keyof typeof cats2 = typeIndex === 0 ? '支出' : '收入'
+              deleteCategory(type2, name)
+              this.loadCategories()
+            }
+          })
         }
       })
-    }
+    },
   }
 })
