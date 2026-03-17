@@ -1,36 +1,105 @@
-<navigation-bar title="记一笔" back="{{false}}" />
 <view class="page-body">
-  <view class="type-switch">
-    <view class="type-pill {{typeIndex === index ? 'active' : ''}}"
-          wx:for="{{types}}" wx:key="*this" data-index="{{index}}" bind:tap="onTypeChange">{{item}}</view>
-  </view>
+  <navigation-bar title="" back="{{false}}" background="#ffffff">
+    <view slot="left" class="nav-side nav-close" bindtap="onClose">×</view>
+    <view slot="center" class="nav-title">记一笔</view>
+  </navigation-bar>
 
-  <view class="amount-panel">
-    <text class="amount-label">金额</text>
-    <view class="amount-row">
-      <text class="currency">¥</text>
-      <input class="amount-input" type="digit" value="{{amountText}}" placeholder="0.00" bind:input="onAmountInput" />
+  <view class="page-content">
+    <view class="type-switch">
+      <view
+        class="type-pill {{typeIndex === index ? 'active' : ''}}"
+        wx:for="{{types}}"
+        wx:key="*this"
+        data-index="{{index}}"
+        bindtap="onTypeChange"
+      >
+        {{item}}
+      </view>
     </view>
-    <view class="amount-line"></view>
-  </view>
 
-  <view class="section-block">
-    <text class="section-title">选择分类</text>
-    <category-grid categories="{{categories}}" selected="{{selectedCategory}}" bind:select="onCategorySelect" />
-  </view>
+    <view class="amount-panel">
+      <text class="amount-label">金额</text>
+      <view class="amount-display">
+        <view class="currency-chip">
+          <text class="currency-symbol">¥</text>
+          <view class="currency-arrow"></view>
+        </view>
+        <input
+          class="amount-input"
+          type="digit"
+          value="{{amountDisplay}}"
+          maxlength="12"
+          cursor-spacing="24"
+          bindinput="onAmountInput"
+          bindfocus="onAmountFocus"
+          bindblur="onAmountBlur"
+        />
+      </view>
+      <view class="amount-line"></view>
+    </view>
 
-  <view class="detail-list">
-    <view class="detail-row">
-      <text class="detail-label">日期</text>
-      <picker mode="date" value="{{date}}" bind:change="onDateChange">
-        <text class="detail-value">{{date}}</text>
+    <view class="section-title">选择分类</view>
+    <view class="category-grid">
+      <view
+        class="category-item {{item.isMore ? 'category-item-more' : ''}} {{item.name === selectedCategory ? 'active' : ''}}"
+        wx:for="{{quickCategories}}"
+        wx:key="name"
+        data-name="{{item.name}}"
+        data-more="{{item.isMore}}"
+        bindtap="onQuickCategoryTap"
+      >
+        <view class="category-badge" style="{{item.isMore ? '' : 'background:' + item.bgColor + ';'}}">
+          <text wx:if="{{!item.isMore}}" class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
+          <view wx:else class="category-more-dots">
+            <view class="category-more-dot"></view>
+            <view class="category-more-dot"></view>
+            <view class="category-more-dot"></view>
+          </view>
+        </view>
+        <text class="category-name">{{item.displayName}}</text>
+      </view>
+    </view>
+
+    <view class="meta-list">
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="meta-row">
+          <view class="meta-leading">
+            <view class="meta-icon meta-icon-date">
+              <view class="meta-date-body"></view>
+              <view class="meta-date-tab meta-date-tab-left"></view>
+              <view class="meta-date-tab meta-date-tab-right"></view>
+              <view class="meta-date-line"></view>
+            </view>
+            <text class="meta-label">日期</text>
+          </view>
+          <view class="meta-value-wrap">
+            <text class="meta-value">{{date}}</text>
+            <view class="meta-arrow"></view>
+          </view>
+        </view>
       </picker>
-    </view>
-    <view class="detail-row">
-      <text class="detail-label">备注</text>
-      <input class="detail-input" value="{{note}}" placeholder="添加备注" bind:input="onNoteInput" />
+
+      <view class="meta-row">
+        <view class="meta-leading">
+          <view class="meta-icon meta-icon-note">
+            <view class="meta-note-body"></view>
+            <view class="meta-note-line meta-note-line-top"></view>
+            <view class="meta-note-line meta-note-line-bottom"></view>
+          </view>
+          <text class="meta-label">备注</text>
+        </view>
+        <input
+          class="meta-input"
+          value="{{note}}"
+          placeholder="添加备注"
+          placeholder-class="meta-input-placeholder"
+          bindinput="onNoteInput"
+        />
+      </view>
     </view>
   </view>
 
-  <view class="save-btn" bind:tap="onSave">完成</view>
+  <view class="save-bar">
+    <view class="save-button" bindtap="onSave">保存</view>
+  </view>
 </view>
