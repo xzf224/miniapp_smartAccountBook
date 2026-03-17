@@ -1,6 +1,6 @@
 .page-body {
   height: 100vh;
-  background: #f5f6f8;
+  background: var(--color-bg-page);
 }
 
 .empty-state {
@@ -18,12 +18,12 @@
 
 .empty-text {
   font-size: 28rpx;
-  color: #aaa;
+  color: var(--color-text-secondary);
 }
 
 .draft-card {
-  background: #fff;
-  border-radius: 16rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
   margin: 24rpx 24rpx 0;
   padding: 28rpx 32rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
@@ -40,12 +40,12 @@
 .draft-name {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
 }
 
 .draft-date {
   font-size: 26rpx;
-  color: #888;
+  color: var(--color-text-secondary);
 }
 
 .draft-meta {
@@ -63,18 +63,18 @@
 }
 
 .type-expense {
-  background: #fff0f0;
-  color: #ff4757;
+  background: rgba(250, 81, 81, 0.1);
+  color: var(--color-expense);
 }
 
 .type-income {
-  background: #f0fff4;
-  color: #07c160;
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--color-income);
 }
 
 .draft-category {
   font-size: 24rpx;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .draft-row {
@@ -86,7 +86,7 @@
 
 .field-label {
   font-size: 26rpx;
-  color: #888;
+  color: var(--color-text-secondary);
   width: 72rpx;
   flex-shrink: 0;
 }
@@ -96,7 +96,7 @@
   flex-direction: row;
   align-items: center;
   flex: 1;
-  background: #f5f6f8;
+  background: var(--color-bg-page);
   border-radius: 12rpx;
   padding: 0 20rpx;
   height: 72rpx;
@@ -104,14 +104,14 @@
 
 .amount-prefix {
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-text-primary);
   margin-right: 8rpx;
 }
 
 .amount-input {
   flex: 1;
   font-size: 30rpx;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
   font-weight: 600;
   height: 72rpx;
 }
@@ -119,15 +119,15 @@
 .note-input {
   flex: 1;
   font-size: 26rpx;
-  color: #333;
-  background: #f5f6f8;
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
   border-radius: 12rpx;
   padding: 16rpx 20rpx;
   height: 72rpx;
 }
 
 .ph {
-  color: #ccc;
+  color: var(--color-text-secondary);
 }
 
 .draft-actions {
@@ -142,10 +142,11 @@
   height: 72rpx;
   line-height: 72rpx;
   text-align: center;
-  border-radius: 36rpx;
+  border-radius: var(--radius-btn);
   font-size: 28rpx;
-  color: #888;
-  background: #f5f6f8;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border: 1rpx solid var(--color-border);
 }
 
 .btn-confirm {
@@ -153,10 +154,10 @@
   height: 72rpx;
   line-height: 72rpx;
   text-align: center;
-  border-radius: 36rpx;
+  border-radius: var(--radius-btn);
   font-size: 28rpx;
   color: #fff;
-  background: #07c160;
+  background: var(--color-primary);
 }
 
 .confirm-all-btn {
@@ -164,9 +165,9 @@
   height: 88rpx;
   line-height: 88rpx;
   text-align: center;
-  border-radius: 44rpx;
+  border-radius: var(--radius-btn);
   font-size: 30rpx;
   color: #fff;
-  background: #07c160;
+  background: var(--color-primary);
   font-weight: 600;
 }
