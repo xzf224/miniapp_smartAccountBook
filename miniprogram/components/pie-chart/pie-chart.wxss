@@ -2,14 +2,28 @@
   display: block;
 }
 
+/* Pie chart wrapper — chart content is rendered on <canvas> via JS */
+/* Slice colors are passed as data; only surrounding text/label styles use CSS variables */
 .pie-chart-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 16rpx 0;
+  /* legend / total label fallback color for any non-canvas text nodes */
+  color: var(--color-text-secondary);
+  font-size: 20rpx;
+}
+
+/* Amount/total text (non-canvas) uses primary text color */
+.pie-total-text {
+  color: var(--color-text-primary);
+}
+
+/* Category label text uses secondary text color */
+.pie-label-text {
+  color: var(--color-text-secondary);
 }
 
 .pie-canvas {
-  width: 480rpx;
-  height: 480rpx;
+  width: 180rpx;
+  height: 180rpx;
 }

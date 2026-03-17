@@ -2,12 +2,17 @@
   display: block;
 }
 
+/* Bar chart wrapper — chart content is rendered on <canvas> via JS */
 .bar-chart-container {
   width: 100%;
-  padding: 8rpx 0;
+  padding: 4rpx 0;
+  background: transparent;
+  /* label / axis text color fallback for any non-canvas text nodes */
+  color: var(--color-text-secondary);
+  font-size: 20rpx;
 }
 
 .bar-canvas {
   width: 100%;
-  height: 400rpx;
+  height: 320rpx;
 }

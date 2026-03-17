@@ -47,46 +47,44 @@ Component({
 
           const cx = width / 2
           const cy = height / 2
-          const outerR = Math.min(cx, cy) * 0.85
-          const innerR = outerR * 0.55
+          const outerR = Math.min(cx, cy) * 0.78
+          const ringWidth = Math.max(12, outerR * 0.24)
+          const innerR = outerR - ringWidth
 
-          // Step 1: draw pizza wedges with slight overlap to cover aa gaps
+          ctx.lineWidth = ringWidth
+          ctx.lineCap = 'round'
+          ctx.strokeStyle = '#FFF5E6'
+          ctx.beginPath()
+          ctx.arc(cx, cy, outerR - ringWidth / 2, 0, 2 * Math.PI)
+          ctx.stroke()
+
           let startAngle = -Math.PI / 2
           for (const item of data) {
             const sweep = (item.value / total) * 2 * Math.PI
-            ctx.beginPath()
-            ctx.moveTo(cx, cy)
-            ctx.arc(cx, cy, outerR, startAngle, startAngle + sweep + 0.03)
-            ctx.closePath()
-            ctx.fillStyle = item.color
-            ctx.fill()
+            const gap = data.length > 1 ? Math.min(0.05, sweep * 0.18) : 0
+            const arcStart = startAngle + gap / 2
+            const arcEnd = startAngle + sweep - gap / 2
+
+            if (arcEnd > arcStart) {
+              ctx.beginPath()
+              ctx.strokeStyle = item.color
+              ctx.arc(cx, cy, outerR - ringWidth / 2, arcStart, arcEnd)
+              ctx.stroke()
+            }
+
             startAngle += sweep
           }
 
-          // Step 2: white radial separators for crisp edges
-          ctx.strokeStyle = '#ffffff'
-          ctx.lineWidth = 1.5
-          startAngle = -Math.PI / 2
-          for (const item of data) {
-            ctx.beginPath()
-            ctx.moveTo(cx + innerR * Math.cos(startAngle), cy + innerR * Math.sin(startAngle))
-            ctx.lineTo(cx + outerR * Math.cos(startAngle), cy + outerR * Math.sin(startAngle))
-            ctx.stroke()
-            startAngle += (item.value / total) * 2 * Math.PI
-          }
-
-          // Step 3: white inner circle for donut hole
           ctx.beginPath()
           ctx.arc(cx, cy, innerR, 0, 2 * Math.PI)
           ctx.fillStyle = '#ffffff'
           ctx.fill()
 
-          // Center text
           const totalText = this.data.total || ''
           ctx.fillStyle = '#353535'
           ctx.textAlign = 'center'
           ctx.textBaseline = 'middle'
-          ctx.font = `bold ${Math.round(outerR * 0.22)}px sans-serif`
+          ctx.font = `700 ${Math.round(outerR * 0.28)}px sans-serif`
           ctx.fillText(totalText, cx, cy)
         })
     },

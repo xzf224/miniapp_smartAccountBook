@@ -1,7 +1,7 @@
 Component({
   properties: {
     data: { type: Array, value: [] as Array<{ label: string; value: number }> },
-    barColor: { type: String, value: '#5B8FF9' },
+    barColor: { type: String, value: '#FF8A00' },
     maxValue: { type: Number, value: 0 },
   },
 
@@ -41,77 +41,66 @@ Component({
           ctx.scale(dpr, dpr)
           ctx.clearRect(0, 0, W, H)
 
-          const paddingLeft = 50
-          const paddingRight = 20
-          const paddingTop = 20
-          const paddingBottom = 40
+          const paddingLeft = 8
+          const paddingRight = 8
+          const paddingTop = 10
+          const paddingBottom = 30
           const chartW = W - paddingLeft - paddingRight
           const chartH = H - paddingTop - paddingBottom
 
-          const maxVal = this.data.maxValue || Math.max(...chartData.map(d => d.value), 1)
-          const step = Math.ceil(maxVal / 4)
-          const nicMax = step * 4
-
-          // Draw grid lines
-          ctx.strokeStyle = '#EEEEEE'
-          ctx.lineWidth = 1
-          for (let i = 0; i <= 4; i++) {
-            const y = paddingTop + chartH - (i / 4) * chartH
-            ctx.beginPath()
-            ctx.moveTo(paddingLeft, y)
-            ctx.lineTo(paddingLeft + chartW, y)
-            ctx.stroke()
-            // Y axis labels
-            ctx.fillStyle = '#AAAAAA'
-            ctx.textAlign = 'right'
-            ctx.textBaseline = 'middle'
-            ctx.font = '10px sans-serif'
-            const labelVal = (step * i / 100).toFixed(0)
-            ctx.fillText(labelVal, paddingLeft - 4, y)
-          }
-
-          // Draw bars
           const n = chartData.length
-          const barGroupW = chartW / n
-          const barW = Math.max(barGroupW * 0.6, 4)
-          const radius = Math.min(4, barW / 2)
-
-          // Show every Nth label to avoid crowding
-          const labelStep = Math.ceil(n / 12)
+          const maxVal = this.data.maxValue || Math.max(...chartData.map(d => d.value), 1)
+          const activeIndex = chartData.reduce((best, item, index, source) => (
+            item.value > source[best].value ? index : best
+          ), 0)
+          const groupWidth = chartW / n
+          const barW = Math.min(28, Math.max(10, groupWidth * 0.48))
+          const maxBarHeight = Math.max(chartH - 18, 60)
+          const radius = Math.min(6, barW / 2)
+          const labelStep = n > 12 ? Math.ceil(n / 8) : 1
+          const inactiveBarColor = '#FFF5E6'
 
           for (let i = 0; i < n; i++) {
             const item = chartData[i]
-            const barH = (item.value / nicMax) * chartH
-            const x = paddingLeft + i * barGroupW + (barGroupW - barW) / 2
-            const y = paddingTop + chartH - barH
+            const normalizedHeight = maxVal === 0 ? 0 : (item.value / maxVal) * maxBarHeight
+            const barH = item.value > 0 ? Math.max(normalizedHeight, 12) : 0
+            const x = paddingLeft + i * groupWidth + (groupWidth - barW) / 2
+            const y = paddingTop + maxBarHeight - barH
+            const isActive = i === activeIndex && item.value > 0
 
-            // Bar with rounded top
-            ctx.fillStyle = this.data.barColor
-            ctx.beginPath()
-            if (barH > radius) {
-              ctx.moveTo(x + radius, y)
-              ctx.lineTo(x + barW - radius, y)
-              ctx.arcTo(x + barW, y, x + barW, y + radius, radius)
-              ctx.lineTo(x + barW, paddingTop + chartH)
-              ctx.lineTo(x, paddingTop + chartH)
-              ctx.lineTo(x, y + radius)
-              ctx.arcTo(x, y, x + radius, y, radius)
-            } else {
-              ctx.rect(x, paddingTop + chartH - (barH || 1), barW, barH || 1)
+            if (barH > 0) {
+              this.drawRoundedRect(ctx, x, y, barW, barH, radius)
+              ctx.fillStyle = isActive ? this.data.barColor : inactiveBarColor
+              ctx.fill()
             }
-            ctx.closePath()
-            ctx.fill()
 
-            // X axis label
             if (i % labelStep === 0) {
-              ctx.fillStyle = '#AAAAAA'
+              ctx.fillStyle = isActive ? '#1A1A1A' : '#9CA3AF'
               ctx.textAlign = 'center'
               ctx.textBaseline = 'top'
-              ctx.font = '10px sans-serif'
-              ctx.fillText(item.label, x + barW / 2, paddingTop + chartH + 6)
+              ctx.font = `${isActive ? '600' : '400'} 10px sans-serif`
+              ctx.fillText(item.label, x + barW / 2, paddingTop + maxBarHeight + 8)
             }
           }
         })
+    },
+
+    drawRoundedRect(
+      ctx: any,
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      radius: number,
+    ) {
+      const safeRadius = Math.min(radius, width / 2, height / 2)
+      ctx.beginPath()
+      ctx.moveTo(x + safeRadius, y)
+      ctx.arcTo(x + width, y, x + width, y + height, safeRadius)
+      ctx.arcTo(x + width, y + height, x, y + height, 0)
+      ctx.arcTo(x, y + height, x, y, 0)
+      ctx.arcTo(x, y, x + width, y, safeRadius)
+      ctx.closePath()
     },
   },
 })
