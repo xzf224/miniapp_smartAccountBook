@@ -11,6 +11,11 @@
   background: var(--color-bg-card);
 }
 
+.record-item-compact {
+  padding: 16rpx 24rpx;
+  min-height: 84rpx;
+}
+
 .icon-wrap {
   width: 80rpx;
   height: 80rpx;
@@ -22,10 +27,24 @@
   flex-shrink: 0;
 }
 
+.icon-wrap-budget {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 16rpx;
+  margin-right: 18rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
 .icon {
   font-size: 32rpx;
-  color: #ffffff;
   font-weight: 600;
+}
+
+.icon-budget {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1;
 }
 
 .info {
@@ -39,17 +58,34 @@
   font-size: 28rpx;
   font-weight: 500;
   color: var(--color-text-primary);
+  line-height: 1.2;
 }
 
 .note {
   font-size: 24rpx;
   color: var(--color-text-secondary);
   margin-top: 4rpx;
+  line-height: 1.2;
+}
+
+.record-item-compact .category {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.record-item-compact .note {
+  margin-top: 2rpx;
+  font-size: 22rpx;
 }
 
 .amount {
   font-size: 32rpx;
   font-weight: 600;
+  line-height: 1.1;
+}
+
+.record-item-compact .amount {
+  font-size: 30rpx;
 }
 
 .text-income {

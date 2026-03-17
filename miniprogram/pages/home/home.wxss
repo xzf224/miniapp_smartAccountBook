@@ -1,6 +1,8 @@
 .page-body {
   height: 100vh;
   background: #f7f8fa;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 .month-header {
@@ -297,7 +299,19 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: stretch;
+}
+
+.day-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.day-net-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .day-date {
@@ -305,12 +319,21 @@
   font-weight: 500;
   color: var(--color-text-primary);
   letter-spacing: 1rpx;
+  line-height: 1.2;
+}
+
+.day-summary-label {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  line-height: 1;
 }
 
 .day-net {
   font-size: 26rpx;
   font-weight: 600;
   letter-spacing: -0.5rpx;
+  line-height: 1;
+  display: block;
 }
 
 .divider {
@@ -365,24 +388,30 @@
 
 .analysis-item {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 20rpx;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36rpx;
+}
+
+.analysis-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .analysis-name {
   font-size: 26rpx;
   color: var(--color-text-primary);
-  width: 120rpx;
-  flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .analysis-bar-wrap {
-  flex: 1;
   height: 12rpx;
   background: #f0f0f0;
   border-radius: 6rpx;
-  margin: 0 20rpx;
+  margin-top: 20rpx;
+  margin-right: 20rpx;
   overflow: hidden;
 }
 
@@ -395,7 +424,12 @@
 .analysis-amount {
   font-size: 26rpx;
   color: var(--color-text-secondary);
-  width: 100rpx;
+  width: 144rpx;
   text-align: right;
   flex-shrink: 0;
+  line-height: 1;
+}
+
+.page-bottom-space {
+  height: calc(40rpx + env(safe-area-inset-bottom));
 }

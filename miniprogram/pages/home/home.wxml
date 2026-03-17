@@ -79,7 +79,7 @@
     </view>
     <view class="quick-action" bind:tap="onOpenBudget">
       <view class="quick-action-badge badge-green">
-        <image class="quick-action-icon" src="/images/new/wallet-cards.png" mode="aspectFit" />
+        <image class="quick-action-icon" src="/images/new/wallet-cards-green.png" mode="aspectFit" />
       </view>
       <text class="quick-action-label">预算</text>
     </view>
@@ -108,15 +108,20 @@
     </view>
     <view class="day-group" wx:for="{{groups}}" wx:key="date" wx:for-item="group">
       <view class="day-header flex-row">
-        <text class="day-date">{{group.dateDisplay}}</text>
-        <text class="day-net {{group.dayNetNegative ? 'text-expense' : 'text-income'}}">
-          {{group.dayNetNegative ? '-' : '+'}}{{group.dayNetText}}
-        </text>
+        <view class="day-meta">
+          <text class="day-date">{{group.dateDisplay}}</text>
+          <text class="day-summary-label">合计</text>
+        </view>
+        <view class="day-net-wrap">
+          <text class="day-net {{group.dayNetNegative ? 'text-expense' : 'text-income'}}">
+            {{group.dayNetNegative ? '-' : '+'}}{{group.dayNetText}}
+          </text>
+        </view>
       </view>
       <view class="day-records" style="overflow: hidden;">
         <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap">
           <swipe-cell bind:edit="onRecordEdit" bind:delete="onRecordDelete" data-id="{{record.id}}">
-            <record-item record="{{record}}" />
+            <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.date}}" />
           </swipe-cell>
           <view class="divider" wx:if="{{index < group.records.length - 1}}"></view>
         </view>
@@ -128,13 +133,17 @@
   <view class="analysis-section" wx:if="{{!searchVisible && analysisItems.length > 0}}">
     <text class="analysis-title">本月消费分析</text>
     <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category">
-      <text class="analysis-name">{{item.category}}</text>
-      <view class="analysis-bar-wrap">
-        <view class="analysis-bar-fill" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+      <view class="analysis-meta">
+        <text class="analysis-name">{{item.category}}</text>
+        <view class="analysis-bar-wrap">
+          <view class="analysis-bar-fill" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+        </view>
       </view>
       <text class="analysis-amount">¥{{item.amountText}}</text>
     </view>
   </view>
+
+  <view class="page-bottom-space"></view>
 
 </scroll-view>
 <bottom-nav current="{{0}}" />

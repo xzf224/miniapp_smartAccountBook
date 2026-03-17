@@ -1,10 +1,10 @@
-<view class="record-item flex-row">
-  <view class="icon-wrap" style="background: {{iconBg}};">
-    <text class="icon">{{icon}}</text>
+<view class="record-item flex-row {{compact ? 'record-item-compact' : ''}}">
+  <view class="icon-wrap {{iconVariant === 'budget' ? 'icon-wrap-budget' : ''}}" style="background: {{iconBg}}; color: {{iconVariant === 'budget' ? iconColor : '#ffffff'}};">
+    <text class="icon {{iconVariant === 'budget' ? 'icon-budget' : ''}}">{{icon}}</text>
   </view>
   <view class="info flex-col flex-1">
     <text class="category">{{record.category}}</text>
-    <text class="note" wx:if="{{record.note}}">{{record.note}}</text>
+    <text class="note" wx:if="{{displaySubText}}">{{displaySubText}}</text>
   </view>
   <text class="amount {{colorClass}}">{{sign}}{{amountText}}</text>
 </view>

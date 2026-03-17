@@ -49,6 +49,11 @@
   letter-spacing: 1rpx;
 }
 
+.overview-header {
+  padding-top: 20rpx;
+  padding-bottom: 4rpx;
+}
+
 /* 菜单组 */
 .settings-group {
   background: var(--color-bg-card);
