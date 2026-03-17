@@ -24,6 +24,14 @@
 
 ## 全局设计语言
 
+### Skyline 渲染器说明
+
+项目使用 `"renderer": "skyline"` + `glass-easel` 组件框架。实施时注意：
+- wxss 使用标准 flex 布局，Skyline 支持良好
+- `env(safe-area-inset-bottom)` Skyline 支持
+- `swipe-cell` 为自定义组件，保持现有实现不变
+- 线性渐变 (`linear-gradient`) 在 Skyline wxss 中支持
+
 ### 色彩系统
 
 | CSS 变量 | 值 | 用途 |
@@ -40,6 +48,11 @@
 | `--color-bg-page` | `#F5F5F5` | 页面背景浅灰 |
 | `--color-bg-card` | `#FFFFFF` | 卡片背景白色 |
 | `--color-border` | `#EFEFEF` | 分割线 |
+
+### 圆角/间距 Token
+
+| CSS 变量 | 值 | 用途 |
+|---------|-----|------|
 | `--radius-card` | `24rpx` | 卡片圆角 |
 | `--radius-btn` | `44rpx` | 按钮圆角（胶囊型） |
 
@@ -197,7 +210,20 @@
 6. 最近扫描列表（日期 + 金额，箭头跳转）
 7. 底部扫描小贴士（橙色图标 + 文字）
 
-### 10. 功能子页（统一设计语言）
+### 10. 手动记账 (add-record)
+
+`add-record` 是从交易记录页跳转的编辑/新增记录页面（与 `quick-add` 功能类似但入口不同）。
+
+**布局：**
+1. navigation-bar：标题"编辑记录" 或 "新增记录" + 返回
+2. 支出/收入 Tab 切换（圆角胶囊型，激活态橙色背景白字）
+3. 货币符号 + 金额大字输入框（居中，56rpx）
+4. 分类网格：4列，图标+标签，激活态橙色圆圈
+5. 日期行：日历图标 + 日期（picker）
+6. 备注行：备注图标 + 输入框
+7. 橙色"保存"按钮（全宽胶囊型，固定底部）
+
+### 11. 功能子页（统一设计语言）
 
 **定期账单 (recurring)：**
 - navigation-bar + 列表卡片（卡片样式更新为圆角白底）+ 右上角"+"按钮
@@ -219,6 +245,7 @@
 
 **分类表单 (category-form)：**
 - navigation-bar + 图标选择网格 + 名称输入 + 保存按钮（橙色）
+- 注：该页面目录已存在于 `miniprogram/pages/category-form/`，但尚未注册到 `app.json`。实施时需同步将其添加到 `app.json` 的 pages 列表。
 
 ---
 
@@ -235,8 +262,17 @@
 
 ---
 
+## 文件变更范围
+
+**主要变更文件类型：** wxml（结构）和 wxss（样式）
+
+**允许的 TS/JSON 变更（最小化）：**
+- `app.json`：将 `category-form` 添加到 pages 列表
+- `bottom-nav` 组件（新建）：需要完整的 ts/wxml/wxss/json 四个文件
+- 其余所有页面的 `.ts` 文件**不做修改**，仅更新对应的 wxml 和 wxss
+
 ## 不在本次范围内
 
-- 账户管理页（`p0Nzp`，设计稿标注"先不考虑"）
-- 任何业务逻辑、数据模型、TS 文件的变更（仅 wxml/wxss 更新）
+- 账户管理页（设计稿标注"先不考虑"）
+- 业务逻辑、数据模型、已有页面的 TS 文件变更
 - 新增功能
