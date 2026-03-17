@@ -68,7 +68,7 @@
           bind:touchend="onStopRecord"
           bind:touchcancel="onStopRecord"
           catch:touchmove="preventMove">
-      <image class="mic-icon-img" src="/images/record.png" mode="aspectFit" />
+      <image class="mic-icon-img" src="/images/new/mic.png" mode="aspectFit" />
     </view>
 
     <text class="disclaimer">本服务为 AI 生成内容，结果仅供参考</text>
