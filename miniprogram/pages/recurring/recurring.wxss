@@ -1,6 +1,6 @@
 .page-body {
   height: 100vh;
-  background: #f5f6f8;
+  background: var(--color-bg-page);
 }
 
 .empty-state {
@@ -20,20 +20,20 @@
 
 .empty-text {
   font-size: 30rpx;
-  color: #555;
+  color: var(--color-text-primary);
   font-weight: 600;
   margin-bottom: 12rpx;
 }
 
 .empty-sub {
   font-size: 24rpx;
-  color: #aaa;
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
 .rule-card {
-  background: #fff;
-  border-radius: 16rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
   margin: 24rpx 24rpx 0;
   overflow: hidden;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
@@ -61,13 +61,13 @@
 .rule-name {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
 }
 
 .rule-freq {
   font-size: 22rpx;
-  color: #07c160;
-  background: #e8f9f0;
+  color: var(--color-primary);
+  background: rgba(255, 125, 0, 0.10);
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
 }
@@ -86,23 +86,23 @@
 }
 
 .type-expense {
-  background: #fff0f0;
-  color: #ff4757;
+  background: rgba(250, 81, 81, 0.10);
+  color: var(--color-expense);
 }
 
 .type-income {
-  background: #f0fff4;
-  color: #07c160;
+  background: rgba(76, 175, 80, 0.10);
+  color: var(--color-income);
 }
 
 .rule-category {
   font-size: 24rpx;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .rule-note {
   font-size: 24rpx;
-  color: #aaa;
+  color: var(--color-text-secondary);
 }
 
 .rule-right {
@@ -115,11 +115,11 @@
 }
 
 .amount-expense {
-  color: #ff4757;
+  color: var(--color-expense);
 }
 
 .amount-income {
-  color: #07c160;
+  color: var(--color-income);
 }
 
 .rule-footer {
@@ -128,8 +128,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 16rpx 32rpx;
-  border-top: 1rpx solid #f0f0f0;
-  background: #fafafa;
+  border-top: 1rpx solid var(--color-border);
+  background: var(--color-bg-page);
 }
 
 .toggle-area {
@@ -151,7 +151,7 @@
 }
 
 .toggle-track.active {
-  background: #07c160;
+  background: var(--color-primary);
 }
 
 .toggle-thumb {
@@ -169,12 +169,12 @@
 
 .toggle-label {
   font-size: 24rpx;
-  color: #888;
+  color: var(--color-text-secondary);
 }
 
 .delete-btn {
   font-size: 24rpx;
-  color: #ff4757;
+  color: var(--color-expense);
   padding: 8rpx 24rpx;
   border-radius: 8rpx;
 }
@@ -184,9 +184,9 @@
   height: 88rpx;
   line-height: 88rpx;
   text-align: center;
-  border-radius: 44rpx;
+  border-radius: var(--radius-btn);
   font-size: 30rpx;
   color: #fff;
-  background: #07c160;
+  background: var(--color-primary);
   font-weight: 600;
 }
