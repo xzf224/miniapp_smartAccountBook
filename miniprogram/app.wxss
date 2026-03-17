@@ -1,17 +1,21 @@
 /* ====== CSS 变量 ====== */
 page {
-  --color-primary: #1AAD19;
+  --color-primary: #FF7D00;
+  --color-primary-light: #FFF3E0;
+  --color-primary-gradient-start: #FF9500;
+  --color-primary-gradient-end: #FF7D00;
   --color-danger: #FA5151;
-  --color-income: #1AAD19;
+  --color-income: #4CAF50;
   --color-expense: #FA5151;
   --color-neutral: #576B95;
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #9B9B9B;
+  --color-text-secondary: #999999;
   --color-text-placeholder: #C8C8C8;
-  --color-bg-page: #FFFFFF;
+  --color-bg-page: #F5F5F5;
   --color-bg-card: #FFFFFF;
   --color-border: #EFEFEF;
-  --radius-card: 0rpx;
+  --radius-card: 24rpx;
+  --radius-btn: 44rpx;
 
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
                "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -23,9 +27,9 @@ page {
 /* ====== 通用类 ====== */
 .card {
   background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  margin: 0 24rpx 16rpx;
   padding: 32rpx;
-  margin: 0;
-  border-bottom: 1rpx solid var(--color-border);
 }
 
 .section-title {
@@ -68,7 +72,7 @@ page {
   height: 88rpx;
   line-height: 88rpx;
   text-align: center;
-  border-radius: 44rpx;
+  border-radius: var(--radius-btn);
   background: var(--color-primary);
   color: #fff;
   font-size: 32rpx;
@@ -81,3 +85,50 @@ page {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* ====== Tab 页面统一骨架 ====== */
+.tab-scroll {
+  min-height: 100vh;
+  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.tab-page {
+  min-height: 100vh;
+  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* ====== 通用菜单组 ====== */
+.menu-group {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  margin: 0 24rpx 16rpx;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  min-height: 100rpx;
+  box-sizing: border-box;
+}
+
+.menu-item-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.menu-item-label {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+}
+
+.menu-item-arrow {
+  font-size: 32rpx;
+  color: #C8C8C8;
+}
