@@ -8,14 +8,14 @@ page {
 .page-body {
   flex: 1;
   min-height: 0;
-  background: #f5f6f8;
+  background: var(--color-bg-page);
 }
 
 .form-section {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: #fff;
+  background: var(--color-bg-card);
   padding: 20rpx 32rpx;
   margin-top: 2rpx;
 }
@@ -31,12 +31,12 @@ page {
 
 /* Section divider via margin group */
 .form-section + .form-section {
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid var(--color-border);
 }
 
 .form-label {
   font-size: 28rpx;
-  color: #555;
+  color: var(--color-text-secondary);
   width: 128rpx;
   flex-shrink: 0;
   margin-bottom: 0;
@@ -52,7 +52,7 @@ page {
 .form-input {
   flex: 1;
   font-size: 28rpx;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
   height: 56rpx;
 }
 
@@ -76,9 +76,9 @@ page {
 }
 
 .type-tab.active {
-  color: #07c160;
+  color: var(--color-primary);
   font-weight: 600;
-  border-bottom-color: #07c160;
+  border-bottom-color: var(--color-primary);
 }
 
 .amount-row {
@@ -90,7 +90,7 @@ page {
 
 .amount-prefix {
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-text-primary);
   margin-right: 8rpx;
 }
 
@@ -98,13 +98,13 @@ page {
   flex: 1;
   font-size: 32rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
 }
 
 .picker-item {
   flex: 1;
   font-size: 28rpx;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
 }
 
 .end-date-row {
@@ -121,4 +121,13 @@ page {
   padding: 8rpx 0;
 }
 
-
+.save-btn {
+  margin: 48rpx 32rpx 0;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  border-radius: var(--radius-btn);
+  padding: 28rpx 0;
+}
