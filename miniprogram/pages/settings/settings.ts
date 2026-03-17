@@ -4,7 +4,9 @@ import {
   clearAllRecords,
   getCategories,
   getRecords,
+  getUserProfile,
   restoreBackupJSON,
+  saveUserProfile,
 } from '../../utils/storage'
 
 Component({
@@ -14,6 +16,12 @@ Component({
     statCategories: 0,
     statConsecutiveDays: 0,
     statTotalDays: 0,
+    profileAvatarUrl: '',
+    profileNickname: '',
+    profilePersonalized: false,
+    profileEditing: false,
+    draftAvatarUrl: '',
+    draftNickname: '',
   },
 
   lifetimes: {
@@ -32,6 +40,7 @@ Component({
     loadStats() {
       const records = getRecords()
       const categories = getCategories()
+      const userProfile = getUserProfile()
       const now = new Date()
       const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
       const monthCount = records.filter((item: any) => item.date.startsWith(monthStr)).length
@@ -59,7 +68,75 @@ Component({
         statCategories: categoryCount,
         statConsecutiveDays,
         statTotalDays,
+        profileAvatarUrl: userProfile.avatarUrl,
+        profileNickname: userProfile.nickname,
+        profilePersonalized: userProfile.personalized,
+        draftAvatarUrl: userProfile.avatarUrl,
+        draftNickname: userProfile.nickname,
+        profileEditing: false,
       })
+    },
+
+    onProfileCardTap() {
+      if (this.data.profilePersonalized) {
+        this.setData({
+          profileEditing: true,
+          draftAvatarUrl: this.data.profileAvatarUrl,
+          draftNickname: this.data.profileNickname,
+        })
+        return
+      }
+
+      wx.showModal({
+        title: '开启个性化',
+        content: '设置头像和昵称后，我的页面会展示你的专属资料。信息仅保存在当前设备。',
+        confirmText: '去设置',
+        confirmColor: '#ff8a00',
+        success: (res) => {
+          if (!res.confirm) return
+          this.setData({
+            profileEditing: true,
+            draftAvatarUrl: this.data.profileAvatarUrl,
+            draftNickname: this.data.profileNickname,
+          })
+        },
+      })
+    },
+
+    onChooseAvatar(e: WechatMiniprogram.CustomEvent) {
+      const avatarUrl = (e.detail as any)?.avatarUrl || ''
+      if (!avatarUrl) return
+      this.setData({ draftAvatarUrl: avatarUrl })
+    },
+
+    onNicknameInput(e: WechatMiniprogram.Input) {
+      const draftNickname = e.detail.value
+      this.setData({ draftNickname })
+    },
+
+    onProfileCancel() {
+      this.setData({
+        profileEditing: false,
+        draftAvatarUrl: this.data.profileAvatarUrl,
+        draftNickname: this.data.profileNickname,
+      })
+    },
+
+    onProfileSave() {
+      const nickname = this.data.draftNickname.trim()
+      const avatarUrl = this.data.draftAvatarUrl
+      saveUserProfile({
+        avatarUrl,
+        nickname,
+        personalized: true,
+      })
+      this.setData({
+        profileAvatarUrl: avatarUrl,
+        profileNickname: nickname,
+        profilePersonalized: true,
+        profileEditing: false,
+      })
+      wx.showToast({ title: '已保存', icon: 'success' })
     },
 
     onBudgetSetting() {

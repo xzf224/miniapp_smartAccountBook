@@ -6,11 +6,18 @@ const BUDGETS_KEY = 'budgets'
 const RECURRING_RULES_KEY = 'recurring_rules'
 const PENDING_DRAFTS_KEY = 'pending_drafts'
 const CATEGORY_META_KEY = 'category_meta'
+const USER_PROFILE_KEY = 'user_profile'
 
 export interface ICategoryMeta {
   icon: string
   color: string
   bgColor: string
+}
+
+export interface IUserProfile {
+  avatarUrl: string
+  nickname: string
+  personalized: boolean
 }
 
 export function getCategoryMeta(): Record<string, ICategoryMeta> {
@@ -23,6 +30,23 @@ export function setCategoryMeta(name: string, meta: ICategoryMeta): void {
   wx.setStorageSync(CATEGORY_META_KEY, all)
 }
 
+export function getUserProfile(): IUserProfile {
+  const profile = wx.getStorageSync(USER_PROFILE_KEY)
+  return {
+    avatarUrl: typeof profile?.avatarUrl === 'string' ? profile.avatarUrl : '',
+    nickname: typeof profile?.nickname === 'string' ? profile.nickname : '',
+    personalized: Boolean(profile?.personalized),
+  }
+}
+
+export function saveUserProfile(profile: Partial<IUserProfile>): void {
+  const current = getUserProfile()
+  wx.setStorageSync(USER_PROFILE_KEY, {
+    ...current,
+    ...profile,
+  })
+}
+
 export interface IAppBackupPayload {
   version: number
   exportedAt: number
@@ -31,6 +55,7 @@ export interface IAppBackupPayload {
   budgets: IBudget[]
   recurringRules: IRecurringRule[]
   pendingDrafts: IPendingDraft[]
+  userProfile: IUserProfile
 }
 
 // ---- 记录 CRUD ----
@@ -177,6 +202,7 @@ export function exportBackupJSON(): string {
     budgets: getBudgets(),
     recurringRules: getRecurringRules(),
     pendingDrafts: getPendingDrafts(),
+    userProfile: getUserProfile(),
   }
   return JSON.stringify(payload, null, 2)
 }
@@ -196,6 +222,7 @@ export function restoreBackupJSON(raw: string): boolean {
   saveBudgets(Array.isArray(parsed.budgets) ? parsed.budgets : [])
   saveRecurringRules(Array.isArray(parsed.recurringRules) ? parsed.recurringRules : [])
   savePendingDrafts(Array.isArray(parsed.pendingDrafts) ? parsed.pendingDrafts : [])
+  saveUserProfile(parsed.userProfile || {})
   return true
 }
 

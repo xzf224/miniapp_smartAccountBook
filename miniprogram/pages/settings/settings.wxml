@@ -1,5 +1,57 @@
 <navigation-bar brand="{{true}}" back="{{false}}" />
 <scroll-view scroll-y class="page-body tab-scroll">
+  <view class="profile-card">
+    <image
+      wx:if="{{profileAvatarUrl}}"
+      class="profile-avatar"
+      src="{{profileAvatarUrl}}"
+      mode="aspectFill"
+    />
+    <view wx:else class="profile-avatar profile-avatar-placeholder">
+      <image class="profile-avatar-icon" src="/images/new/user.png" mode="aspectFit" />
+    </view>
+    <view class="profile-copy">
+      <text class="profile-name">{{profileNickname || '微信用户'}}</text>
+      <text class="profile-subtitle">{{profilePersonalized ? '点击右侧图标修改头像和昵称' : '匿名模式，点击右侧图标开启个性化'}}</text>
+    </view>
+    <image class="profile-edit-icon" src="/images/note.png" mode="aspectFit" bind:tap="onProfileCardTap" />
+  </view>
+
+  <view class="profile-editor" wx:if="{{profileEditing}}">
+    <view class="profile-editor-head">
+      <text class="profile-editor-title">个性化资料</text>
+      <text class="profile-editor-desc">设置后仅保存在当前设备</text>
+    </view>
+    <view class="profile-editor-row">
+      <text class="profile-editor-label">头像</text>
+      <button class="profile-avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <image
+          wx:if="{{draftAvatarUrl}}"
+          class="profile-avatar profile-avatar-small"
+          src="{{draftAvatarUrl}}"
+          mode="aspectFill"
+        />
+        <view wx:else class="profile-avatar profile-avatar-small profile-avatar-placeholder">
+          <image class="profile-avatar-icon profile-avatar-icon-small" src="/images/new/user.png" mode="aspectFit" />
+        </view>
+      </button>
+    </view>
+    <view class="profile-editor-row">
+      <text class="profile-editor-label">昵称</text>
+      <input
+        class="profile-name-input"
+        type="nickname"
+        value="{{draftNickname}}"
+        placeholder="请输入昵称"
+        placeholder-class="profile-name-placeholder"
+        bind:input="onNicknameInput"
+      />
+    </view>
+    <view class="profile-editor-actions">
+      <view class="profile-editor-btn profile-editor-btn-secondary" bind:tap="onProfileCancel">取消</view>
+      <view class="profile-editor-btn profile-editor-btn-primary" bind:tap="onProfileSave">保存</view>
+    </view>
+  </view>
   <view class="section-header overview-header">数据总览</view>
   <view class="stats-row">
     <view class="stat-item">
