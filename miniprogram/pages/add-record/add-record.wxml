@@ -34,5 +34,7 @@
     </view>
   </view>
 
-  <view class="save-btn" bind:tap="onSave">保存记录</view>
+  <view class="save-bar">
+    <view class="save-btn" bind:tap="onSave">保存记录</view>
+  </view>
 </view>

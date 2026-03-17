@@ -1,4 +1,4 @@
-<navigation-bar title="拍照记账" />
+<navigation-bar title="小票扫描" />
 <view class="page-container">
   <scroll-view class="results-area" scroll-y="{{true}}">
     <view wx:if="{{!imagePath && !showResult && !scanning}}" class="scan-stage">
