@@ -8,6 +8,8 @@ interface ParsedRecord {
   amount: number   // 分
   note: string
   date: string
+  tags?: string[]
+  currency?: string
 }
 
 const KEYWORD_CATEGORY_MAP: Record<string, { type: RecordType; category: string }> = {
@@ -410,6 +412,8 @@ export function parsedToRecord(parsed: ParsedRecord): IRecord {
     amount: parsed.amount,
     date: parsed.date,
     note: parsed.note,
+    tags: parsed.tags,
+    currency: parsed.currency,
     createTime: now,
     updateTime: now,
   }

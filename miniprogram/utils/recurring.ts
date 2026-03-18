@@ -140,6 +140,7 @@ export function checkRecurringRules(): void {
           category: rule.category,
           amount: rule.amount,
           note: rule.note,
+          currency: rule.currency,
           date,
           generatedAt: Date.now(),
         })

@@ -57,7 +57,8 @@
 
   <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
                 expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" daysLeft="{{daysLeft}}"
-                mixedCount="{{mixedCurrencyCount}}" />
+                mixedCount="{{mixedCurrencyCount}}" alertVisible="{{budgetAlertVisible}}"
+                alertTone="{{budgetAlertTone}}" alertTitle="{{budgetAlertTitle}}" alertText="{{budgetAlertText}}" />
 
   <view wx:if="{{!searchVisible}}" class="quick-actions">
     <view class="quick-action" bind:tap="onManual">
@@ -105,7 +106,7 @@
   <!-- 本月消费分析 -->
   <view class="analysis-section" wx:if="{{!searchVisible && analysisItems.length > 0}}">
     <text class="analysis-title">本月消费分析</text>
-    <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category">
+    <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category" wx:if="{{analysisExpanded || index < 5}}">
       <view class="analysis-meta">
         <text class="analysis-name">{{item.category}}</text>
         <view class="analysis-bar-wrap">
@@ -113,6 +114,10 @@
         </view>
       </view>
       <text class="analysis-amount">{{currencySymbol}}{{item.amountText}}</text>
+    </view>
+    <view class="analysis-toggle" wx:if="{{analysisItems.length > 5}}" bindtap="onToggleAnalysis">
+      <text class="analysis-toggle-text">{{analysisExpanded ? '收起' : '查看全部 (' + analysisItems.length + ')'}}</text>
+      <view class="analysis-toggle-arrow {{analysisExpanded ? 'analysis-toggle-arrow-up' : ''}}"></view>
     </view>
   </view>
 

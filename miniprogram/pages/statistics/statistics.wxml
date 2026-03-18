@@ -13,21 +13,23 @@
   <!-- 收支摘要 -->
   <view class="summary-row">
     <view
-      class="summary-card income-card {{typeIndex === 1 ? 'summary-card-active' : 'summary-card-muted'}}"
+      class="summary-card income-card {{typeIndex === 1 ? 'summary-card-active summary-card-income-active' : 'summary-card-muted'}}"
       bind:tap="onSummaryTypeTap"
       data-type="收入"
     >
+      <view class="summary-card-accent"></view>
       <text class="summary-label income-label">本月收入</text>
-      <text class="summary-state">{{typeIndex === 1 ? '当前分析' : '点按切换'}}</text>
+      <text class="summary-state {{typeIndex === 1 ? 'summary-state-active' : ''}}">{{typeIndex === 1 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{income}}</text>
     </view>
     <view
-      class="summary-card expense-card {{typeIndex === 0 ? 'summary-card-active' : 'summary-card-muted'}}"
+      class="summary-card expense-card {{typeIndex === 0 ? 'summary-card-active summary-card-expense-active' : 'summary-card-muted'}}"
       bind:tap="onSummaryTypeTap"
       data-type="支出"
     >
+      <view class="summary-card-accent"></view>
       <text class="summary-label expense-label">本月支出</text>
-      <text class="summary-state">{{typeIndex === 0 ? '当前分析' : '点按切换'}}</text>
+      <text class="summary-state {{typeIndex === 0 ? 'summary-state-active' : ''}}">{{typeIndex === 0 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{expense}}</text>
     </view>
   </view>
@@ -78,7 +80,7 @@
   <view class="section-card" wx:if="{{hasPieData}}">
     <view class="section-head">
       <text class="section-title">{{types[typeIndex]}}分类</text>
-      <text class="section-total">¥{{typeTotalText}}</text>
+      <text class="section-total">{{currencySymbol}}{{typeTotalText}}</text>
     </view>
 
     <view class="category-focus" wx:if="{{selectedCategoryName}}">

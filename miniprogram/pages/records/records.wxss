@@ -183,15 +183,18 @@
   display: inline-flex;
   align-items: center;
   gap: 8rpx;
-  padding: 8rpx 16rpx;
+  min-height: 44rpx;
+  padding: 0 20rpx;
   border-radius: 999rpx;
   background: rgba(255, 138, 0, 0.1);
   font-size: 20rpx;
   color: var(--color-primary);
+  box-sizing: border-box;
 }
 
 .applied-tag-text {
   line-height: 1;
+  white-space: nowrap;
 }
 
 .applied-tag-close {

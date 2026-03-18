@@ -3,6 +3,7 @@ import {
   addRecurringRule,
   updateRecurringRule,
   getCategories,
+  getCurrencyCode,
 } from '../../utils/storage'
 import { IRecurringRule, RecordType, RECORD_TYPES, generateId, yuanToFen } from '../../models/record'
 import { getToday } from '../../utils/date'
@@ -188,6 +189,7 @@ Component({
         startDate,
         endDate: endDate || undefined,
         lastGeneratedDate,
+        currency: getCurrencyCode(),
         enabled: true,
       }
 

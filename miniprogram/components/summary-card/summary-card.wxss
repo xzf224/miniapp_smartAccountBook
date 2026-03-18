@@ -41,15 +41,15 @@
   color: #FFFFFF;
   display: block;
   letter-spacing: -1rpx;
-  margin-bottom: 28rpx;
+  margin-bottom: 10rpx;
 }
 
 /* 预算进度 */
 .budget-row {
-  margin-bottom: 20rpx;
+  margin-bottom: 4rpx;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 2rpx;
 }
 
 .budget-bar-bg {
@@ -82,11 +82,48 @@
 .budget-hint {
   font-size: 20rpx;
   color: rgba(255, 255, 255, 0.85);
+  line-height: 1.2;
 }
 
 .budget-hint-over {
   color: #FFD700;
   font-weight: 600;
+}
+
+.summary-alert {
+  margin-bottom: 8rpx;
+  padding: 14rpx 16rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10rpx);
+}
+
+.summary-alert-warning {
+  border: 1rpx solid rgba(255, 243, 199, 0.48);
+}
+
+.summary-alert-danger {
+  border: 1rpx solid rgba(255, 215, 0, 0.44);
+  background: rgba(122, 21, 21, 0.18);
+}
+
+.summary-alert-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4rpx;
+}
+
+.summary-alert-title {
+  font-size: 21rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.summary-alert-text {
+  font-size: 20rpx;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .stats-row {
@@ -130,10 +167,11 @@
 }
 
 .mixed-hint {
-  margin-bottom: 14rpx;
+  margin-bottom: 4rpx;
 }
 
 .mixed-hint-text {
   font-size: 20rpx;
   color: rgba(255, 255, 255, 0.7);
+  line-height: 1.2;
 }

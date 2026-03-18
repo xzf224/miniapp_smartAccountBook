@@ -152,7 +152,7 @@
 }
 
 .amount-input {
-  min-width: 240rpx;
+  min-width: 340rpx;
   height: 88rpx;
   font-size: 72rpx;
   font-weight: 700;
@@ -161,7 +161,7 @@
   letter-spacing: -2rpx;
   padding: 0;
   box-sizing: border-box;
-  text-align: left;
+  text-align: center;
 }
 
 .amount-input-ph {

@@ -1,6 +1,7 @@
 import { parseOCRResult, parsedToRecord } from '../../utils/parser'
-import { addRecordsBatch, getCategories, getRecords } from '../../utils/storage'
-import { CATEGORY_ICONS, yuanToFen, RecordType, RECORD_TYPES } from '../../models/record'
+import { addRecordsBatch, getCategories, getRecords, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
+import { CATEGORY_ICONS, RECORD_TAG_SCAN, yuanToFen, RecordType, RECORD_TYPES } from '../../models/record'
+import { checkBudgetAlertAfterRecordsSaved, showBudgetAlertModal } from '../../utils/budget-alert'
 
 interface DraftRecord {
   tempId: number
@@ -14,6 +15,14 @@ interface DraftRecord {
   categoryIndex: number
 }
 
+function formatRecentScanDateTime(date: string, timestamp?: number): string {
+  if (!timestamp) return date
+  const value = new Date(timestamp)
+  if (Number.isNaN(value.getTime())) return date
+  const timeText = `${String(value.getHours()).padStart(2, '0')}:${String(value.getMinutes()).padStart(2, '0')}`
+  return `${date} ${timeText}`
+}
+
 Component({
   data: {
     imagePath: '',
@@ -23,18 +32,20 @@ Component({
     recentScans: [] as Array<{ title: string; date: string; amountText: string }>,
     allTypes: RECORD_TYPES,
     allCategories: {} as Record<string, string[]>,
+    currencySymbol: '¥',
   },
 
   lifetimes: {
     attached() {
       const cats = getCategories()
-      this.setData({ allCategories: cats as any })
+      this.setData({ allCategories: cats as any, currencySymbol: getCurrencySymbol() })
       this.loadRecentScans()
     },
   },
 
   pageLifetimes: {
     show() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadRecentScans()
     },
   },
@@ -42,11 +53,13 @@ Component({
   methods: {
     loadRecentScans() {
       const recentScans = getRecords()
+        .filter(item => item.tags?.includes(RECORD_TAG_SCAN))
+        .sort((a, b) => (b.updateTime || b.createTime) - (a.updateTime || a.createTime))
         .slice(0, 3)
         .map(item => ({
           title: `${item.category}小票`,
-          date: item.date,
-          amountText: `¥${(item.amount / 100).toFixed(2)}`,
+          date: formatRecentScanDateTime(item.date, item.updateTime || item.createTime),
+          amountText: `${getCurrencySymbol()}${(item.amount / 100).toFixed(2)}`,
         }))
       this.setData({ recentScans })
     },
@@ -157,6 +170,13 @@ Component({
       this.setData({ drafts })
     },
 
+    onEditDate(e: WechatMiniprogram.PickerChange) {
+      const idx = (e.currentTarget.dataset as any).index as number
+      const drafts = [...this.data.drafts]
+      drafts[idx] = { ...drafts[idx], date: e.detail.value as string }
+      this.setData({ drafts })
+    },
+
     onRemoveDraft(e: WechatMiniprogram.TouchEvent) {
       const idx = (e.currentTarget.dataset as any).index as number
       const drafts = this.data.drafts.filter((_: DraftRecord, i: number) => i !== idx)
@@ -206,6 +226,7 @@ Component({
         wx.showToast({ title: '请检查金额是否正确', icon: 'none' })
         return
       }
+      const currentCurrency = getCurrencyCode()
       const records = validDrafts.map((d: DraftRecord) =>
         parsedToRecord({
           type: d.type,
@@ -213,10 +234,17 @@ Component({
           amount: yuanToFen(parseFloat(d.amountYuan)),
           note: d.note,
           date: d.date,
+          tags: [RECORD_TAG_SCAN],
+          currency: currentCurrency,
         }),
       )
       addRecordsBatch(records)
       this.loadRecentScans()
+      const alert = checkBudgetAlertAfterRecordsSaved(records)
+      if (alert) {
+        showBudgetAlertModal(alert, () => wx.navigateBack())
+        return
+      }
       wx.showToast({ title: `已保存 ${records.length} 条记录` })
       setTimeout(() => wx.navigateBack(), 600)
     },

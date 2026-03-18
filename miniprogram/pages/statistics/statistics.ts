@@ -1,4 +1,5 @@
-import { getRecords, getCurrencyCode } from '../../utils/storage'
+import { getRecords, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
+import { PICKER_YEARS, PICKER_MONTHS } from '../../utils/constants'
 import {
   calcMonthSummary,
   calcCategoryRanking,
@@ -14,8 +15,6 @@ type CompareMode = 'daily' | 'weekly' | 'monthly'
 const STAT_TYPES: RecordType[] = ['支出', '收入']
 
 const now = new Date()
-const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
-const PICKER_MONTHS: string[] = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 
 function getStatusBarHeight(): number {
   const wxApi = wx as any
@@ -25,7 +24,7 @@ function getStatusBarHeight(): number {
   return info.statusBarHeight || info.safeArea?.top || 0
 }
 
-function formatAmount(fen: number, withCurrency = false): string {
+function formatAmount(fen: number, withCurrency = false, symbol = '¥'): string {
   const normalized = fenToYuan(fen)
   const trimmed = normalized.includes('.')
     ? normalized.replace(/\.00$/, '').replace(/(\.\d*[1-9])0+$/, '$1')
@@ -33,7 +32,7 @@ function formatAmount(fen: number, withCurrency = false): string {
   const [integerPart, decimalPart] = trimmed.split('.')
   const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   const amount = decimalPart ? `${groupedInteger}.${decimalPart}` : groupedInteger
-  return withCurrency ? `¥ ${amount}` : amount
+  return withCurrency ? `${symbol} ${amount}` : amount
 }
 
 function getTrendColor(type: RecordType): string {
@@ -63,6 +62,7 @@ Component({
     pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
     typeIndex: 0,
     types: STAT_TYPES,
+    currencySymbol: '¥',
     income: '¥ 0',
     expense: '¥ 0',
     typeTotalText: '0',
@@ -88,7 +88,7 @@ Component({
     barColor: getTrendColor('支出'),
     selectedBarIndex: -1,
     trendSelectedLabel: '--',
-    trendSelectedValueText: '¥ 0',
+    trendSelectedValueText: '',
     trendPeakLabel: '',
     trendPeakValueText: '',
     trendAverageValueText: '',
@@ -108,13 +108,14 @@ Component({
 
   pageLifetimes: {
     show() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
     },
   },
 
   methods: {
     loadData() {
-      const { year, month, typeIndex } = this.data
+      const { year, month, typeIndex, currencySymbol } = this.data
       const allRecords = getRecords()
       const type = this.data.types[typeIndex] as RecordType
       const currentCurrencyCode = getCurrencyCode()
@@ -130,7 +131,7 @@ Component({
       const topCategories = ranking.slice(0, 3).map((item, index) => ({
         rank: index + 1,
         category: item.category,
-        amountText: formatAmount(item.amount, true),
+        amountText: formatAmount(item.amount, true, currencySymbol),
         percentageText: `${item.percentage}%`,
         color: item.color,
       }))
@@ -141,8 +142,8 @@ Component({
       const barColor = getTrendColor(type)
 
       this.setData({
-        income: formatAmount(summary.income, true),
-        expense: formatAmount(summary.expense, true),
+        income: formatAmount(summary.income, true, currencySymbol),
+        expense: formatAmount(summary.expense, true, currencySymbol),
         typeTotalText: formatAmount(typeTotal),
         pieData,
         topCategories,
@@ -157,7 +158,7 @@ Component({
     },
 
     loadCompareData() {
-      const { compareMode, typeIndex } = this.data
+      const { compareMode, typeIndex, currencySymbol } = this.data
       const type = this.data.types[typeIndex] as RecordType
       const allRecords = getRecords()
       let barData: ComparisonDatum[] = []
@@ -184,11 +185,11 @@ Component({
         barData,
         selectedBarIndex: peakIndex,
         trendSelectedLabel: peakDatum?.label || '--',
-        trendSelectedValueText: peakDatum ? formatAmount(peakDatum.value, true) : '¥ 0',
+        trendSelectedValueText: peakDatum ? formatAmount(peakDatum.value, true, currencySymbol) : '',
         hasBarData: activeBars.length > 0,
         trendPeakLabel: peakDatum?.label || '--',
-        trendPeakValueText: peakDatum ? formatAmount(peakDatum.value, true) : '¥ 0',
-        trendAverageValueText: formatAmount(average, true),
+        trendPeakValueText: peakDatum ? formatAmount(peakDatum.value, true, currencySymbol) : '',
+        trendAverageValueText: formatAmount(average, true, currencySymbol),
         trendActiveCountText: `${activeBars.length}`,
         compareModeLabel: getCompareModeLabel(compareMode),
         compareModePeriodName: getCompareModePeriodName(compareMode),

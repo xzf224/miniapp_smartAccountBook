@@ -10,6 +10,10 @@ Component({
     expenseRaw: { type: Number, value: 0 },
     daysLeft: { type: Number, value: 0 },
     mixedCount: { type: Number, value: 0 },
+    alertVisible: { type: Boolean, value: false },
+    alertTone: { type: String, value: 'warning' },
+    alertTitle: { type: String, value: '' },
+    alertText: { type: String, value: '' },
   },
 
   data: {
@@ -34,11 +38,20 @@ Component({
 
   observers: {
     'expenseBudget, expenseRaw'(budget: number, raw: number) {
-      if (!budget) return
+      if (!budget) {
+        this.setData({
+          budgetLabel: '',
+          budgetPercent: 0,
+          budgetOver: false,
+          overAmountText: '',
+        })
+        return
+      }
       const over = raw > budget
       const percent = over ? 100 : Math.round((raw / budget) * 100)
+      const symbol = this.data.currencySymbol
       this.setData({
-        budgetLabel: '预算¥' + Math.round(budget / 100),
+        budgetLabel: `预算${symbol}${Math.round(budget / 100)}`,
         budgetPercent: percent,
         budgetOver: over,
         overAmountText: over ? fenToYuan(raw - budget) : '',

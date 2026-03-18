@@ -7,10 +7,13 @@ export interface IRecord {
   amount: number       // 单位: 分（整数，避免浮点精度问题）
   date: string         // YYYY-MM-DD
   note: string
+  tags?: string[]      // 可选来源标签，如“扫描识别”
   currency?: string    // 货币代码，如 'CNY'/'USD'，未设置时视为 'CNY'
   createTime: number
   updateTime: number
 }
+
+export const RECORD_TAG_SCAN = '扫描识别'
 
 export interface ICategories {
   '支出': string[]
@@ -89,6 +92,7 @@ export interface IRecurringRule {
   category: string
   amount: number            // 分
   note: string
+  currency?: string         // 货币代码，未设置时视为 'CNY'
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
   dayOfMonth?: number       // 1–31（monthly / yearly）
   dayOfWeek?: number        // 0–6（weekly，0=周日）
@@ -107,6 +111,7 @@ export interface IPendingDraft {
   category: string
   amount: number
   note: string
+  currency?: string         // 货币代码，未设置时视为 'CNY'
   date: string          // 到期日期 YYYY-MM-DD
   generatedAt: number   // 生成时间戳
 }

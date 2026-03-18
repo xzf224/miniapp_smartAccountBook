@@ -1,20 +1,6 @@
 import { CATEGORY_ICONS, CATEGORY_COLORS, fenToYuan } from '../../models/record'
 import { getCategoryMeta, getCurrencySymbol } from '../../utils/storage'
-
-function createSoftBackground(color: string): string {
-  const normalized = color.replace('#', '')
-  const hex = normalized.length === 3
-    ? normalized.split('').map((item) => item + item).join('')
-    : normalized
-
-  if (hex.length !== 6) return 'rgba(255, 138, 0, 0.14)'
-
-  const red = parseInt(hex.slice(0, 2), 16)
-  const green = parseInt(hex.slice(2, 4), 16)
-  const blue = parseInt(hex.slice(4, 6), 16)
-
-  return `rgba(${red}, ${green}, ${blue}, 0.14)`
-}
+import { createSoftBackground } from '../../utils/format'
 
 Component({
   properties: {

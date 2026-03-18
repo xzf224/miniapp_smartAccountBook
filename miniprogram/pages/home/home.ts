@@ -1,11 +1,21 @@
-import { getRecords, deleteRecord, getBudgetAmount, getPendingDrafts, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
+import { getRecords, deleteRecord, getBudgets, getPendingDrafts, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
 import { checkRecurringRules } from '../../utils/recurring'
 import { groupRecordsByDate } from '../../utils/date'
 import { fenToYuan } from '../../models/record'
+import { PICKER_YEARS, PICKER_MONTHS } from '../../utils/constants'
+import { getBudgetAlertBanner, getBudgetAlertForPeriod } from '../../utils/budget-alert'
 
 const now = new Date()
-const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
-const PICKER_MONTHS: string[] = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+
+function getExactBudgetAmount(year: number, month: number, type: '支出' | '收入', category: string): number {
+  const entry = getBudgets().find(
+    budget => budget.year === year
+      && budget.month === month
+      && budget.type === type
+      && budget.category === category,
+  )
+  return entry ? entry.amount : 0
+}
 
 function formatRecordDateTime(record: any): string {
   const timestamp = record.updateTime || record.createTime
@@ -41,8 +51,13 @@ Component({
     dateEnd: '',
     pendingDraftCount: 0,
     analysisItems: [] as any[],
+    analysisExpanded: false,
     currencySymbol: '¥',
     mixedCurrencyCount: 0,
+    budgetAlertVisible: false,
+    budgetAlertTone: 'warning',
+    budgetAlertTitle: '',
+    budgetAlertText: '',
   },
 
   lifetimes: {
@@ -99,7 +114,9 @@ Component({
         ...record,
         timeText: formatRecordDateTime(record),
       })) as any, currentCurrencyCode)
-      const expenseBudget = getBudgetAmount(year, month, '支出', '__total__')
+      const expenseBudget = getExactBudgetAmount(year, month, '支出', '__total__')
+      const budgetAlert = getBudgetAlertForPeriod(year, month, currentCurrencyCode)
+      const budgetAlertBanner = budgetAlert ? getBudgetAlertBanner(budgetAlert) : null
 
       const pendingDraftCount = getPendingDrafts().length
 
@@ -109,16 +126,15 @@ Component({
       const daysInMonth = new Date(currentYear, currentMonth, 0).getDate()
       const daysLeft = daysInMonth - nowDate.getDate()
 
-      // 按分类汇总支出，取前5，计算百分比
+      // 按分类汇总支出，计算百分比（仅统计当前货币）
       const categoryMap: Record<string, number> = {}
-      monthRecords.filter((r: any) => r.type === '支出').forEach((r: any) => {
+      monthRecords.filter((r: any) => r.type === '支出' && (r.currency ?? 'CNY') === currentCurrencyCode).forEach((r: any) => {
         categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount
       })
       const total = Object.values(categoryMap).reduce((a: number, b: number) => a + b, 0)
-      const colours = ['#FF7D00', '#4CAF50', '#2196F3', '#9C27B0', '#FF5722']
+      const colours = ['#FF7D00', '#4CAF50', '#2196F3', '#9C27B0', '#FF5722', '#5B8FF9', '#E86452', '#6DC8EC', '#945FB9', '#FF9845']
       const analysisItems = Object.entries(categoryMap)
         .sort((a, b) => (b[1] as number) - (a[1] as number))
-        .slice(0, 5)
         .map(([category, amount], i) => ({
           category,
           amountText: fenToYuan(amount as number),
@@ -139,6 +155,10 @@ Component({
         pendingDraftCount,
         daysLeft,
         mixedCurrencyCount,
+        budgetAlertVisible: Boolean(budgetAlertBanner),
+        budgetAlertTone: budgetAlertBanner?.tone || 'warning',
+        budgetAlertTitle: budgetAlertBanner?.title || '',
+        budgetAlertText: budgetAlertBanner?.text || '',
       })
     },
 
@@ -233,6 +253,10 @@ Component({
 
     onPhoto() {
       wx.navigateTo({ url: '/pages/photo-scan/photo-scan' })
+    },
+
+    onToggleAnalysis() {
+      this.setData({ analysisExpanded: !this.data.analysisExpanded })
     },
 
     onViewAllRecords() {

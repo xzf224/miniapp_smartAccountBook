@@ -1,5 +1,6 @@
-import { getCategories, getBudgets, upsertBudget, deleteBudget, getRecords } from '../../utils/storage'
-import { IBudget, fenToYuan, yuanToFen, CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
+import { getCategories, getBudgets, upsertBudget, deleteBudget, getRecords, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
+import { hexToRgba } from '../../utils/format'
+import { fenToYuan, yuanToFen, CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
 
 type StatusTone = 'normal' | 'warning' | 'danger' | 'neutral'
 
@@ -7,17 +8,17 @@ interface CatBudgetItem {
   rank: number
   category: string
   budgetFen: number
-  budgetYuan: string        // display text e.g. "1,000.00"
+  budgetYuan: string
   spentFen: number
-  spentYuan: string         // display text
-  progressPct: number       // 0-100, capped at 100
-  spentPct: number          // actual percent (may exceed 100)
+  spentYuan: string
+  progressPct: number
+  spentPct: number
   isOver: boolean
   iconText: string
-  iconColor: string         // hex
-  iconBgRgba: string        // rgba string for 15% opacity background
+  iconColor: string
+  iconBgRgba: string
   editingBudget: boolean
-  editBudgetValue: string   // raw input value while editing
+  editBudgetValue: string
   isPriority: boolean
   statusText: string
   statusTone: StatusTone
@@ -25,19 +26,8 @@ interface CatBudgetItem {
   accentColor: string
 }
 
-function hexToRgba(color: string, alpha: number): string {
-  const normalized = color.replace('#', '')
-  const hex = normalized.length === 3
-    ? normalized.split('').map((item) => item + item).join('')
-    : normalized
-
-  if (hex.length !== 6) return `rgba(255, 138, 0, ${alpha})`
-
-  const r = parseInt(hex.slice(0, 2), 16)
-  const g = parseInt(hex.slice(2, 4), 16)
-  const b = parseInt(hex.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
-}
+const EXPENSE_TYPE = '支出' as const
+const ALLOCATION_WARNING_THRESHOLD = 90
 
 function getCatStatusTone(spentPct: number): StatusTone {
   if (spentPct > 100) return 'danger'
@@ -52,12 +42,20 @@ function getCatStatusText(spentPct: number, isPriority: boolean): string {
   return '预算稳定'
 }
 
-function buildOverview(totalBudgetFen: number, totalCatBudgetFen: number, alertThreshold: number) {
+function buildOverview(totalBudgetFen: number, totalCatBudgetFen: number) {
   if (totalBudgetFen <= 0) {
+    if (totalCatBudgetFen > 0) {
+      return {
+        overviewStatusText: '未设总额',
+        overviewStatusTone: 'neutral' as StatusTone,
+        overviewHintText: '当前只设置了分类预算，您也可以继续保持不设总预算。',
+      }
+    }
+
     return {
       overviewStatusText: '待设置',
       overviewStatusTone: 'neutral' as StatusTone,
-      overviewHintText: '先设置总预算，再按分类逐项分配。',
+      overviewHintText: '总预算和分类预算都可以独立设置，当前两者都未设置。',
     }
   }
 
@@ -78,7 +76,7 @@ function buildOverview(totalBudgetFen: number, totalCatBudgetFen: number, alertT
   }
 
   const allocatedPct = Math.round((totalCatBudgetFen / totalBudgetFen) * 100)
-  if (allocatedPct >= alertThreshold) {
+  if (allocatedPct >= ALLOCATION_WARNING_THRESHOLD) {
     return {
       overviewStatusText: '分配偏满',
       overviewStatusTone: 'warning' as StatusTone,
@@ -117,33 +115,81 @@ function decorateCatBudgets(items: CatBudgetItem[]): CatBudgetItem[] {
     })
 }
 
+function buildCatBudgetItem(category: string, budgetFen: number, spentFen: number): CatBudgetItem {
+  const spentPct = budgetFen > 0 ? Math.round((spentFen / budgetFen) * 100) : 0
+  const iconColor = CATEGORY_COLORS[category] || '#95A5A6'
+  return {
+    rank: 0,
+    category,
+    budgetFen,
+    budgetYuan: fenToYuan(budgetFen),
+    spentFen,
+    spentYuan: fenToYuan(spentFen),
+    progressPct: Math.min(spentPct, 100),
+    spentPct,
+    isOver: spentPct > 100,
+    iconText: CATEGORY_ICONS[category] || category.slice(0, 1),
+    iconColor,
+    iconBgRgba: hexToRgba(iconColor, 0.15),
+    editingBudget: false,
+    editBudgetValue: '',
+    isPriority: false,
+    statusText: '',
+    statusTone: 'normal',
+    cardBg: '#F8F8F8',
+    accentColor: iconColor,
+  }
+}
+
+function getAvailableCategories(allExpenseCategories: string[], catBudgets: CatBudgetItem[]) {
+  const budgetedCats = new Set(catBudgets.map(item => item.category))
+  return allExpenseCategories.filter(category => !budgetedCats.has(category))
+}
+
+function buildDraftState(
+  totalBudgetFen: number,
+  catBudgets: CatBudgetItem[],
+  allExpenseCategories: string[],
+) {
+  const decorated = decorateCatBudgets(catBudgets)
+  const totalCatBudgetFen = decorated.reduce((sum, item) => sum + item.budgetFen, 0)
+  const unallocatedFen = totalBudgetFen - totalCatBudgetFen
+
+  return {
+    catBudgets: decorated,
+    availableCategories: getAvailableCategories(allExpenseCategories, decorated),
+    totalCatBudgetFen,
+    totalCatBudgetDisplay: fenToYuan(totalCatBudgetFen),
+    unallocatedFen,
+    unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
+    unallocatedPositive: unallocatedFen >= 0,
+    ...buildOverview(totalBudgetFen, totalCatBudgetFen),
+  }
+}
+
 Component({
   data: {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
 
-    // --- Total budget ---
     totalBudgetFen: 0,
     totalBudgetDisplay: '0.00',
     editingTotal: false,
     editTotalValue: '',
 
-    // --- Alert settings ---
     alertThreshold: 80,
     alertEnabled: false,
     editingThreshold: false,
     editThresholdValue: '',
 
-    // --- Category budgets (only those with amount > 0) ---
     catBudgets: [] as CatBudgetItem[],
+    allExpenseCategories: [] as string[],
 
-    // --- Add category form ---
     showAddForm: false,
-    availableCategories: [] as string[],   // categories without a budget yet
+    availableCategories: [] as string[],
     addPickerIndex: 0,
     addBudgetValue: '',
 
-    // --- Summary ---
     totalCatBudgetFen: 0,
     totalCatBudgetDisplay: '0.00',
     unallocatedFen: 0,
@@ -152,142 +198,118 @@ Component({
     overviewStatusText: '待设置',
     overviewStatusTone: 'neutral' as StatusTone,
     overviewHintText: '',
+    currencySymbol: '¥',
   },
 
   lifetimes: {
     attached() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
-    }
+    },
   },
 
   pageLifetimes: {
     show() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
-    }
+    },
   },
 
   methods: {
+    getDraftState(overrides?: {
+      totalBudgetFen?: number
+      catBudgets?: CatBudgetItem[]
+    }) {
+      const totalBudgetFen = overrides?.totalBudgetFen ?? this.data.totalBudgetFen
+      const catBudgets = overrides?.catBudgets ?? this.data.catBudgets
+
+      return buildDraftState(
+        totalBudgetFen,
+        catBudgets,
+        this.data.allExpenseCategories,
+      )
+    },
+
     loadData() {
       const now = new Date()
       const year = now.getFullYear()
       const month = now.getMonth() + 1
-      const type = '支出' as const
 
-      // Load alert settings
       const alertThreshold = wx.getStorageSync('budgetAlertThreshold') || 80
       const alertEnabled = wx.getStorageSync('budgetAlertEnabled') || false
 
-      // Load all budgets and records
       const budgets = getBudgets()
       const records = getRecords()
+      const allExpenseCategories = getCategories()[EXPENSE_TYPE] || []
 
-      // Total budget — try exact month first, then universal (month=0)
       const totalEntry = budgets.find(
-        b => b.year === year && b.month === month && b.type === type && b.category === '__total__'
-      ) || budgets.find(
-        b => b.month === 0 && b.type === type && b.category === '__total__'
+        budget => budget.year === year
+          && budget.month === month
+          && budget.type === EXPENSE_TYPE
+          && budget.category === '__total__',
       )
       const totalBudgetFen = totalEntry ? totalEntry.amount : 0
-      const totalBudgetDisplay = fenToYuan(totalBudgetFen)
 
-      // Category budgets — only entries with amount > 0 for this month
-      const allCats = getCategories()['支出'] || []
-
-      // Compute spent per category this month
       const prefix = `${year}-${String(month).padStart(2, '0')}`
+      const currentCurrencyCode = getCurrencyCode()
       const monthRecords = records.filter(
-        r => r.type === type && r.date.startsWith(prefix)
+        record => record.type === EXPENSE_TYPE
+          && record.date.startsWith(prefix)
+          && (record.currency ?? 'CNY') === currentCurrencyCode,
       )
       const spentByCat: Record<string, number> = {}
-      for (const r of monthRecords) {
-        spentByCat[r.category] = (spentByCat[r.category] || 0) + r.amount
+      for (const record of monthRecords) {
+        spentByCat[record.category] = (spentByCat[record.category] || 0) + record.amount
       }
 
-      // Build catBudgets list from budget entries that have amount > 0
-      const catBudgetEntries = budgets.filter(
-        b => b.type === type && b.category !== '__total__' && b.amount > 0 &&
-          ((b.year === year && b.month === month) || b.month === 0)
-      )
-      // deduplicate: prefer month-specific over universal
-      const seen = new Set<string>()
-      const dedupedEntries: IBudget[] = []
-      for (const b of catBudgetEntries) {
-        if (b.year === year && b.month === month) {
-          seen.add(b.category)
-          dedupedEntries.push(b)
-        }
-      }
-      for (const b of catBudgetEntries) {
-        if (b.month === 0 && !seen.has(b.category)) {
-          seen.add(b.category)
-          dedupedEntries.push(b)
-        }
-      }
-
-      const catBudgets = decorateCatBudgets(dedupedEntries.map(b => {
-        const spentFen = spentByCat[b.category] || 0
-        const pct = b.amount > 0 ? Math.round((spentFen / b.amount) * 100) : 0
-        const color = CATEGORY_COLORS[b.category] || '#95A5A6'
-        return {
-          rank: 0,
-          category: b.category,
-          budgetFen: b.amount,
-          budgetYuan: fenToYuan(b.amount),
-          spentFen,
-          spentYuan: fenToYuan(spentFen),
-          progressPct: Math.min(pct, 100),
-          spentPct: pct,
-          isOver: pct > 100,
-          iconText: CATEGORY_ICONS[b.category] || b.category.slice(0, 1),
-          iconColor: color,
-          iconBgRgba: hexToRgba(color, 0.15),
-          editingBudget: false,
-          editBudgetValue: '',
-          isPriority: false,
-          statusText: '',
-          statusTone: 'normal' as StatusTone,
-          cardBg: '#F8F8F8',
-          accentColor: color,
-        }
-      }))
-
-      // Summary
-      const totalCatBudgetFen = catBudgets.reduce((s, c) => s + c.budgetFen, 0)
-      const unallocatedFen = totalBudgetFen - totalCatBudgetFen
-      const unallocatedPositive = unallocatedFen >= 0
-      const { overviewStatusText, overviewStatusTone, overviewHintText } = buildOverview(
-        totalBudgetFen,
-        totalCatBudgetFen,
-        alertThreshold
-      )
-
-      // Available categories for add form (those not yet in catBudgets)
-      const budgetedCats = new Set(catBudgets.map(c => c.category))
-      const availableCategories = allCats.filter(c => !budgetedCats.has(c))
+      const catBudgets = budgets
+        .filter(
+          budget => budget.year === year
+            && budget.month === month
+            && budget.type === EXPENSE_TYPE
+            && budget.category !== '__total__'
+            && budget.amount > 0,
+        )
+        .map(budget => buildCatBudgetItem(
+          budget.category,
+          budget.amount,
+          spentByCat[budget.category] || 0,
+        ))
 
       this.setData({
-        year, month,
-        alertThreshold, alertEnabled,
-        totalBudgetFen, totalBudgetDisplay,
-        catBudgets,
-        totalCatBudgetFen,
-        totalCatBudgetDisplay: fenToYuan(totalCatBudgetFen),
-        unallocatedFen,
-        unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
-        unallocatedPositive,
-        overviewStatusText,
-        overviewStatusTone,
-        overviewHintText,
-        availableCategories,
+        year,
+        month,
+        alertThreshold,
+        alertEnabled,
+        totalBudgetFen,
+        totalBudgetDisplay: fenToYuan(totalBudgetFen),
+        editingTotal: false,
+        editTotalValue: '',
+        editingThreshold: false,
+        editThresholdValue: '',
+        allExpenseCategories,
+        showAddForm: false,
         addPickerIndex: 0,
         addBudgetValue: '',
-        showAddForm: false,
+        ...buildDraftState(totalBudgetFen, catBudgets, allExpenseCategories),
       })
     },
 
-    // ---- Total budget inline edit ----
     onEditTotal() {
-      this.setData({ editingTotal: true, editTotalValue: fenToYuan(this.data.totalBudgetFen) })
+      this.setData({
+        editingTotal: true,
+        editTotalValue: this.data.totalBudgetFen > 0 ? fenToYuan(this.data.totalBudgetFen) : '',
+      })
+    },
+
+    onClearTotal() {
+      this.setData({
+        editingTotal: false,
+        editTotalValue: '',
+        totalBudgetFen: 0,
+        totalBudgetDisplay: '0.00',
+        ...this.getDraftState({ totalBudgetFen: 0 }),
+      })
     },
 
     onTotalInput(e: WechatMiniprogram.CustomEvent) {
@@ -305,27 +327,37 @@ Component({
     _confirmTotal() {
       const raw = this.data.editTotalValue.trim()
       const val = parseFloat(raw)
+
       if (!raw || isNaN(val) || val < 0) {
-        this.setData({ editingTotal: false })
+        this.setData({ editingTotal: false, editTotalValue: '' })
         return
       }
+
       const totalBudgetFen = yuanToFen(val)
-      const totalBudgetDisplay = fenToYuan(totalBudgetFen)
-      const unallocatedFen = totalBudgetFen - this.data.totalCatBudgetFen
+      if (totalBudgetFen < this.data.totalCatBudgetFen) {
+        wx.showToast({
+          title: `不能低于分类合计${this.data.currencySymbol}${fenToYuan(this.data.totalCatBudgetFen)}`,
+          icon: 'none',
+          duration: 2000,
+        })
+        this.setData({ editingTotal: false, editTotalValue: '' })
+        return
+      }
+
       this.setData({
         editingTotal: false,
+        editTotalValue: '',
         totalBudgetFen,
-        totalBudgetDisplay,
-        unallocatedFen,
-        unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
-        unallocatedPositive: unallocatedFen >= 0,
-        ...buildOverview(totalBudgetFen, this.data.totalCatBudgetFen, this.data.alertThreshold),
+        totalBudgetDisplay: fenToYuan(totalBudgetFen),
+        ...this.getDraftState({ totalBudgetFen }),
       })
     },
 
-    // ---- Alert threshold inline edit ----
     onEditThreshold() {
-      this.setData({ editingThreshold: true, editThresholdValue: String(this.data.alertThreshold) })
+      this.setData({
+        editingThreshold: true,
+        editThresholdValue: String(this.data.alertThreshold),
+      })
     },
 
     onThresholdInput(e: WechatMiniprogram.CustomEvent) {
@@ -342,15 +374,17 @@ Component({
 
     _confirmThreshold() {
       const raw = this.data.editThresholdValue.trim()
-      const val = parseInt(raw)
+      const val = parseInt(raw, 10)
+
       if (!raw || isNaN(val) || val < 1 || val > 100) {
-        this.setData({ editingThreshold: false })
+        this.setData({ editingThreshold: false, editThresholdValue: '' })
         return
       }
+
       this.setData({
         editingThreshold: false,
+        editThresholdValue: '',
         alertThreshold: val,
-        ...buildOverview(this.data.totalBudgetFen, this.data.totalCatBudgetFen, val),
       })
     },
 
@@ -358,13 +392,12 @@ Component({
       this.setData({ alertEnabled: e.detail.value })
     },
 
-    // ---- Category budget inline edit ----
     onEditCatBudget(e: WechatMiniprogram.CustomEvent) {
       const index = Number(e.currentTarget.dataset.index)
-      const catBudgets = this.data.catBudgets.map((item, i) => ({
+      const catBudgets = this.data.catBudgets.map((item, itemIndex) => ({
         ...item,
-        editingBudget: i === index,
-        editBudgetValue: i === index ? fenToYuan(item.budgetFen) : item.editBudgetValue,
+        editingBudget: itemIndex === index,
+        editBudgetValue: itemIndex === index ? fenToYuan(item.budgetFen) : '',
       }))
       this.setData({ catBudgets })
     },
@@ -372,7 +405,10 @@ Component({
     onCatBudgetInput(e: WechatMiniprogram.CustomEvent) {
       const index = Number(e.currentTarget.dataset.index)
       const catBudgets = this.data.catBudgets.slice()
-      catBudgets[index] = { ...catBudgets[index], editBudgetValue: e.detail.value }
+      catBudgets[index] = {
+        ...catBudgets[index],
+        editBudgetValue: e.detail.value,
+      }
       this.setData({ catBudgets })
     },
 
@@ -391,65 +427,47 @@ Component({
       const item = catBudgets[index]
       const raw = item.editBudgetValue.trim()
       const val = parseFloat(raw)
+
       if (!raw || isNaN(val) || val <= 0) {
-        catBudgets[index] = { ...item, editingBudget: false }
+        catBudgets[index] = { ...item, editingBudget: false, editBudgetValue: '' }
         this.setData({ catBudgets })
         return
       }
-      const budgetFen = yuanToFen(val)
+
       catBudgets[index] = {
         ...item,
-        budgetFen,
-        budgetYuan: fenToYuan(budgetFen),
+        budgetFen: yuanToFen(val),
+        budgetYuan: fenToYuan(yuanToFen(val)),
         editingBudget: false,
+        editBudgetValue: '',
       }
-      const decorated = decorateCatBudgets(catBudgets)
-      const totalCatBudgetFen = decorated.reduce((s, c) => s + c.budgetFen, 0)
-      const unallocatedFen = this.data.totalBudgetFen - totalCatBudgetFen
+
       this.setData({
-        catBudgets: decorated,
-        totalCatBudgetFen,
-        totalCatBudgetDisplay: fenToYuan(totalCatBudgetFen),
-        unallocatedFen,
-        unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
-        unallocatedPositive: unallocatedFen >= 0,
-        ...buildOverview(this.data.totalBudgetFen, totalCatBudgetFen, this.data.alertThreshold),
+        ...this.getDraftState({ catBudgets }),
       })
     },
 
-    // ---- Delete category budget ----
     onDeleteCatBudget(e: WechatMiniprogram.CustomEvent) {
       const index = Number(e.currentTarget.dataset.index)
-      const catBudgets = this.data.catBudgets.slice()
-      const removed = catBudgets.splice(index, 1)[0]
-
-      const decorated = decorateCatBudgets(catBudgets)
-      const totalCatBudgetFen = decorated.reduce((s, c) => s + c.budgetFen, 0)
-      const unallocatedFen = this.data.totalBudgetFen - totalCatBudgetFen
-
-      // Add removed category back to available list
-      const availableCategories = [...this.data.availableCategories, removed.category]
+      const catBudgets = this.data.catBudgets.filter((_: CatBudgetItem, itemIndex: number) => itemIndex !== index)
 
       this.setData({
-        catBudgets: decorated,
-        totalCatBudgetFen,
-        totalCatBudgetDisplay: fenToYuan(totalCatBudgetFen),
-        unallocatedFen,
-        unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
-        unallocatedPositive: unallocatedFen >= 0,
-        ...buildOverview(this.data.totalBudgetFen, totalCatBudgetFen, this.data.alertThreshold),
-        availableCategories,
         addPickerIndex: 0,
+        ...this.getDraftState({ catBudgets }),
       })
     },
 
-    // ---- Add category budget form ----
     onToggleAddForm() {
       if (this.data.availableCategories.length === 0) {
         wx.showToast({ title: '所有分类均已设置预算', icon: 'none' })
         return
       }
-      this.setData({ showAddForm: !this.data.showAddForm, addBudgetValue: '', addPickerIndex: 0 })
+
+      this.setData({
+        showAddForm: !this.data.showAddForm,
+        addBudgetValue: '',
+        addPickerIndex: 0,
+      })
     },
 
     onAddPickerChange(e: WechatMiniprogram.CustomEvent) {
@@ -464,89 +482,68 @@ Component({
       const { availableCategories, addPickerIndex, addBudgetValue } = this.data
       const category = availableCategories[addPickerIndex]
       const val = parseFloat(addBudgetValue.trim())
+
       if (!category) {
-        wx.showToast({ title: '请选择分类', icon: 'none' }); return
+        wx.showToast({ title: '请选择分类', icon: 'none' })
+        return
       }
+
       if (!addBudgetValue.trim() || isNaN(val) || val <= 0) {
-        wx.showToast({ title: '请输入有效金额', icon: 'none' }); return
+        wx.showToast({ title: '请输入有效金额', icon: 'none' })
+        return
       }
 
-      const budgetFen = yuanToFen(val)
-      const color = CATEGORY_COLORS[category] || '#95A5A6'
-
-      const spentFen = 0  // new entry, no spend yet accounted (recalculated on reload)
-      const newItem: CatBudgetItem = {
-        rank: 0,
-        category,
-        budgetFen,
-        budgetYuan: fenToYuan(budgetFen),
-        spentFen,
-        spentYuan: fenToYuan(0),
-        progressPct: 0,
-        spentPct: 0,
-        isOver: false,
-        iconText: CATEGORY_ICONS[category] || category.slice(0, 1),
-        iconColor: color,
-        iconBgRgba: hexToRgba(color, 0.15),
-        editingBudget: false,
-        editBudgetValue: '',
-        isPriority: false,
-        statusText: '',
-        statusTone: 'normal' as StatusTone,
-        cardBg: '#F8F8F8',
-        accentColor: color,
-      }
-
-      const catBudgets = decorateCatBudgets([...this.data.catBudgets, newItem])
-      const newAvailable = availableCategories.filter(c => c !== category)
-      const totalCatBudgetFen = catBudgets.reduce((s, c) => s + c.budgetFen, 0)
-      const unallocatedFen = this.data.totalBudgetFen - totalCatBudgetFen
+      const catBudgets = [
+        ...this.data.catBudgets,
+        buildCatBudgetItem(category, yuanToFen(val), 0),
+      ]
 
       this.setData({
-        catBudgets,
-        availableCategories: newAvailable,
         showAddForm: false,
         addBudgetValue: '',
         addPickerIndex: 0,
-        totalCatBudgetFen,
-        totalCatBudgetDisplay: fenToYuan(totalCatBudgetFen),
-        unallocatedFen,
-        unallocatedDisplay: fenToYuan(Math.abs(unallocatedFen)),
-        unallocatedPositive: unallocatedFen >= 0,
-        ...buildOverview(this.data.totalBudgetFen, totalCatBudgetFen, this.data.alertThreshold),
+        ...this.getDraftState({ catBudgets }),
       })
     },
 
     onCancelAdd() {
-      this.setData({ showAddForm: false, addBudgetValue: '' })
+      this.setData({
+        showAddForm: false,
+        addBudgetValue: '',
+        addPickerIndex: 0,
+      })
     },
 
-    // ---- Save all ----
     onSave() {
       const { year, month, totalBudgetFen, catBudgets, alertThreshold, alertEnabled } = this.data
-      const type = '支出' as const
 
-      // Save total budget
       if (totalBudgetFen > 0) {
-        upsertBudget({ year, month, type, category: '__total__', amount: totalBudgetFen })
+        upsertBudget({ year, month, type: EXPENSE_TYPE, category: '__total__', amount: totalBudgetFen })
       } else {
-        deleteBudget(year, month, type, '__total__')
+        deleteBudget(year, month, EXPENSE_TYPE, '__total__')
       }
 
-      // Save category budgets — first clear existing month entries to handle deletions
       const existing = getBudgets().filter(
-        b => b.type === type && b.year === year && b.month === month && b.category !== '__total__'
+        budget => budget.type === EXPENSE_TYPE
+          && budget.year === year
+          && budget.month === month
+          && budget.category !== '__total__',
       )
-      for (const b of existing) {
-        deleteBudget(year, month, type, b.category)
+      for (const budget of existing) {
+        deleteBudget(year, month, EXPENSE_TYPE, budget.category)
       }
       for (const item of catBudgets) {
         if (item.budgetFen > 0) {
-          upsertBudget({ year, month, type, category: item.category, amount: item.budgetFen })
+          upsertBudget({
+            year,
+            month,
+            type: EXPENSE_TYPE,
+            category: item.category,
+            amount: item.budgetFen,
+          })
         }
       }
 
-      // Save alert settings
       wx.setStorageSync('budgetAlertThreshold', alertThreshold)
       wx.setStorageSync('budgetAlertEnabled', alertEnabled)
 
@@ -555,5 +552,5 @@ Component({
         wx.navigateBack()
       }, 800)
     },
-  }
+  },
 })

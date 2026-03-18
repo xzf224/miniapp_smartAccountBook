@@ -52,17 +52,38 @@
 
 .summary-card {
   flex: 1;
+  position: relative;
+  overflow: hidden;
   border-radius: var(--radius-card);
   padding: 24rpx;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  border: 2rpx solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
 }
 
 .income-card {
-  background: #E8F5E9;
+  background: linear-gradient(180deg, #EEF9F0 0%, #E5F6E8 100%);
 }
 
 .expense-card {
-  background: #FFF3E0;
+  background: linear-gradient(180deg, #FFF7EC 0%, #FFF0DB 100%);
+}
+
+.summary-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.income-card .summary-card-accent {
+  background: linear-gradient(90deg, #27AE60 0%, #52C41A 100%);
+}
+
+.expense-card .summary-card-accent {
+  background: linear-gradient(90deg, #FF8A00 0%, #FF6A3D 100%);
 }
 
 .summary-label {
@@ -72,11 +93,21 @@
 }
 
 .summary-state {
-  display: block;
   margin-top: 8rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
   font-size: 18rpx;
   line-height: 1.2;
   color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.summary-state-active {
+  color: #FFFFFF;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.16);
 }
 
 .income-label {
@@ -96,12 +127,38 @@
 }
 
 .summary-card-active {
-  box-shadow: 0 12rpx 28rpx rgba(15, 23, 42, 0.08);
-  transform: translateY(-2rpx);
+  box-shadow: 0 16rpx 32rpx rgba(15, 23, 42, 0.1);
+  transform: translateY(-4rpx);
+}
+
+.summary-card-active .summary-card-accent {
+  opacity: 1;
+}
+
+.summary-card-active .summary-value {
+  color: #141A22;
+}
+
+.summary-card-income-active {
+  border-color: rgba(46, 204, 113, 0.28);
+  box-shadow: 0 16rpx 32rpx rgba(46, 204, 113, 0.16);
+}
+
+.summary-card-expense-active {
+  border-color: rgba(255, 138, 0, 0.28);
+  box-shadow: 0 16rpx 32rpx rgba(255, 138, 0, 0.16);
 }
 
 .summary-card-muted {
-  opacity: 0.72;
+  opacity: 0.78;
+}
+
+.summary-card-muted .summary-value {
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.summary-card-muted .summary-label {
+  opacity: 0.88;
 }
 
 /* 通用卡片 */

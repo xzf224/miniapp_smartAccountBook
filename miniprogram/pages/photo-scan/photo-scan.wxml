@@ -45,6 +45,12 @@
             <input class="draft-note-input" value="{{item.note}}"
                    bind:input="onEditNote" data-index="{{index}}"
                    placeholder="商品名" placeholder-class="input-ph" />
+            <picker mode="date" value="{{item.date}}" bind:change="onEditDate" data-index="{{index}}">
+              <view class="draft-date-row">
+                <text class="draft-date-label">日期</text>
+                <text class="draft-date-value">{{item.date}} ▾</text>
+              </view>
+            </picker>
           </view>
           <view class="draft-amount-area">
             <text class="draft-currency">¥</text>

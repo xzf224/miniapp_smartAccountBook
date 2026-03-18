@@ -13,35 +13,47 @@
   </view>
   <view class="budget-card budget-card-{{budgetStatusTone}}">
     <view class="budget-card-top">
-      <text class="budget-card-title">本月支出预算</text>
+      <text class="budget-card-title">本月支出总预算</text>
       <text class="budget-card-badge budget-card-badge-{{budgetStatusTone}}">{{budgetStatusText}}</text>
     </view>
     <text class="budget-card-label">{{summaryLabel}}</text>
     <view class="budget-main-row">
-      <text class="budget-main-amount">¥{{summaryValueText}}</text>
+      <text class="budget-main-amount">{{currencySymbol}}{{summaryValueText}}</text>
     </view>
-    <text class="budget-card-days">{{budgetHintText}}</text>
+    <text class="budget-card-days {{hasTotalBudget ? 'budget-card-days-active' : ''}}">{{budgetHintText}}</text>
+    <view wx:if="{{budgetAlertVisible}}" class="budget-alert-strip budget-alert-strip-{{budgetAlertTone}}">
+      <text class="budget-alert-title">{{budgetAlertTitle}}</text>
+      <text class="budget-alert-text">{{budgetAlertText}}</text>
+    </view>
     <view class="budget-metrics-row">
       <view class="budget-metric-card budget-metric-card-{{budgetStatusTone}}">
         <text class="budget-metric-label">已花</text>
-        <text class="budget-metric-value">¥{{expenseText}}</text>
+        <text class="budget-metric-value">{{currencySymbol}}{{expenseText}}</text>
       </view>
       <view class="budget-metric-card budget-metric-card-{{budgetStatusTone}}">
-        <text class="budget-metric-label">预算</text>
-        <text class="budget-metric-value">¥{{totalBudgetText}}</text>
+        <text class="budget-metric-label">{{secondaryMetricLabel}}</text>
+        <text class="budget-metric-value">{{currencySymbol}}{{secondaryMetricText}}</text>
       </view>
     </view>
-    <view class="progress-track">
-      <view class="progress-fill {{isOverBudget ? 'progress-fill-over' : ''}}" style="width: {{progressWidth}}%;"></view>
+    <view wx:if="{{hasTotalBudget}}" class="budget-progress-panel">
+      <view class="progress-track">
+        <view class="progress-fill {{isOverBudget ? 'progress-fill-over' : ''}}" style="width: {{progressWidth}}%;"></view>
+      </view>
+      <view class="budget-foot-row">
+        <text class="budget-foot-left {{isOverBudget ? 'budget-foot-left-over' : ''}}">已用 {{progress}}%</text>
+        <text class="budget-foot-right {{isOverBudget ? 'budget-foot-right-over' : ''}}">{{remainLabel}} {{currencySymbol}}{{remainText}}</text>
+      </view>
     </view>
-    <view class="budget-foot-row">
-      <text class="budget-foot-left {{isOverBudget ? 'budget-foot-left-over' : ''}}">已用 {{progress}}%</text>
-      <text class="budget-foot-right {{isOverBudget ? 'budget-foot-right-over' : ''}}">{{remainLabel}} ¥{{remainText}}</text>
+    <view wx:else class="budget-foot-row budget-foot-row-neutral">
+      <text class="budget-foot-right">总预算未设置时，分类预算也会独立生效。</text>
     </view>
   </view>
 
   <view class="section-row">
-    <text class="section-title">分类预算</text>
+    <view class="section-copy">
+      <text class="section-title">分类预算</text>
+      <text class="section-hint">按分类查看本月预算使用情况</text>
+    </view>
     <!--
     <view class="section-add" bind:tap="onOpenBudgetSetting">＋ 添加预算</view>
     -->
@@ -62,7 +74,7 @@
               <text class="budget-item-percent {{item.overBudget ? 'budget-item-percent-over' : ''}}" style="color: {{item.accentColor}};">{{item.percent}}%</text>
             </view>
             <view class="budget-item-meta-row">
-              <text class="budget-item-sub">¥{{item.spentText}} / ¥{{item.budgetText}}</text>
+              <text class="budget-item-sub">{{currencySymbol}}{{item.spentText}} / {{currencySymbol}}{{item.budgetText}}</text>
               <text class="budget-item-status budget-item-status-{{item.statusTone}}">{{item.statusText}}</text>
             </view>
           </view>
@@ -73,7 +85,10 @@
       </view>
     </view>
   </view>
-  <view class="empty-tip" wx:if="{{items.length === 0}}">还没有分类预算，点击右上角添加</view>
+  <view class="empty-tip" wx:if="{{items.length === 0}}">
+    <text class="empty-tip-title">还没有分类预算</text>
+    <text class="empty-tip-desc">点击右上角进入预算设置，为常用支出分类添加预算。</text>
+  </view>
   <view class="page-bottom-space"></view>
 </scroll-view>
 <bottom-nav current="{{1}}" />

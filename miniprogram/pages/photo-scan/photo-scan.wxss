@@ -224,6 +224,23 @@
   color: #4f5866;
 }
 
+.draft-date-row {
+  margin-top: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.draft-date-label {
+  font-size: 20rpx;
+  color: #9aa3af;
+}
+
+.draft-date-value {
+  font-size: 22rpx;
+  color: #5f6773;
+}
+
 .draft-amount-area {
   display: flex;
   align-items: baseline;

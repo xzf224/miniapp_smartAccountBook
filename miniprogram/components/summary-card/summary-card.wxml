@@ -15,6 +15,13 @@
     </text>
   </view>
 
+  <view class="summary-alert summary-alert-{{alertTone}}" wx:if="{{alertVisible}}">
+    <view class="summary-alert-head">
+      <text class="summary-alert-title">{{alertTitle}}</text>
+    </view>
+    <text class="summary-alert-text">{{alertText}}</text>
+  </view>
+
   <view class="mixed-hint" wx:if="{{mixedCount > 0}}">
     <text class="mixed-hint-text">另有 {{mixedCount}} 笔其他货币记录未计入</text>
   </view>

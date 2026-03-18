@@ -1,9 +1,10 @@
 import { CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
-import { getBudgetAmount, getCategories, getRecords, getCurrencyCode } from '../../utils/storage'
+import { getBudgets, getCategories, getRecords, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
+import { hexToRgba } from '../../utils/format'
+import { PICKER_YEARS, PICKER_MONTHS } from '../../utils/constants'
+import { getBudgetAlertBanner, getBudgetAlertForPeriod } from '../../utils/budget-alert'
 
 const now = new Date()
-const PICKER_YEARS: string[] = Array.from({ length: 11 }, (_, i) => `${2020 + i}年`)
-const PICKER_MONTHS: string[] = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 
 function formatCurrency(fen: number): string {
   const amount = fen / 100
@@ -13,24 +14,12 @@ function formatCurrency(fen: number): string {
   })
 }
 
-function hexToRgba(color: string, alpha: number): string {
-  const normalized = color.replace('#', '')
-  const hex = normalized.length === 3
-    ? normalized.split('').map((item) => item + item).join('')
-    : normalized
-
-  if (hex.length !== 6) return `rgba(255, 138, 0, ${alpha})`
-
-  const red = parseInt(hex.slice(0, 2), 16)
-  const green = parseInt(hex.slice(2, 4), 16)
-  const blue = parseInt(hex.slice(4, 6), 16)
-
-  return `rgba(${red}, ${green}, ${blue}, ${alpha})`
-}
 
 interface BudgetItem {
   rank: number
   category: string
+  spentFen: number
+  budgetFen: number
   spentText: string
   budgetText: string
   percent: number
@@ -44,6 +33,21 @@ interface BudgetItem {
   cardBg: string
   statusText: string
   statusTone: 'normal' | 'warning' | 'danger'
+}
+
+function getExactBudgetAmount(
+  budgets: ReturnType<typeof getBudgets>,
+  year: number,
+  month: number,
+  category: string,
+): number {
+  const entry = budgets.find(
+    (budget) => budget.year === year
+      && budget.month === month
+      && budget.type === '支出'
+      && budget.category === category,
+  )
+  return entry ? entry.amount : 0
 }
 
 Component({
@@ -66,17 +70,27 @@ Component({
     daysLeftText: '剩余0天',
     isOverBudget: false,
     remainLabel: '剩余',
+    hasTotalBudget: false,
+    secondaryMetricLabel: '本月支出总预算',
+    secondaryMetricText: '0',
+    budgetAlertVisible: false,
+    budgetAlertTone: 'warning',
+    budgetAlertTitle: '',
+    budgetAlertText: '',
     items: [] as BudgetItem[],
+    currencySymbol: '¥',
   },
 
   lifetimes: {
     attached() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
     },
   },
 
   pageLifetimes: {
     show() {
+      this.setData({ currencySymbol: getCurrencySymbol() })
       this.loadData()
     },
   },
@@ -86,14 +100,15 @@ Component({
       const { year, month } = this.data
       const monthStr = `${year}-${String(month).padStart(2, '0')}`
       const currentCurrencyCode = getCurrencyCode()
+      const budgets = getBudgets()
       const records = getRecords().filter((item: any) => item.type === '支出' && item.date.startsWith(monthStr) && (item.currency ?? 'CNY') === currentCurrencyCode)
-      const totalBudget = getBudgetAmount(year, month, '支出', '__total__')
+      const totalBudget = getExactBudgetAmount(budgets, year, month, '__total__')
       const categories = getCategories()['支出']
       let expense = 0
       records.forEach((item: any) => { expense += item.amount })
 
       const sortedItems = categories.map((category: string): BudgetItem | null => {
-        const budget = getBudgetAmount(year, month, '支出', category)
+        const budget = getExactBudgetAmount(budgets, year, month, category)
         if (!budget) return null
         let spent = 0
         records.forEach((item: any) => {
@@ -105,6 +120,8 @@ Component({
         return {
           rank: 0,
           category,
+          spentFen: spent,
+          budgetFen: budget,
           spentText: formatCurrency(spent),
           budgetText: formatCurrency(budget),
           percent,
@@ -148,6 +165,9 @@ Component({
                 : '预算稳定',
         }
       })
+      const totalCatBudget = items.reduce((sum, item) => sum + item.budgetFen, 0)
+      const budgetAlert = getBudgetAlertForPeriod(year, month, currentCurrencyCode)
+      const budgetAlertBanner = budgetAlert ? getBudgetAlertBanner(budgetAlert) : null
 
       const lastDay = new Date(year, month, 0).getDate()
       const today = new Date()
@@ -168,13 +188,26 @@ Component({
       let budgetStatusText = '预算稳定'
       let budgetHintText = ''
       let budgetStatusTone = 'normal'
+      let secondaryMetricLabel = '本月支出总预算'
+      let secondaryMetricText = formatCurrency(totalBudget)
+      const hasTotalBudget = totalBudget > 0
 
-      if (totalBudget <= 0) {
+      if (!hasTotalBudget && totalCatBudget > 0) {
+        summaryLabel = '已设分类预算'
+        summaryValueText = formatCurrency(totalCatBudget)
+        budgetStatusText = '未设总预算'
+        budgetHintText = `当前已设置 ${items.length} 项分类预算，可按分类跟踪本月支出。`
+        budgetStatusTone = 'neutral'
+        secondaryMetricLabel = '本月支出预算分类合计'
+        secondaryMetricText = formatCurrency(totalCatBudget)
+      } else if (!hasTotalBudget) {
         summaryLabel = '尚未设置预算'
         summaryValueText = '0.00'
         budgetStatusText = '待设置'
         budgetHintText = '点击右上角进入预算设置，开始追踪本月支出。'
         budgetStatusTone = 'neutral'
+        secondaryMetricLabel = '本月支出预算分类合计'
+        secondaryMetricText = '0.00'
       } else if (isOverBudget) {
         summaryLabel = '已超预算'
         summaryValueText = formatCurrency(Math.abs(remain))
@@ -210,6 +243,13 @@ Component({
         daysLeftText,
         isOverBudget,
         remainLabel: isOverBudget ? '超出' : '剩余',
+        hasTotalBudget,
+        secondaryMetricLabel,
+        secondaryMetricText,
+        budgetAlertVisible: Boolean(budgetAlertBanner),
+        budgetAlertTone: budgetAlertBanner?.tone || 'warning',
+        budgetAlertTitle: budgetAlertBanner?.title || '',
+        budgetAlertText: budgetAlertBanner?.text || '',
         items,
       })
     },

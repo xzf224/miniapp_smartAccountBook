@@ -1,6 +1,7 @@
 import { getRecords, addRecord, updateRecord, getCategories, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
 import { IRecord, RecordType, CATEGORY_COLORS, CATEGORY_ICONS, generateId, yuanToFen } from '../../models/record'
 import { getToday } from '../../utils/date'
+import { checkBudgetAlertAfterRecordsSaved, showBudgetAlertModal } from '../../utils/budget-alert'
 
 type EditType = '支出' | '收入'
 
@@ -252,11 +253,15 @@ Component({
       }
       if (isEdit) {
         updateRecord(record)
-        wx.showToast({ title: '已更新' })
       } else {
         addRecord(record)
-        wx.showToast({ title: '已保存' })
       }
+      const alert = checkBudgetAlertAfterRecordsSaved([record])
+      if (alert) {
+        showBudgetAlertModal(alert, () => wx.navigateBack())
+        return
+      }
+      wx.showToast({ title: isEdit ? '已更新' : '已保存' })
       setTimeout(() => wx.navigateBack(), 500)
     },
   },

@@ -1,6 +1,7 @@
 import { addRecord, getCategories, getCurrencyCode, getCurrencySymbol, CURRENCIES } from '../../utils/storage'
 import { CATEGORY_COLORS, CATEGORY_ICONS, generateId, yuanToFen } from '../../models/record'
 import { getToday } from '../../utils/date'
+import { checkBudgetAlertAfterRecordsSaved, showBudgetAlertModal } from '../../utils/budget-alert'
 
 type QuickType = '支出' | '收入'
 
@@ -232,7 +233,7 @@ Component({
       }
 
       const now = Date.now()
-      addRecord({
+      const record = {
         id: generateId(),
         type: this.data.types[typeIndex] as QuickType,
         category: selectedCategory,
@@ -242,15 +243,21 @@ Component({
         currency: this.data.currencyCode,
         createTime: now,
         updateTime: now,
-      })
+      }
+      addRecord(record)
 
-      wx.showToast({ title: '已保存', icon: 'success' })
       ;(this as any)._amountDraft = '0.00'
       this.setData({
         date: getToday(),
         note: '',
       })
       this.syncAmountState('0.00')
+      const alert = checkBudgetAlertAfterRecordsSaved([record])
+      if (alert) {
+        showBudgetAlertModal(alert, () => wx.reLaunch({ url: '/pages/home/home' }))
+        return
+      }
+      wx.showToast({ title: '已保存', icon: 'success' })
       setTimeout(() => wx.reLaunch({ url: '/pages/home/home' }), 400)
     },
 

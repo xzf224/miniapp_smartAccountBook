@@ -1,6 +1,7 @@
 import { parseVoiceText, parsedToRecord } from '../../utils/parser'
 import { addRecordsBatch, getCategories, getCurrencyCode, getCurrencySymbol, CURRENCIES } from '../../utils/storage'
 import { RECORD_TYPES, RecordType, CATEGORY_ICONS, yuanToFen } from '../../models/record'
+import { checkBudgetAlertAfterRecordsSaved, showBudgetAlertModal } from '../../utils/budget-alert'
 
 const recorderManager = wx.getRecorderManager()
 
@@ -267,6 +268,11 @@ Component({
         currency: this.data.currencyCode,
       }))
       addRecordsBatch(records)
+      const alert = checkBudgetAlertAfterRecordsSaved(records)
+      if (alert) {
+        showBudgetAlertModal(alert, () => wx.navigateBack())
+        return
+      }
       wx.showToast({ title: `已保存 ${records.length} 条记录` })
       setTimeout(() => wx.navigateBack(), 600)
     },

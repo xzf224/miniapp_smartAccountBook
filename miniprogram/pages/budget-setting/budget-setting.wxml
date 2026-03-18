@@ -13,17 +13,15 @@
       <view class="bs-overview-grid">
         <view class="bs-overview-metric">
           <text class="bs-overview-label">总预算</text>
-          <text class="bs-overview-value">¥{{totalBudgetDisplay}}</text>
+          <text class="bs-overview-value">{{currencySymbol}}{{totalBudgetDisplay}}</text>
         </view>
         <view class="bs-overview-metric">
           <text class="bs-overview-label">分类合计</text>
-          <text class="bs-overview-value">¥{{totalCatBudgetDisplay}}</text>
+          <text class="bs-overview-value">{{currencySymbol}}{{totalCatBudgetDisplay}}</text>
         </view>
         <view class="bs-overview-metric">
           <text class="bs-overview-label">未分配</text>
-          <text class="bs-overview-value {{unallocatedPositive ? 'bs-overview-value-pos' : 'bs-overview-value-neg'}}">
-            {{unallocatedPositive ? '' : '-'}}¥{{unallocatedDisplay}}
-          </text>
+          <text class="bs-overview-value {{unallocatedPositive ? 'bs-overview-value-pos' : 'bs-overview-value-neg'}}">{{unallocatedPositive ? '' : '-'}}{{currencySymbol}}{{unallocatedDisplay}}</text>
         </view>
       </view>
     </view>
@@ -33,14 +31,15 @@
       <text class="bs-card-title">总预算设置</text>
 
       <!-- Amount row -->
-      <view class="bs-row">
+      <view class="bs-row bs-row-no-border">
         <view class="bs-amount-left">
-          <text class="bs-currency">¥</text>
+          <text class="bs-currency">{{currencySymbol}}</text>
           <text wx:if="{{!editingTotal}}" class="bs-amount-num">{{totalBudgetDisplay}}</text>
           <input wx:else
             class="bs-amount-input"
             type="digit"
             placeholder="请输入金额"
+            placeholder-style="font-size: 28rpx; font-weight: 500; color: #C8C8C8;"
             value="{{editTotalValue}}"
             focus="{{editingTotal}}"
             bind:input="onTotalInput"
@@ -48,9 +47,17 @@
             bind:confirm="onTotalConfirm"
           />
         </view>
-        <view class="bs-edit-btn" bind:tap="onEditTotal">
-          <image class="bs-pencil-icon" src="/images/new/pencil.png" mode="aspectFit" />
+        <view class="bs-amount-actions">
+          <view class="bs-action-chip" bind:tap="onEditTotal">
+            <image class="bs-action-icon" src="/images/new/pencil.png" mode="aspectFit" />
+          </view>
+          <view wx:if="{{totalBudgetFen > 0}}" class="bs-action-chip bs-action-chip-clear" bind:tap="onClearTotal">
+            <image class="bs-action-icon" src="/images/new/clear.png" mode="aspectFit" />
+          </view>
         </view>
+      </view>
+      <view class="bs-inline-tip">
+        <text class="bs-inline-tip-text">总预算可不设置；如已设置，金额不能低于分类预算之和。</text>
       </view>
 
       <!-- Cycle row -->
@@ -102,6 +109,7 @@
           bind:change="onAlertToggle"
         />
       </view>
+      <text class="bs-alert-note">开启后，新增支出达到总预算或分类预算阈值、或发生超支时会弹窗提醒；首页和预算页也会同步显示提醒状态。</text>
     </view>
 
     <!-- ===== Section 3: 分类预算 ===== -->
@@ -142,7 +150,7 @@
         <view class="bs-add-field">
           <text class="bs-add-form-label">预算金额</text>
           <view class="bs-add-input-wrap bs-add-input-wrap-block">
-            <text class="bs-currency bs-currency-sm">¥</text>
+            <text class="bs-currency bs-currency-sm">{{currencySymbol}}</text>
             <input
               class="bs-add-input"
               type="digit"
@@ -164,7 +172,7 @@
       </view>
 
       <!-- Category budget list -->
-      <view class="bs-cat-list">
+      <view class="bs-cat-list" wx:if="{{catBudgets.length > 0}}">
         <view
           class="bs-cat-item bs-cat-item-{{item.statusTone}}"
           wx:for="{{catBudgets}}"
@@ -193,7 +201,7 @@
               </view>
             </view>
             <view class="bs-cat-right">
-              <text wx:if="{{!item.editingBudget}}" class="bs-cat-budget-num">¥{{item.budgetYuan}}</text>
+              <text wx:if="{{!item.editingBudget}}" class="bs-cat-budget-num">{{currencySymbol}}{{item.budgetYuan}}</text>
               <input wx:else
                 class="bs-cat-budget-input"
                 type="digit"
@@ -220,22 +228,26 @@
 
           <!-- Bottom row: spent | delete -->
           <view class="bs-cat-bottom">
-            <text class="bs-spent-text">已用 ¥{{item.spentYuan}} ({{item.spentPct}}%)</text>
+            <text class="bs-spent-text">已用 {{currencySymbol}}{{item.spentYuan}} ({{item.spentPct}}%)</text>
             <view class="bs-delete-btn" data-index="{{index}}" bind:tap="onDeleteCatBudget">删除</view>
           </view>
         </view>
       </view>
+      <view wx:else class="bs-empty-card">
+        <text class="bs-empty-title">还没有分类预算</text>
+        <text class="bs-empty-desc">分类预算可以单独设置，不依赖总预算。可先添加常用支出分类。</text>
+      </view>
 
       <!-- Summary rows -->
       <view class="bs-summary-row">
-        <text class="bs-summary-left">分类预算合计: ¥{{totalCatBudgetDisplay}}</text>
-        <text class="bs-summary-right">总预算: ¥{{totalBudgetDisplay}}</text>
+        <text class="bs-summary-left">分类预算合计: {{currencySymbol}}{{totalCatBudgetDisplay}}</text>
+        <text class="bs-summary-right">总预算: {{currencySymbol}}{{totalBudgetDisplay}}</text>
       </view>
 
       <view class="bs-unallocated-row">
         <text class="bs-unallocated-label">未分配预算: </text>
         <text class="bs-unallocated-amount {{unallocatedPositive ? 'bs-unallocated-pos' : 'bs-unallocated-neg'}}">
-          {{unallocatedPositive ? '' : '-'}}¥{{unallocatedDisplay}}
+          {{unallocatedPositive ? '' : '-'}}{{currencySymbol}}{{unallocatedDisplay}}
         </text>
       </view>
     </view>

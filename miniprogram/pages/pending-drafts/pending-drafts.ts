@@ -3,8 +3,10 @@ import {
   savePendingDrafts,
   removePendingDraft,
   addRecord,
+  getCurrencyCode,
 } from '../../utils/storage'
 import { IPendingDraft as _IPendingDraft, IRecord, generateId, fenToYuan, yuanToFen } from '../../models/record'
+import { checkBudgetAlertAfterRecordsSaved, showBudgetAlertModal } from '../../utils/budget-alert'
 
 Component({
   data: {
@@ -64,11 +66,18 @@ Component({
         amount: yuanToFen(amountNum),
         date: draft.date,
         note: draft.editNote,
+        currency: draft.currency ?? getCurrencyCode(),
         createTime: now,
         updateTime: now,
       }
       addRecord(record)
       removePendingDraft(draft.id)
+      const alert = checkBudgetAlertAfterRecordsSaved([record])
+      if (alert) {
+        this.loadDrafts()
+        showBudgetAlertModal(alert)
+        return
+      }
       wx.showToast({ title: '已入账', icon: 'success' })
       this.loadDrafts()
     },
@@ -96,6 +105,7 @@ Component({
 
       const now = Date.now()
       const toRemoveIds: string[] = []
+      const savedRecords: IRecord[] = []
       let successCount = 0
 
       for (const draft of drafts) {
@@ -108,10 +118,12 @@ Component({
           amount: yuanToFen(amountNum),
           date: draft.date,
           note: draft.editNote,
+          currency: draft.currency ?? getCurrencyCode(),
           createTime: now,
           updateTime: now,
         }
         addRecord(record)
+        savedRecords.push(record)
         toRemoveIds.push(draft.id)
         successCount++
       }
@@ -122,8 +134,13 @@ Component({
         savePendingDrafts(remaining)
       }
 
-      wx.showToast({ title: `${successCount} 条已入账`, icon: 'success' })
       this.loadDrafts()
+      const alert = checkBudgetAlertAfterRecordsSaved(savedRecords)
+      if (alert) {
+        showBudgetAlertModal(alert)
+        return
+      }
+      wx.showToast({ title: `${successCount} 条已入账`, icon: 'success' })
     },
   },
 })
