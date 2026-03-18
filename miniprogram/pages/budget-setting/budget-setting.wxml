@@ -16,12 +16,14 @@
           <text class="bs-overview-value">{{currencySymbol}}{{totalBudgetDisplay}}</text>
         </view>
         <view class="bs-overview-metric">
-          <text class="bs-overview-label">分类合计</text>
+          <text class="bs-overview-label">分类预算合计</text>
           <text class="bs-overview-value">{{currencySymbol}}{{totalCatBudgetDisplay}}</text>
         </view>
         <view class="bs-overview-metric">
           <text class="bs-overview-label">未分配</text>
-          <text class="bs-overview-value {{unallocatedPositive ? 'bs-overview-value-pos' : 'bs-overview-value-neg'}}">{{unallocatedPositive ? '' : '-'}}{{currencySymbol}}{{unallocatedDisplay}}</text>
+          <text class="bs-overview-value {{unallocatedPositive ? 'bs-overview-value-pos' : 'bs-overview-value-neg'}}">
+            {{unallocatedPositive ? '' : '-'}}{{currencySymbol}}{{unallocatedDisplay}}
+          </text>
         </view>
       </view>
     </view>
@@ -109,7 +111,6 @@
           bind:change="onAlertToggle"
         />
       </view>
-      <text class="bs-alert-note">开启后，新增支出达到总预算或分类预算阈值、或发生超支时会弹窗提醒；首页和预算页也会同步显示提醒状态。</text>
     </view>
 
     <!-- ===== Section 3: 分类预算 ===== -->
