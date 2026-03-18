@@ -26,14 +26,6 @@ export function formatDateDisplay(dateStr: string): string {
   return `${m}月${d}日  周${WEEKDAYS[date.getDay()]}`
 }
 
-/** 获取指定月份的起止日期 */
-export function getMonthRange(year: number, month: number): [string, string] {
-  const start = `${year}-${String(month).padStart(2, '0')}-01`
-  const lastDay = getDaysInMonth(year, month)
-  const end = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
-  return [start, end]
-}
-
 /** 获取指定月份的天数 */
 export function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate()

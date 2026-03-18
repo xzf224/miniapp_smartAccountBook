@@ -148,7 +148,7 @@ export function getBudgets(): IBudget[] {
   return wx.getStorageSync(BUDGETS_KEY) || []
 }
 
-export function saveBudgets(budgets: IBudget[]): void {
+function saveBudgets(budgets: IBudget[]): void {
   wx.setStorageSync(BUDGETS_KEY, budgets)
 }
 
@@ -167,16 +167,6 @@ export function deleteBudget(year: number, month: number, type: string, category
   saveBudgets(getBudgets().filter(
     b => !(b.year === year && b.month === month && b.type === type && b.category === category),
   ))
-}
-
-export function getBudgetAmount(year: number, month: number, type: '支出' | '收入', category: string): number {
-  const budgets = getBudgets()
-  const exact = budgets.find(
-    b => b.year === year && b.month === month && b.type === type && b.category === category,
-  )
-  if (exact) return exact.amount
-  const universal = budgets.find(b => b.month === 0 && b.type === type && b.category === category)
-  return universal ? universal.amount : 0
 }
 
 // ---- 导出 ----

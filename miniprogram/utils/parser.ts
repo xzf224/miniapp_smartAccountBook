@@ -199,33 +199,6 @@ const KEYWORD_CATEGORY_MAP: Record<string, { type: RecordType; category: string 
   '补贴': { type: '收入', category: '其他收入' },
 }
 
-// 数字中文映射
-const CN_NUM: Record<string, number> = {
-  '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4,
-  '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
-  '十': 10, '百': 100, '千': 1000, '万': 10000,
-}
-
-export function parseCNNumber(s: string): number | null {
-  if (/^\d+(\.\d+)?$/.test(s)) return parseFloat(s)
-  // 简单中文数字解析（十几，几十等）
-  let result = 0
-  let cur = 0
-  for (const ch of s) {
-    const n = CN_NUM[ch]
-    if (n === undefined) return null
-    if (n >= 10) {
-      if (cur === 0) cur = 1
-      result += cur * n
-      cur = 0
-    } else {
-      cur = n
-    }
-  }
-  result += cur
-  return result || null
-}
-
 /**
  * 解析语音识别文本，提取多条记录。
  * 支持格式: "午餐30元，打车15块，买衣服200"
