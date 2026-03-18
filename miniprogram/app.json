@@ -14,8 +14,7 @@
     "pages/recurring/recurring",
     "pages/recurring-form/recurring-form",
     "pages/pending-drafts/pending-drafts",
-    "pages/currency-setting/currency-setting",
-    "pages/category-form/category-form"
+    "pages/currency-setting/currency-setting"
   ],
   "window": {
     "navigationBarTextStyle": "black",

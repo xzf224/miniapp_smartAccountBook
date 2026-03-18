@@ -1,5 +1,5 @@
 import { IRecord, RecordType, fenToYuan } from '../models/record'
-import { getDaysInMonth, getPreviousMonths } from './date'
+import { getDaysInMonth } from './date'
 
 export interface MonthSummary {
   income: number    // 分
@@ -96,59 +96,6 @@ export function calcDailyComparison(
     result.push({ label: String(d), value: total })
   }
   return result
-}
-
-/** 每周对比数据（近 8 周，含当前周） */
-export function calcWeeklyComparison(
-  records: IRecord[],
-  type: RecordType,
-  currency?: string,
-): ComparisonDatum[] {
-  const result: ComparisonDatum[] = []
-  const now = new Date()
-  // 找本周周一
-  const day = now.getDay() || 7
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - day + 1)
-  monday.setHours(0, 0, 0, 0)
-
-  for (let i = 7; i >= 0; i--) {
-    const wStart = new Date(monday)
-    wStart.setDate(monday.getDate() - i * 7)
-    const wEnd = new Date(wStart)
-    wEnd.setDate(wStart.getDate() + 6)
-
-    const fmt = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    const startStr = fmt(wStart)
-    const endStr = fmt(wEnd)
-
-    const total = records
-      .filter(r => r.type === type && r.date >= startStr && r.date <= endStr)
-      .filter(r => !currency || (r.currency ?? 'CNY') === currency)
-      .reduce((sum, r) => sum + r.amount, 0)
-
-    const label = `${wStart.getMonth() + 1}/${wStart.getDate()}`
-    result.push({ label, value: total })
-  }
-  return result
-}
-
-/** 每月对比数据（近 6 个月） */
-export function calcMonthlyComparison(
-  records: IRecord[],
-  type: RecordType,
-  currency?: string,
-): ComparisonDatum[] {
-  const months = getPreviousMonths(6)
-  return months.map(([y, m]) => {
-    const prefix = `${y}-${String(m).padStart(2, '0')}`
-    const total = records
-      .filter(r => r.type === type && r.date.startsWith(prefix))
-      .filter(r => !currency || (r.currency ?? 'CNY') === currency)
-      .reduce((sum, r) => sum + r.amount, 0)
-    return { label: `${m}月`, value: total }
-  })
 }
 
 /** 选定月份内，按周一到周日聚合 */

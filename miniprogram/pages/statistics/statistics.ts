@@ -393,17 +393,6 @@ Component({
       this.loadData()
     },
 
-    onMonthChange(e: any) {
-      this.setData({ year: e.detail.year, month: e.detail.month })
-      this.loadData()
-    },
-
-    onTypeChange(e: any) {
-      const idx = (e.currentTarget.dataset as any).index as number
-      this.setData({ typeIndex: idx })
-      this.loadData()
-    },
-
     onSummaryTypeTap(e: WechatMiniprogram.TouchEvent) {
       const type = (e.currentTarget.dataset as { type?: RecordType }).type
       if (!type) return
