@@ -21,6 +21,7 @@
       <text class="summary-label income-label">本月收入</text>
       <text class="summary-state {{typeIndex === 1 ? 'summary-state-active' : ''}}">{{typeIndex === 1 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{income}}</text>
+      <text class="summary-compare summary-compare-{{incomeMoMTone}}">{{incomeMoMText}}</text>
     </view>
     <view
       class="summary-card expense-card {{typeIndex === 0 ? 'summary-card-active summary-card-expense-active' : 'summary-card-muted'}}"
@@ -31,6 +32,58 @@
       <text class="summary-label expense-label">本月支出</text>
       <text class="summary-state {{typeIndex === 0 ? 'summary-state-active' : ''}}">{{typeIndex === 0 ? '当前分析' : '点按切换'}}</text>
       <text class="summary-value">{{expense}}</text>
+      <text class="summary-compare summary-compare-{{expenseMoMTone}}">{{expenseMoMText}}</text>
+    </view>
+  </view>
+
+  <view class="section-card budget-execution-card" wx:if="{{typeIndex === 0 && budgetExecutionVisible}}">
+    <view class="section-head">
+      <text class="section-title">预算执行分析</text>
+      <text class="budget-status-badge budget-status-badge-{{budgetStatusTone}}">{{budgetStatusText}}</text>
+    </view>
+    <text class="budget-execution-hint">{{budgetHintText}}</text>
+    <view class="budget-metric-grid">
+      <view class="budget-metric">
+        <text class="budget-metric-label">本月总预算</text>
+        <text class="budget-metric-value">{{budgetTotalText}}</text>
+      </view>
+      <view class="budget-metric">
+        <text class="budget-metric-label">本月已花</text>
+        <text class="budget-metric-value">{{budgetSpentText}}</text>
+      </view>
+      <view class="budget-metric">
+        <text class="budget-metric-label">{{budgetRemainLabel}}</text>
+        <text class="budget-metric-value">{{budgetRemainText}}</text>
+      </view>
+      <view class="budget-metric">
+        <text class="budget-metric-label">预算执行率</text>
+        <text class="budget-metric-value">{{budgetExecutionPctText}}</text>
+      </view>
+    </view>
+    <view class="budget-forecast-strip">
+      <text class="budget-forecast-label">{{budgetForecastLabel}}</text>
+      <text class="budget-forecast-value">{{budgetForecastText}}</text>
+    </view>
+    <view class="budget-variance-block" wx:if="{{budgetVarianceTop.length > 0}}">
+      <view class="budget-variance-head">
+        <text class="budget-variance-title">分类预算偏差 Top 3</text>
+        <text class="budget-variance-sub">优先关注最接近或已经超支的分类</text>
+      </view>
+      <view class="budget-variance-list">
+        <view class="budget-variance-item" wx:for="{{budgetVarianceTop}}" wx:key="category">
+          <view class="budget-variance-top">
+            <view class="budget-variance-title-wrap">
+              <view class="budget-variance-dot" style="background: {{item.color}};"></view>
+              <text class="budget-variance-name">{{item.category}}</text>
+            </view>
+            <text class="budget-variance-status budget-variance-status-{{item.status}}">{{item.varianceText}}</text>
+          </view>
+          <view class="budget-variance-bottom">
+            <text class="budget-variance-meta">{{item.spentText}} / {{item.budgetText}}</text>
+            <text class="budget-variance-meta">{{item.executionText}}</text>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 

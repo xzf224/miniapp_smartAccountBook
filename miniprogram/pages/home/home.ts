@@ -40,15 +40,6 @@ Component({
     isEmpty: true,
     pickerRange: [PICKER_YEARS, PICKER_MONTHS] as string[][],
     pickerValue: [now.getFullYear() - 2020, now.getMonth()] as number[],
-    searchVisible: false,
-    searchKeyword: '',
-    searchTypeIndex: 0,
-    searchTypes: ['全部', '支出', '收入'],
-    searchResultCount: 0,
-    amountMin: '',
-    amountMax: '',
-    dateStart: '',
-    dateEnd: '',
     pendingDraftCount: 0,
     analysisItems: [] as any[],
     analysisExpanded: false,
@@ -76,29 +67,10 @@ Component({
 
   methods: {
     loadData() {
-      const { year, month, searchKeyword, searchTypeIndex } = this.data
+      const { year, month } = this.data
       const allRecords = getRecords()
       const monthStr = `${year}-${String(month).padStart(2, '0')}`
-      let monthRecords = allRecords.filter((r: any) => r.date.startsWith(monthStr))
-
-      // 搜索过滤
-      const keyword = searchKeyword.trim().toLowerCase()
-      if (keyword) {
-        monthRecords = monthRecords.filter((r: any) =>
-          r.note.toLowerCase().includes(keyword) || r.category.toLowerCase().includes(keyword)
-        )
-      }
-      if (searchTypeIndex === 1) monthRecords = monthRecords.filter((r: any) => r.type === '支出')
-      else if (searchTypeIndex === 2) monthRecords = monthRecords.filter((r: any) => r.type === '收入')
-
-      const { amountMin, amountMax, dateStart, dateEnd } = this.data
-      const minFen = amountMin ? Math.round(parseFloat(amountMin) * 100) : 0
-      const maxFen = amountMax ? Math.round(parseFloat(amountMax) * 100) : Infinity
-      if (amountMin || amountMax) {
-        monthRecords = monthRecords.filter((r: any) => r.amount >= minFen && r.amount <= maxFen)
-      }
-      if (dateStart) monthRecords = monthRecords.filter((r: any) => r.date >= dateStart)
-      if (dateEnd) monthRecords = monthRecords.filter((r: any) => r.date <= dateEnd)
+      const monthRecords = allRecords.filter((r: any) => r.date.startsWith(monthStr))
 
       const currentCurrencyCode = getCurrencyCode()
       let incomeTotal = 0
@@ -151,7 +123,6 @@ Component({
         expenseBudget,
         groups,
         isEmpty: monthRecords.length === 0,
-        searchResultCount: monthRecords.length,
         pendingDraftCount,
         daysLeft,
         mixedCurrencyCount,
@@ -160,11 +131,6 @@ Component({
         budgetAlertTitle: budgetAlertBanner?.title || '',
         budgetAlertText: budgetAlertBanner?.text || '',
       })
-    },
-
-    onMonthChange(e: any) {
-      this.setData({ year: e.detail.year, month: e.detail.month })
-      this.loadData()
     },
 
     onPickerChange(e: any) {
@@ -177,47 +143,6 @@ Component({
 
     onSearchToggle() {
       wx.navigateTo({ url: '/pages/records/records' })
-    },
-
-    onSearchInput(e: WechatMiniprogram.Input) {
-      this.setData({ searchKeyword: e.detail.value })
-      this.loadData()
-    },
-
-    onSearchClear() {
-      this.setData({ searchKeyword: '' })
-      this.loadData()
-    },
-
-    onSearchTypeChange(e: WechatMiniprogram.TouchEvent) {
-      const idx = (e.currentTarget.dataset as any).index as number
-      this.setData({ searchTypeIndex: idx })
-      this.loadData()
-    },
-
-    onAmountMinInput(e: WechatMiniprogram.Input) {
-      this.setData({ amountMin: e.detail.value })
-      this.loadData()
-    },
-
-    onAmountMaxInput(e: WechatMiniprogram.Input) {
-      this.setData({ amountMax: e.detail.value })
-      this.loadData()
-    },
-
-    onDateStartChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ dateStart: e.detail.value as string })
-      this.loadData()
-    },
-
-    onDateEndChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ dateEnd: e.detail.value as string })
-      this.loadData()
-    },
-
-    onDateRangeClear() {
-      this.setData({ dateStart: '', dateEnd: '' })
-      this.loadData()
     },
 
     onRecordEdit(e: any) {
@@ -261,10 +186,6 @@ Component({
 
     onViewAllRecords() {
       wx.navigateTo({ url: '/pages/records/records' })
-    },
-
-    onOpenStatistics() {
-      wx.reLaunch({ url: '/pages/statistics/statistics' })
     },
 
     onOpenBudget() {

@@ -9,58 +9,16 @@
     </picker>
     <view class="header-icons flex-row">
       <view class="icon-btn" bind:tap="onSearchToggle">
-        <image class="header-icon" src="{{searchVisible ? '/images/search-active.png' : '/images/search.png'}}" mode="aspectFit" />
+        <image class="header-icon" src="/images/new/list.png" mode="aspectFit" />
       </view>
     </view>
   </view>
-
-  <!-- 搜索栏 -->
-  <view class="search-panel" wx:if="{{searchVisible}}">
-    <view class="search-input-wrap flex-row">
-      <image class="search-icon-small" src="/images/search-active.png" mode="aspectFit" />
-      <input class="search-input" value="{{searchKeyword}}" placeholder="搜索备注或类别"
-             placeholder-class="search-ph" bind:input="onSearchInput" />
-      <text wx:if="{{searchKeyword}}" class="search-clear" bind:tap="onSearchClear">×</text>
-    </view>
-    <view class="search-type-chips flex-row">
-      <view class="type-chip {{searchTypeIndex === index ? 'chip-active' : ''}}"
-            wx:for="{{searchTypes}}" wx:key="*this"
-            data-index="{{index}}" bind:tap="onSearchTypeChange">{{item}}</view>
-    </view>
-    <!-- 金额区间 -->
-    <view class="search-row flex-row">
-      <text class="search-row-label">金额</text>
-      <view class="search-range-wrap flex-row">
-        <input class="range-input" type="digit" value="{{amountMin}}" placeholder="最小"
-               placeholder-class="search-ph" bind:input="onAmountMinInput" />
-        <text class="range-sep">—</text>
-        <input class="range-input" type="digit" value="{{amountMax}}" placeholder="最大"
-               placeholder-class="search-ph" bind:input="onAmountMaxInput" />
-        <text class="range-unit">元</text>
-      </view>
-    </view>
-    <!-- 日期区间 -->
-    <view class="search-row flex-row">
-      <text class="search-row-label">日期</text>
-      <view class="search-range-wrap flex-row">
-        <picker mode="date" value="{{dateStart}}" bind:change="onDateStartChange">
-          <view class="range-date-btn">{{dateStart || '开始日期'}}</view>
-        </picker>
-        <text class="range-sep">—</text>
-        <picker mode="date" value="{{dateEnd}}" bind:change="onDateEndChange">
-          <view class="range-date-btn">{{dateEnd || '结束日期'}}</view>
-        </picker>
-        <text wx:if="{{dateStart || dateEnd}}" class="search-clear" bind:tap="onDateRangeClear">×</text>
-      </view>
-    </view>
-  </view>
-
-  <summary-card wx:if="{{!searchVisible}}" income="{{income}}" expense="{{expense}}" balance="{{balance}}"
+  <summary-card income="{{income}}" expense="{{expense}}" balance="{{balance}}"
                 expenseBudget="{{expenseBudget}}" expenseRaw="{{expenseRaw}}" daysLeft="{{daysLeft}}"
                 mixedCount="{{mixedCurrencyCount}}" alertVisible="{{budgetAlertVisible}}"
                 alertTone="{{budgetAlertTone}}" alertTitle="{{budgetAlertTitle}}" alertText="{{budgetAlertText}}" />
 
-  <view wx:if="{{!searchVisible}}" class="quick-actions">
+  <view class="quick-actions">
     <view class="quick-action" bind:tap="onManual">
       <view class="quick-action-badge badge-orange">
         <image class="quick-action-icon" src="/images/new/notebook-pen.png" mode="aspectFit" />
@@ -88,23 +46,18 @@
   </view>
 
   <!-- 待确认草稿提示卡 -->
-  <view class="draft-hint-card" wx:if="{{pendingDraftCount > 0 && !searchVisible}}" bind:tap="onViewDrafts">
+  <view class="draft-hint-card" wx:if="{{pendingDraftCount > 0}}" bind:tap="onViewDrafts">
     <text class="draft-hint-text">📌 {{pendingDraftCount}} 条定期账单待确认</text>
     <text class="draft-hint-arrow">查看草稿 ›</text>
   </view>
 
-  <!-- 搜索结果提示 -->
-  <view wx:if="{{searchVisible}}" class="search-result-hint">
-    <text class="search-result-text">共 {{searchResultCount}} 条结果</text>
-  </view>
-
   <view class="empty-state" wx:if="{{isEmpty}}">
     <image class="empty-icon" src="../../images/list.png"></image>
-    <text class="empty-text">{{searchVisible ? '未找到匹配记录' : '暂无记录，点击下方按钮开始添加'}}</text>
+    <text class="empty-text">暂无记录，点击下方按钮开始添加</text>
   </view>
 
   <!-- 本月消费分析 -->
-  <view class="analysis-section" wx:if="{{!searchVisible && analysisItems.length > 0}}">
+  <view class="analysis-section" wx:if="{{analysisItems.length > 0}}">
     <text class="analysis-title">本月消费分析</text>
     <view class="analysis-item" wx:for="{{analysisItems}}" wx:key="category" wx:if="{{analysisExpanded || index < 5}}">
       <view class="analysis-meta">

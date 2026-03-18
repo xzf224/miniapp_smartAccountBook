@@ -13,7 +13,7 @@
       </view>
     </picker>
     <view class="filter-header-btn {{hasAdvancedFilter ? 'filter-header-btn-active' : ''}}" bind:tap="onOpenFilter">
-      <image class="filter-header-icon" src="/images/new/sliders-horizontal.png" mode="aspectFit" />
+      <image class="filter-header-icon" src="/images/new/funnel.png" mode="aspectFit" />
       <view class="filter-header-dot" wx:if="{{hasAdvancedFilter}}"></view>
     </view>
   </view>

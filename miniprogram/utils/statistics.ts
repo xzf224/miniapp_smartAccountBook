@@ -102,6 +102,7 @@ export function calcDailyComparison(
 export function calcWeeklyComparison(
   records: IRecord[],
   type: RecordType,
+  currency?: string,
 ): ComparisonDatum[] {
   const result: ComparisonDatum[] = []
   const now = new Date()
@@ -124,6 +125,7 @@ export function calcWeeklyComparison(
 
     const total = records
       .filter(r => r.type === type && r.date >= startStr && r.date <= endStr)
+      .filter(r => !currency || (r.currency ?? 'CNY') === currency)
       .reduce((sum, r) => sum + r.amount, 0)
 
     const label = `${wStart.getMonth() + 1}/${wStart.getDate()}`
@@ -136,12 +138,14 @@ export function calcWeeklyComparison(
 export function calcMonthlyComparison(
   records: IRecord[],
   type: RecordType,
+  currency?: string,
 ): ComparisonDatum[] {
   const months = getPreviousMonths(6)
   return months.map(([y, m]) => {
     const prefix = `${y}-${String(m).padStart(2, '0')}`
     const total = records
       .filter(r => r.type === type && r.date.startsWith(prefix))
+      .filter(r => !currency || (r.currency ?? 'CNY') === currency)
       .reduce((sum, r) => sum + r.amount, 0)
     return { label: `${m}月`, value: total }
   })
@@ -153,10 +157,13 @@ export function calcWeekdayComparison(
   year: number,
   month: number,
   type: RecordType,
+  currency?: string,
 ): ComparisonDatum[] {
   const labels = ['一', '二', '三', '四', '五', '六', '日']
   const totals = new Array<number>(7).fill(0)
-  const monthRecords = filterMonthRecords(records, year, month).filter(r => r.type === type)
+  const monthRecords = filterMonthRecords(records, year, month)
+    .filter(r => r.type === type)
+    .filter(r => !currency || (r.currency ?? 'CNY') === currency)
 
   for (const record of monthRecords) {
     const weekday = new Date(`${record.date}T00:00:00`).getDay()
@@ -172,12 +179,14 @@ export function calcYearlyComparison(
   records: IRecord[],
   year: number,
   type: RecordType,
+  currency?: string,
 ): ComparisonDatum[] {
   return Array.from({ length: 12 }, (_, index) => {
     const month = index + 1
     const prefix = `${year}-${String(month).padStart(2, '0')}`
     const total = records
       .filter(r => r.type === type && r.date.startsWith(prefix))
+      .filter(r => !currency || (r.currency ?? 'CNY') === currency)
       .reduce((sum, r) => sum + r.amount, 0)
     return { label: `${month}月`, value: total }
   })
