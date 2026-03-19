@@ -7,6 +7,12 @@ const RECURRING_RULES_KEY = 'recurring_rules'
 const PENDING_DRAFTS_KEY = 'pending_drafts'
 const CATEGORY_META_KEY = 'category_meta'
 const USER_PROFILE_KEY = 'user_profile'
+const BUDGET_ALERT_ENABLED_KEY = 'budgetAlertEnabled'
+const BUDGET_ALERT_THRESHOLD_KEY = 'budgetAlertThreshold'
+const BUDGET_CATEGORY_ALERT_ENABLED_KEY = 'budgetCategoryAlertEnabled'
+const BUDGET_REPEAT_OVER_ALERT_ENABLED_KEY = 'budgetRepeatOverAlertEnabled'
+const PENDING_DRAFT_ALERT_ENABLED_KEY = 'pendingDraftAlertEnabled'
+const PENDING_DRAFT_ALERT_THRESHOLD_KEY = 'pendingDraftAlertThreshold'
 
 export interface ICategoryMeta {
   icon: string
@@ -18,6 +24,36 @@ export interface IUserProfile {
   avatarUrl: string
   nickname: string
   personalized: boolean
+}
+
+export interface IReminderSettings {
+  budgetAlertEnabled: boolean
+  budgetAlertThreshold: number
+  budgetCategoryAlertEnabled: boolean
+  budgetRepeatOverAlertEnabled: boolean
+  pendingDraftAlertEnabled: boolean
+  pendingDraftAlertThreshold: number
+}
+
+export const DEFAULT_REMINDER_SETTINGS: IReminderSettings = {
+  budgetAlertEnabled: false,
+  budgetAlertThreshold: 80,
+  budgetCategoryAlertEnabled: true,
+  budgetRepeatOverAlertEnabled: false,
+  pendingDraftAlertEnabled: true,
+  pendingDraftAlertThreshold: 3,
+}
+
+function normalizePercent(rawValue: unknown, fallback: number): number {
+  const value = Number(rawValue)
+  if (!Number.isFinite(value)) return fallback
+  return Math.min(100, Math.max(1, Math.round(value)))
+}
+
+function normalizePositiveInt(rawValue: unknown, fallback: number): number {
+  const value = Number(rawValue)
+  if (!Number.isFinite(value)) return fallback
+  return Math.max(1, Math.round(value))
 }
 
 export function getCategoryMeta(): Record<string, ICategoryMeta> {
@@ -45,6 +81,56 @@ export function saveUserProfile(profile: Partial<IUserProfile>): void {
     ...current,
     ...profile,
   })
+}
+
+export function getReminderSettings(): IReminderSettings {
+  const budgetAlertEnabled = wx.getStorageSync(BUDGET_ALERT_ENABLED_KEY)
+  const budgetAlertThreshold = wx.getStorageSync(BUDGET_ALERT_THRESHOLD_KEY)
+  const budgetCategoryAlertEnabled = wx.getStorageSync(BUDGET_CATEGORY_ALERT_ENABLED_KEY)
+  const budgetRepeatOverAlertEnabled = wx.getStorageSync(BUDGET_REPEAT_OVER_ALERT_ENABLED_KEY)
+  const pendingDraftAlertEnabled = wx.getStorageSync(PENDING_DRAFT_ALERT_ENABLED_KEY)
+  const pendingDraftAlertThreshold = wx.getStorageSync(PENDING_DRAFT_ALERT_THRESHOLD_KEY)
+
+  return {
+    budgetAlertEnabled: Boolean(budgetAlertEnabled),
+    budgetAlertThreshold: normalizePercent(
+      budgetAlertThreshold,
+      DEFAULT_REMINDER_SETTINGS.budgetAlertThreshold,
+    ),
+    budgetCategoryAlertEnabled: budgetCategoryAlertEnabled === ''
+      ? DEFAULT_REMINDER_SETTINGS.budgetCategoryAlertEnabled
+      : budgetCategoryAlertEnabled !== false,
+    budgetRepeatOverAlertEnabled: Boolean(budgetRepeatOverAlertEnabled),
+    pendingDraftAlertEnabled: pendingDraftAlertEnabled === ''
+      ? DEFAULT_REMINDER_SETTINGS.pendingDraftAlertEnabled
+      : pendingDraftAlertEnabled !== false,
+    pendingDraftAlertThreshold: normalizePositiveInt(
+      pendingDraftAlertThreshold,
+      DEFAULT_REMINDER_SETTINGS.pendingDraftAlertThreshold,
+    ),
+  }
+}
+
+export function saveReminderSettings(settings: Partial<IReminderSettings>): IReminderSettings {
+  const merged = {
+    ...getReminderSettings(),
+    ...settings,
+  }
+
+  wx.setStorageSync(BUDGET_ALERT_ENABLED_KEY, Boolean(merged.budgetAlertEnabled))
+  wx.setStorageSync(
+    BUDGET_ALERT_THRESHOLD_KEY,
+    normalizePercent(merged.budgetAlertThreshold, DEFAULT_REMINDER_SETTINGS.budgetAlertThreshold),
+  )
+  wx.setStorageSync(BUDGET_CATEGORY_ALERT_ENABLED_KEY, Boolean(merged.budgetCategoryAlertEnabled))
+  wx.setStorageSync(BUDGET_REPEAT_OVER_ALERT_ENABLED_KEY, Boolean(merged.budgetRepeatOverAlertEnabled))
+  wx.setStorageSync(PENDING_DRAFT_ALERT_ENABLED_KEY, Boolean(merged.pendingDraftAlertEnabled))
+  wx.setStorageSync(
+    PENDING_DRAFT_ALERT_THRESHOLD_KEY,
+    normalizePositiveInt(merged.pendingDraftAlertThreshold, DEFAULT_REMINDER_SETTINGS.pendingDraftAlertThreshold),
+  )
+
+  return getReminderSettings()
 }
 
 export interface IAppBackupPayload {

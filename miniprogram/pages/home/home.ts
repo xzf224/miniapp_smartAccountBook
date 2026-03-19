@@ -1,4 +1,4 @@
-import { getRecords, deleteRecord, getBudgets, getPendingDrafts, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
+import { getRecords, deleteRecord, getBudgets, getPendingDrafts, getCurrencySymbol, getCurrencyCode, getReminderSettings } from '../../utils/storage'
 import { checkRecurringRules } from '../../utils/recurring'
 import { groupRecordsByDate } from '../../utils/date'
 import { fenToYuan } from '../../models/record'
@@ -90,7 +90,12 @@ Component({
       const budgetAlert = getBudgetAlertForPeriod(year, month, currentCurrencyCode)
       const budgetAlertBanner = budgetAlert ? getBudgetAlertBanner(budgetAlert) : null
 
-      const pendingDraftCount = getPendingDrafts().length
+      const reminderSettings = getReminderSettings()
+      const allPendingDrafts = getPendingDrafts()
+      const pendingDraftCount = reminderSettings.pendingDraftAlertEnabled
+        && allPendingDrafts.length >= reminderSettings.pendingDraftAlertThreshold
+        ? allPendingDrafts.length
+        : 0
 
       const nowDate = new Date()
       const currentYear = nowDate.getFullYear()

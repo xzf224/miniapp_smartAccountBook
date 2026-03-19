@@ -4,13 +4,35 @@ import {
   clearAllRecords,
   getBudgets,
   getCategories,
+  getCurrencyCode,
   getPendingDrafts,
   getRecords,
+  getReminderSettings,
   getRecurringRules,
   getUserProfile,
   restoreBackupJSON,
   saveUserProfile,
 } from '../../utils/storage'
+
+const LAST_BACKUP_AT_KEY = 'settings_last_backup_at'
+const LAST_EXPORT_AT_KEY = 'settings_last_export_at'
+const LAST_RESTORE_AT_KEY = 'settings_last_restore_at'
+
+function formatActionStatus(rawValue: unknown, actionLabel: string, fallback: string): string {
+  const timestamp = Number(rawValue)
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return fallback
+
+  const target = new Date(timestamp)
+  const now = new Date()
+  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime()
+  const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const diffDays = Math.round((nowDay - targetDay) / (24 * 60 * 60 * 1000))
+
+  if (diffDays <= 0) return `今天已${actionLabel}`
+  if (diffDays === 1) return `昨天${actionLabel}`
+  if (diffDays < 7) return `${diffDays} 天前${actionLabel}`
+  return `${target.getMonth() + 1} 月 ${target.getDate()} 日${actionLabel}`
+}
 
 Component({
   data: {
@@ -29,6 +51,40 @@ Component({
     profileEditing: false,
     draftAvatarUrl: '',
     draftNickname: '',
+    profileSummaryText: '',
+    monthlySummaryText: '',
+    monthlyFocusText: '',
+    monthlyBudgetText: '',
+    monthlyPendingText: '',
+    monthlyRecurringText: '',
+    reminderStatusText: '',
+    reminderMetaText: '',
+    recurringStatusText: '',
+    recurringMetaText: '',
+    categoryStatusText: '',
+    categoryMetaText: '',
+    currencyStatusText: '',
+    currencyMetaText: '',
+    backupStatusText: '',
+    backupMetaText: '',
+    exportStatusText: '',
+    exportMetaText: '',
+    restoreStatusText: '',
+    restoreMetaText: '',
+    aboutStatusText: '',
+    aboutMetaText: '',
+    feedbackStatusText: '',
+    feedbackMetaText: '',
+    dialogVisible: false,
+    dialogMode: '',
+    dialogTitle: '',
+    dialogDesc: '',
+    dialogConfirmText: '我知道了',
+    dialogCancelText: '取消',
+    dialogSingleAction: false,
+    dialogDanger: false,
+    pendingRestorePath: '',
+    pendingRestoreFileName: '',
   },
 
   lifetimes: {
@@ -51,10 +107,17 @@ Component({
       const recurringRules = getRecurringRules()
       const pendingDrafts = getPendingDrafts()
       const userProfile = getUserProfile()
+      const reminderSettings = getReminderSettings()
+      const currentCurrencyCode = getCurrencyCode()
       const now = new Date()
       const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
       const monthCount = records.filter((item: any) => item.date.startsWith(monthStr)).length
       const categoryCount = categories['支出'].length + categories['收入'].length
+      const activeRuleCount = recurringRules.filter(rule => rule.enabled).length
+      const activeReminderGroups = [
+        reminderSettings.budgetAlertEnabled,
+        reminderSettings.pendingDraftAlertEnabled,
+      ].filter(Boolean).length
 
       // 已记账天数：有记录的不同日期总数
       const daySet = new Set<string>(records.map((r: any) => r.date as string))
@@ -73,6 +136,45 @@ Component({
         }
       }
 
+      const profileSummaryText = userProfile.personalized
+        ? `已记录 ${records.length} 笔，连续记账 ${statConsecutiveDays} 天`
+        : `已记录 ${records.length} 笔，点击右侧完善头像和昵称`
+      const monthlySummaryText = monthCount > 0
+        ? `本月已记 ${monthCount} 笔`
+        : '本月还没有新记录'
+      const monthlyFocusText = pendingDrafts.length > 0
+        ? `有 ${pendingDrafts.length} 条待处理草稿`
+        : '当前没有待处理草稿'
+      const monthlyBudgetText = budgets.length > 0 ? `${budgets.length} 项预算配置` : '还没有设置预算'
+      const monthlyPendingText = pendingDrafts.length > 0 ? `${pendingDrafts.length} 条待处理` : '当前清空'
+      const monthlyRecurringText = recurringRules.length > 0 ? `${activeRuleCount}/${recurringRules.length} 条生效` : '尚未设置'
+      const reminderStatusText = activeReminderGroups > 0 ? `已开启 ${activeReminderGroups} 组` : '全部关闭'
+      const reminderMetaText = reminderSettings.budgetAlertEnabled || reminderSettings.pendingDraftAlertEnabled
+        ? `预算提醒 ${reminderSettings.budgetAlertEnabled ? '开' : '关'}，草稿提醒 ${reminderSettings.pendingDraftAlertEnabled ? '开' : '关'}`
+        : '建议至少开启一组重要提醒'
+      const recurringStatusText = recurringRules.length > 0
+        ? `${activeRuleCount}/${recurringRules.length} 条启用`
+        : '未设置'
+      const recurringMetaText = pendingDrafts.length > 0
+        ? `${pendingDrafts.length} 条草稿待处理`
+        : recurringRules.length > 0
+          ? '固定收支会按规则自动生成'
+          : '房租、工资、会员费都适合放这里'
+      const categoryStatusText = `${categoryCount} 个分类`
+      const categoryMetaText = `支出 ${categories['支出'].length} 个，收入 ${categories['收入'].length} 个`
+      const currencyStatusText = `当前 ${currentCurrencyCode}`
+      const currencyMetaText = '记账、预算和定期规则统一使用'
+      const backupStatusText = formatActionStatus(wx.getStorageSync(LAST_BACKUP_AT_KEY), '备份', '建议先备份一次')
+      const backupMetaText = '导出完整备份，适合迁移或保底保存'
+      const exportStatusText = formatActionStatus(wx.getStorageSync(LAST_EXPORT_AT_KEY), '导出', '导出 CSV 文件')
+      const exportMetaText = '适合做表格分析或长期留存'
+      const restoreStatusText = formatActionStatus(wx.getStorageSync(LAST_RESTORE_AT_KEY), '恢复', '导入本地备份文件')
+      const restoreMetaText = '恢复会覆盖当前本地数据'
+      const aboutStatusText = `版本 ${this.data.version}`
+      const aboutMetaText = '产品介绍、版本信息与使用说明'
+      const feedbackStatusText = '欢迎反馈建议'
+      const feedbackMetaText = '告诉我哪里难用，优先继续打磨'
+
       this.setData({
         statRecords: monthCount,
         statTotalRecords: records.length,
@@ -88,6 +190,30 @@ Component({
         draftAvatarUrl: userProfile.avatarUrl,
         draftNickname: userProfile.nickname,
         profileEditing: false,
+        profileSummaryText,
+        monthlySummaryText,
+        monthlyFocusText,
+        monthlyBudgetText,
+        monthlyPendingText,
+        monthlyRecurringText,
+        reminderStatusText,
+        reminderMetaText,
+        recurringStatusText,
+        recurringMetaText,
+        categoryStatusText,
+        categoryMetaText,
+        currencyStatusText,
+        currencyMetaText,
+        backupStatusText,
+        backupMetaText,
+        exportStatusText,
+        exportMetaText,
+        restoreStatusText,
+        restoreMetaText,
+        aboutStatusText,
+        aboutMetaText,
+        feedbackStatusText,
+        feedbackMetaText,
       })
     },
 
@@ -101,20 +227,70 @@ Component({
         return
       }
 
-      wx.showModal({
-        title: '开启个性化',
-        content: '设置头像和昵称后，我的页面会展示你的专属资料。信息仅保存在当前设备。',
-        confirmText: '去设置',
-        confirmColor: '#ff8a00',
-        success: (res) => {
-          if (!res.confirm) return
-          this.setData({
-            profileEditing: true,
-            draftAvatarUrl: this.data.profileAvatarUrl,
-            draftNickname: this.data.profileNickname,
-          })
-        },
+      this.setData({
+        dialogVisible: true,
+        dialogMode: 'profile-intro',
+        dialogTitle: '开启个性化',
+        dialogDesc: '设置头像和昵称后，我的页面会展示你的专属资料，信息仅保存在当前设备。',
+        dialogConfirmText: '去设置',
+        dialogCancelText: '稍后',
+        dialogSingleAction: false,
+        dialogDanger: false,
       })
+    },
+
+    closeDialog() {
+      this.setData({
+        dialogVisible: false,
+        dialogMode: '',
+        dialogTitle: '',
+        dialogDesc: '',
+        dialogConfirmText: '我知道了',
+        dialogCancelText: '取消',
+        dialogSingleAction: false,
+        dialogDanger: false,
+        pendingRestorePath: '',
+        pendingRestoreFileName: '',
+      })
+    },
+
+    onDialogMaskTap() {
+      if (this.data.dialogSingleAction) return
+      this.closeDialog()
+    },
+
+    onDialogCancel() {
+      this.closeDialog()
+    },
+
+    onDialogConfirm() {
+      const { dialogMode, pendingRestorePath } = this.data
+
+      if (dialogMode === 'profile-intro') {
+        this.setData({
+          profileEditing: true,
+          draftAvatarUrl: this.data.profileAvatarUrl,
+          draftNickname: this.data.profileNickname,
+        })
+        this.closeDialog()
+        return
+      }
+
+      if (dialogMode === 'restore-confirm' && pendingRestorePath) {
+        this.closeDialog()
+        this.performRestore(pendingRestorePath)
+        return
+      }
+
+      if (dialogMode === 'clear-all-confirm') {
+        clearAllRecords()
+        this.closeDialog()
+        wx.showToast({ title: '已清空', icon: 'success' })
+        this.loadStats()
+        return
+      }
+
+      this.closeDialog()
     },
 
     onChooseAvatar(e: WechatMiniprogram.CustomEvent) {
@@ -165,7 +341,7 @@ Component({
       wx.navigateTo({ url: '/pages/recurring/recurring' })
     },
 
-    writeShareFile(fileName: string, content: string) {
+    writeShareFile(fileName: string, content: string, actionKey?: string) {
       try {
         const fs = wx.getFileSystemManager()
         const files = fs.readdirSync(wx.env.USER_DATA_PATH)
@@ -186,16 +362,23 @@ Component({
         return
       }
 
+      if (actionKey) {
+        wx.setStorageSync(actionKey, Date.now())
+      }
+
       ;(wx as any).shareFileMessage({
         filePath,
         fail: (err: any) => {
           const msg: string = (err && err.errMsg) || ''
           if (msg.includes('cancel')) return
-          wx.showModal({
-            title: '文件已导出',
-            content: `文件写入成功，但分享面板打开失败。\n请升级微信后重试。\n\n文件：${fileName}`,
-            showCancel: false,
-            confirmText: '好',
+          this.setData({
+            dialogVisible: true,
+            dialogMode: 'share-failed',
+            dialogTitle: '文件已生成',
+            dialogDesc: `分享面板打开失败，请升级微信后重试。\n文件已保存为 ${fileName}`,
+            dialogConfirmText: '我知道了',
+            dialogSingleAction: true,
+            dialogDanger: false,
           })
         },
       })
@@ -204,7 +387,8 @@ Component({
     onBackupData() {
       const backup = exportBackupJSON()
       const dateStr = new Date().toISOString().slice(0, 10)
-      this.writeShareFile(`记账备份_${dateStr}.json`, backup)
+      this.writeShareFile(`记账备份_${dateStr}.json`, backup, LAST_BACKUP_AT_KEY)
+      this.loadStats()
     },
 
     onRestoreData() {
@@ -225,35 +409,42 @@ Component({
             return
           }
 
-          wx.showModal({
-            title: '恢复备份',
-            content: '恢复后会覆盖当前账单、分类、预算和规则数据，是否继续？',
-            confirmText: '恢复',
-            confirmColor: '#ff8a00',
-            success: modalRes => {
-              if (!modalRes.confirm) return
-              wx.getFileSystemManager().readFile({
-                filePath: path,
-                encoding: 'utf8',
-                success: readRes => {
-                  try {
-                    const restored = restoreBackupJSON(readRes.data as string)
-                    if (!restored) {
-                      wx.showToast({ title: '备份文件格式错误', icon: 'none' })
-                      return
-                    }
-                    this.loadStats()
-                    wx.showToast({ title: '恢复成功', icon: 'success' })
-                  } catch (_) {
-                    wx.showToast({ title: '恢复失败', icon: 'none' })
-                  }
-                },
-                fail: () => {
-                  wx.showToast({ title: '读取备份文件失败', icon: 'none' })
-                },
-              })
-            },
+          this.setData({
+            dialogVisible: true,
+            dialogMode: 'restore-confirm',
+            dialogTitle: '确认恢复备份',
+            dialogDesc: `即将恢复 ${file.name || '所选备份文件'}，当前账单、分类、预算和规则会被覆盖。建议先执行一次数据备份。`,
+            dialogConfirmText: '确认恢复',
+            dialogCancelText: '取消',
+            dialogSingleAction: false,
+            dialogDanger: true,
+            pendingRestorePath: path,
+            pendingRestoreFileName: file.name || '',
           })
+        },
+      })
+    },
+
+    performRestore(path: string) {
+      wx.getFileSystemManager().readFile({
+        filePath: path,
+        encoding: 'utf8',
+        success: readRes => {
+          try {
+            const restored = restoreBackupJSON(readRes.data as string)
+            if (!restored) {
+              wx.showToast({ title: '备份文件格式错误', icon: 'none' })
+              return
+            }
+            wx.setStorageSync(LAST_RESTORE_AT_KEY, Date.now())
+            this.loadStats()
+            wx.showToast({ title: '恢复成功', icon: 'success' })
+          } catch (_) {
+            wx.showToast({ title: '恢复失败', icon: 'none' })
+          }
+        },
+        fail: () => {
+          wx.showToast({ title: '读取备份文件失败', icon: 'none' })
         },
       })
     },
@@ -265,11 +456,12 @@ Component({
         return
       }
       const dateStr = new Date().toISOString().slice(0, 10)
-      this.writeShareFile(`账单_${dateStr}.csv`, csv)
+      this.writeShareFile(`账单_${dateStr}.csv`, csv, LAST_EXPORT_AT_KEY)
+      this.loadStats()
     },
 
     onReminder() {
-      wx.showToast({ title: '提醒设置即将开放', icon: 'none' })
+      wx.navigateTo({ url: '/pages/reminder-setting/reminder-setting' })
     },
 
     onCurrency() {
@@ -281,25 +473,19 @@ Component({
     },
 
     onAbout() {
-      wx.showModal({
-        title: '关于我们',
-        content: '极简小帐专注于日常收支记录、预算管理、AI 记账和消费分析。',
-        showCancel: false,
-      })
+      wx.navigateTo({ url: '/pages/about/about' })
     },
 
     onClearAll() {
-      wx.showModal({
-        title: '确认清空',
-        content: '将清空所有账单数据，此操作不可撤销！',
-        confirmText: '清空',
-        confirmColor: '#ff4d4f',
-        success: (res) => {
-          if (res.confirm) {
-            clearAllRecords()
-            wx.showToast({ title: '已清空', icon: 'success' })
-          }
-        }
+      this.setData({
+        dialogVisible: true,
+        dialogMode: 'clear-all-confirm',
+        dialogTitle: '确认清空数据',
+        dialogDesc: '将清空当前设备上的账单数据，此操作不可撤销。',
+        dialogConfirmText: '确认清空',
+        dialogCancelText: '取消',
+        dialogSingleAction: false,
+        dialogDanger: true,
       })
     },
 

@@ -1,0 +1,165 @@
+<view class="page-root">
+  <navigation-bar title="提醒设置" back="{{true}}" />
+  <scroll-view scroll-y class="page-body">
+    <view class="hero-card">
+      <view class="hero-top">
+        <view class="hero-copy">
+          <text class="hero-title">只提醒需要马上处理的事</text>
+          <text class="hero-desc">只做预算风险和待确认草稿提醒。</text>
+        </view>
+        <view class="hero-badge">自动保存</view>
+      </view>
+      <view class="hero-preview-grid">
+        <view class="hero-preview-pill {{budgetAlertEnabled ? 'hero-preview-pill-on' : 'hero-preview-pill-off'}}">
+          <view class="hero-preview-head">
+            <text class="hero-preview-kicker">预算提醒</text>
+            <view class="hero-preview-state {{budgetAlertEnabled ? 'hero-preview-state-on' : 'hero-preview-state-off'}}">
+              <text class="hero-preview-state-text">{{budgetAlertEnabled ? '已开启' : '已关闭'}}</text>
+            </view>
+          </view>
+          <text class="hero-preview-meta">{{budgetSummaryText}}</text>
+        </view>
+        <view class="hero-preview-pill {{pendingDraftAlertEnabled ? 'hero-preview-pill-on' : 'hero-preview-pill-off'}}">
+          <view class="hero-preview-head">
+            <text class="hero-preview-kicker">待办提醒</text>
+            <view class="hero-preview-state {{pendingDraftAlertEnabled ? 'hero-preview-state-on' : 'hero-preview-state-off'}}">
+              <text class="hero-preview-state-text">{{pendingDraftAlertEnabled ? '已开启' : '已关闭'}}</text>
+            </view>
+          </view>
+          <text class="hero-preview-meta">{{pendingDraftSummaryText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <text class="section-title">预算提醒</text>
+    <view class="group-card">
+      <view class="group-head">
+        <view class="group-head-top">
+          <text class="group-head-title">预算风险提醒</text>
+          <view class="group-status {{budgetAlertEnabled ? 'group-status-on' : 'group-status-off'}}">
+            <text class="group-status-text">{{budgetAlertEnabled ? '已开启' : '已关闭'}}</text>
+          </view>
+        </view>
+        <text class="group-head-desc">{{budgetSummaryText}}</text>
+      </view>
+      <view class="divider divider-full"></view>
+
+      <view class="setting-row">
+        <view class="setting-copy">
+          <text class="setting-title">开启预算提醒</text>
+          <text class="setting-desc">保存支出后触发，并在首页和预算页展示</text>
+        </view>
+        <switch checked="{{budgetAlertEnabled}}" color="var(--color-primary)" bind:change="onBudgetAlertToggle" />
+      </view>
+
+      <view class="divider"></view>
+
+      <picker wx:if="{{budgetAlertEnabled}}" mode="selector" range="{{budgetThresholdOptions}}" value="{{budgetThresholdIndex}}" bind:change="onBudgetThresholdChange">
+        <view class="setting-row">
+          <view class="setting-copy">
+            <text class="setting-title">提醒阈值</text>
+            <text class="setting-desc">达到预算比例后提醒</text>
+          </view>
+          <view class="setting-value-wrap">
+            <text class="setting-value">{{budgetThresholdOptions[budgetThresholdIndex]}}</text>
+            <text class="setting-arrow">›</text>
+          </view>
+        </view>
+      </picker>
+      <view wx:else class="setting-row setting-row-disabled">
+        <view class="setting-copy">
+          <text class="setting-title">提醒阈值</text>
+          <text class="setting-desc">开启预算提醒后可调整</text>
+        </view>
+        <view class="setting-value-wrap">
+          <text class="setting-value setting-value-muted">{{budgetThresholdOptions[budgetThresholdIndex]}}</text>
+          <text class="setting-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="setting-row {{budgetAlertEnabled ? '' : 'setting-row-disabled'}}">
+        <view class="setting-copy">
+          <text class="setting-title">分类预算也提醒</text>
+          <text class="setting-desc">同步提醒单个分类预算</text>
+        </view>
+        <switch checked="{{budgetCategoryAlertEnabled}}" disabled="{{!budgetAlertEnabled}}" color="var(--color-primary)" bind:change="onBudgetCategoryAlertToggle" />
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="setting-row {{budgetAlertEnabled ? '' : 'setting-row-disabled'}}">
+        <view class="setting-copy">
+          <text class="setting-title">超支后继续提醒</text>
+          <text class="setting-desc">超支后继续新增支出时再次提醒</text>
+        </view>
+        <switch checked="{{budgetRepeatOverAlertEnabled}}" disabled="{{!budgetAlertEnabled}}" color="var(--color-primary)" bind:change="onBudgetRepeatOverAlertToggle" />
+      </view>
+    </view>
+
+    <text class="section-title">待办提醒</text>
+    <view class="group-card">
+      <view class="group-head">
+        <view class="group-head-top">
+          <text class="group-head-title">待确认草稿提醒</text>
+          <view class="group-status {{pendingDraftAlertEnabled ? 'group-status-on' : 'group-status-off'}}">
+            <text class="group-status-text">{{pendingDraftAlertEnabled ? '已开启' : '已关闭'}}</text>
+          </view>
+        </view>
+        <text class="group-head-desc">{{pendingDraftSummaryText}}</text>
+      </view>
+      <view class="divider divider-full"></view>
+
+      <view class="setting-row">
+        <view class="setting-copy">
+          <text class="setting-title">定期账单草稿提醒</text>
+          <text class="setting-desc">有待确认草稿时，在首页显示提醒卡片</text>
+        </view>
+        <switch checked="{{pendingDraftAlertEnabled}}" color="var(--color-primary)" bind:change="onPendingDraftAlertToggle" />
+      </view>
+
+      <view class="divider"></view>
+
+      <picker wx:if="{{pendingDraftAlertEnabled}}" mode="selector" range="{{pendingDraftThresholdOptions}}" value="{{pendingDraftThresholdIndex}}" bind:change="onPendingDraftThresholdChange">
+        <view class="setting-row">
+          <view class="setting-copy">
+            <text class="setting-title">草稿堆积提醒</text>
+            <text class="setting-desc">达到指定数量后才提示</text>
+          </view>
+          <view class="setting-value-wrap">
+            <text class="setting-value">{{pendingDraftThresholdOptions[pendingDraftThresholdIndex]}}</text>
+            <text class="setting-arrow">›</text>
+          </view>
+        </view>
+      </picker>
+      <view wx:else class="setting-row setting-row-disabled">
+        <view class="setting-copy">
+          <text class="setting-title">草稿堆积提醒</text>
+          <text class="setting-desc">开启草稿提醒后可调整</text>
+        </view>
+        <view class="setting-value-wrap">
+          <text class="setting-value setting-value-muted">{{pendingDraftThresholdOptions[pendingDraftThresholdIndex]}}</text>
+          <text class="setting-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <text class="section-title">提醒管理</text>
+    <view class="group-card">
+      <view class="reset-card">
+        <view class="reset-copy">
+          <text class="setting-title">重置预算提醒历史</text>
+          <text class="setting-desc">已提醒过的预算状态会重新计算，适合调整阈值后重新观察效果</text>
+        </view>
+        <view class="reset-btn" bind:tap="onResetHistory">重置</view>
+      </view>
+    </view>
+
+    <view class="footer-note">
+      <text class="footer-note-text">当前版本只做和记账主流程强相关的提醒，不包含系统推送和订阅消息。</text>
+    </view>
+
+    <view class="page-gap"></view>
+  </scroll-view>
+</view>

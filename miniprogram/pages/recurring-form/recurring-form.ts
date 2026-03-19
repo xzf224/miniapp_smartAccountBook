@@ -10,6 +10,7 @@ import { getToday } from '../../utils/date'
 
 const FREQ_OPTIONS = ['每天', '每周', '每月', '每年']
 const FREQ_VALUES: IRecurringRule['frequency'][] = ['daily', 'weekly', 'monthly', 'yearly']
+const RECURRING_TYPES: RecordType[] = RECORD_TYPES.filter((type): type is Extract<RecordType, '支出' | '收入'> => type !== '不计入收支')
 const DOW_OPTIONS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => `${i + 1}月`)
 const DOM_OPTIONS = Array.from({ length: 31 }, (_, i) => `${i + 1}日`)
@@ -20,7 +21,7 @@ Component({
     ruleId: '',
     name: '',
     typeIndex: 0,
-    types: RECORD_TYPES,
+    types: RECURRING_TYPES,
     categories: [] as string[],
     selectedCategory: '',
     amountText: '',
@@ -35,11 +36,16 @@ Component({
     moyOptions: MONTH_OPTIONS,
     startDate: '',
     endDate: '',
+    scheduleSummaryText: '',
+    dateRangeSummaryText: '',
+    amountPreviewText: '',
+    categoryPreviewText: '未选择类别',
+    saveButtonText: '保存规则',
   },
 
   lifetimes: {
     attached() {
-      this.setData({ startDate: getToday() })
+      this.setData({ startDate: getToday() }, () => this._updateViewState())
       this._loadFromOptions()
     },
   },
@@ -64,15 +70,54 @@ Component({
 
     _loadCategories() {
       const cats = getCategories()
-      const type = RECORD_TYPES[this.data.typeIndex]
-      this.setData({ categories: cats[type] || [] })
+      const type = RECURRING_TYPES[this.data.typeIndex]
+      this.setData({ categories: cats[type] || [] }, () => this._updateViewState())
+    },
+
+    _updateViewState() {
+      const {
+        isEdit,
+        freqIndex,
+        dowIndex,
+        domIndex,
+        moyIndex,
+        startDate,
+        endDate,
+        amountText,
+        selectedCategory,
+      } = this.data
+      const frequency = FREQ_VALUES[freqIndex]
+      const scheduleSummaryText = frequency === 'daily'
+        ? '每天执行'
+        : frequency === 'weekly'
+          ? `每周 ${DOW_OPTIONS[dowIndex]}`
+          : frequency === 'monthly'
+            ? `每月 ${DOM_OPTIONS[domIndex]}`
+            : `每年 ${MONTH_OPTIONS[moyIndex]} ${DOM_OPTIONS[domIndex]}`
+      const dateRangeSummaryText = endDate
+        ? `${startDate} 至 ${endDate}`
+        : `${startDate} 起长期有效`
+      const amountPreviewText = amountText ? `¥${amountText}` : '待填写金额'
+      const categoryPreviewText = selectedCategory || '未选择类别'
+      const saveButtonText = isEdit ? '保存修改' : '创建规则'
+
+      this.setData({
+        scheduleSummaryText,
+        dateRangeSummaryText,
+        amountPreviewText,
+        categoryPreviewText,
+        saveButtonText,
+      })
     },
 
     loadRule(id: string) {
       const rules = getRecurringRules()
       const rule = rules.find(r => r.id === id)
       if (!rule) return
-      const typeIndex = RECORD_TYPES.indexOf(rule.type as RecordType)
+      const safeType = RECURRING_TYPES.includes(rule.type as Extract<RecordType, '支出' | '收入'>)
+        ? rule.type as Extract<RecordType, '支出' | '收入'>
+        : '支出'
+      const typeIndex = RECURRING_TYPES.indexOf(safeType)
       const freqIndex = FREQ_VALUES.indexOf(rule.frequency)
       const cats = getCategories()
       this.setData({
@@ -80,8 +125,8 @@ Component({
         ruleId: id,
         name: rule.name,
         typeIndex: typeIndex >= 0 ? typeIndex : 0,
-        categories: cats[rule.type] || [],
-        selectedCategory: rule.category,
+        categories: cats[safeType] || [],
+        selectedCategory: safeType === rule.type ? rule.category : '',
         amountText: (rule.amount / 100).toString(),
         note: rule.note,
         freqIndex: freqIndex >= 0 ? freqIndex : 2,
@@ -90,7 +135,7 @@ Component({
         moyIndex: (rule.monthOfYear ?? 1) - 1,
         startDate: rule.startDate,
         endDate: rule.endDate || '',
-      })
+      }, () => this._updateViewState())
     },
 
     onNameInput(e: WechatMiniprogram.Input) {
@@ -99,16 +144,16 @@ Component({
 
     onTypeChange(e: WechatMiniprogram.TouchEvent) {
       const idx = (e.currentTarget.dataset as any).index as number
-      this.setData({ typeIndex: idx, selectedCategory: '' })
+      this.setData({ typeIndex: idx, selectedCategory: '' }, () => this._updateViewState())
       this._loadCategories()
     },
 
     onCategorySelect(e: any) {
-      this.setData({ selectedCategory: e.detail.category })
+      this.setData({ selectedCategory: e.detail.category }, () => this._updateViewState())
     },
 
     onAmountInput(e: WechatMiniprogram.Input) {
-      this.setData({ amountText: e.detail.value })
+      this.setData({ amountText: e.detail.value }, () => this._updateViewState())
     },
 
     onNoteInput(e: WechatMiniprogram.Input) {
@@ -116,31 +161,31 @@ Component({
     },
 
     onFreqChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ freqIndex: Number(e.detail.value) })
+      this.setData({ freqIndex: Number(e.detail.value) }, () => this._updateViewState())
     },
 
     onDowChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ dowIndex: Number(e.detail.value) })
+      this.setData({ dowIndex: Number(e.detail.value) }, () => this._updateViewState())
     },
 
     onDomChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ domIndex: Number(e.detail.value) })
+      this.setData({ domIndex: Number(e.detail.value) }, () => this._updateViewState())
     },
 
     onMoyChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ moyIndex: Number(e.detail.value) })
+      this.setData({ moyIndex: Number(e.detail.value) }, () => this._updateViewState())
     },
 
     onStartDateChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ startDate: e.detail.value as string })
+      this.setData({ startDate: e.detail.value as string }, () => this._updateViewState())
     },
 
     onEndDateChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ endDate: e.detail.value as string })
+      this.setData({ endDate: e.detail.value as string }, () => this._updateViewState())
     },
 
     onClearEndDate() {
-      this.setData({ endDate: '' })
+      this.setData({ endDate: '' }, () => this._updateViewState())
     },
 
     onSave() {
@@ -178,7 +223,7 @@ Component({
       const rule: IRecurringRule = {
         id: isEdit ? ruleId : generateId(),
         name: name.trim(),
-        type: RECORD_TYPES[typeIndex],
+        type: RECURRING_TYPES[typeIndex],
         category: selectedCategory,
         amount: yuanToFen(amountNum),
         note,

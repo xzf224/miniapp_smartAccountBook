@@ -27,6 +27,9 @@ function buildFrequencyLabel(rule: IRecurringRule): string {
 Component({
   data: {
     rules: [] as any[], // IRecurringRule & { amountYuan: string; frequencyLabel: string }
+    totalCount: 0,
+    activeCount: 0,
+    pausedCount: 0,
   },
 
   pageLifetimes: {
@@ -48,8 +51,15 @@ Component({
         ...r,
         amountYuan: fenToYuan(r.amount),
         frequencyLabel: buildFrequencyLabel(r),
+        statusText: r.enabled ? '已启用' : '已暂停',
       }))
-      this.setData({ rules: enriched })
+      const activeCount = enriched.filter(rule => rule.enabled).length
+      this.setData({
+        rules: enriched,
+        totalCount: enriched.length,
+        activeCount,
+        pausedCount: enriched.length - activeCount,
+      })
     },
 
     onAddRule() {
@@ -76,9 +86,9 @@ Component({
       const rule = getRecurringRules().find(r => r.id === id)
       if (!rule) return
       wx.showModal({
-        title: '删除规则',
-        content: `确认删除"${rule.name}"？已生成的草稿不受影响。`,
-        confirmText: '删除',
+        title: '删除定期规则',
+        content: `确认删除规则「${rule.name}」？\n已生成的草稿不受影响。`,
+        confirmText: '删除规则',
         confirmColor: '#ff4757',
         success: (res) => {
           if (res.confirm) {

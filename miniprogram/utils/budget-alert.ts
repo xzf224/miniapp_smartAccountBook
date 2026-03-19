@@ -1,8 +1,6 @@
 import { IRecord } from '../models/record'
-import { getBudgets, getCurrencyCode, getCurrencySymbol, getRecords } from './storage'
+import { getBudgets, getCurrencyCode, getCurrencySymbol, getRecords, getReminderSettings } from './storage'
 
-const BUDGET_ALERT_ENABLED_KEY = 'budgetAlertEnabled'
-const BUDGET_ALERT_THRESHOLD_KEY = 'budgetAlertThreshold'
 const BUDGET_ALERT_HISTORY_KEY = 'budgetAlertHistory'
 
 type BudgetAlertLevel = 'threshold' | 'over'
@@ -47,13 +45,6 @@ function getCurrentYearMonth() {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
   }
-}
-
-function getAlertThreshold(): number {
-  const rawThreshold = Number(wx.getStorageSync(BUDGET_ALERT_THRESHOLD_KEY) || 80)
-  return Number.isFinite(rawThreshold)
-    ? Math.min(100, Math.max(1, Math.round(rawThreshold)))
-    : 80
 }
 
 function getAlertHistory(): BudgetAlertHistory {
@@ -149,10 +140,13 @@ function pickHigherPriorityAlert(current: BudgetAlert | null, next: BudgetAlert)
 }
 
 export function checkBudgetAlertAfterRecordsSaved(records: IRecord[]): BudgetAlert | null {
-  const alertEnabled = Boolean(wx.getStorageSync(BUDGET_ALERT_ENABLED_KEY))
+  const reminderSettings = getReminderSettings()
+  const alertEnabled = reminderSettings.budgetAlertEnabled
   if (!alertEnabled) return null
 
-  const threshold = getAlertThreshold()
+  const threshold = reminderSettings.budgetAlertThreshold
+  const allowCategoryAlerts = reminderSettings.budgetCategoryAlertEnabled
+  const repeatOverAlertEnabled = reminderSettings.budgetRepeatOverAlertEnabled
 
   const { year: currentYear, month: currentMonth } = getCurrentYearMonth()
   const affectedKeys = new Set<string>()
@@ -165,7 +159,9 @@ export function checkBudgetAlertAfterRecordsSaved(records: IRecord[]): BudgetAle
     if (year !== currentYear || month !== currentMonth) return
     const currencyCode = record.currency ?? 'CNY'
     affectedKeys.add(getBudgetAlertKey(year, month, currencyCode))
-    affectedKeys.add(getBudgetAlertKey(year, month, currencyCode, record.category))
+    if (allowCategoryAlerts) {
+      affectedKeys.add(getBudgetAlertKey(year, month, currencyCode, record.category))
+    }
   })
 
   if (affectedKeys.size === 0) return null
@@ -181,7 +177,7 @@ export function checkBudgetAlertAfterRecordsSaved(records: IRecord[]): BudgetAle
     const prev = history[key]
     const thresholdChanged = prev?.threshold !== threshold
     const shouldNotify = alert.level === 'over'
-      ? prev?.level !== 'over'
+      ? repeatOverAlertEnabled || prev?.level !== 'over'
       : thresholdChanged
         ? prev?.level !== 'over'
         : prev?.level !== 'threshold' && prev?.level !== 'over'
@@ -211,15 +207,18 @@ export function getBudgetAlertForPeriod(
   month: number,
   currencyCode: string = getCurrencyCode(),
 ): BudgetAlert | null {
-  const alertEnabled = Boolean(wx.getStorageSync(BUDGET_ALERT_ENABLED_KEY))
+  const reminderSettings = getReminderSettings()
+  const alertEnabled = reminderSettings.budgetAlertEnabled
   if (!alertEnabled) return null
 
-  const threshold = getAlertThreshold()
+  const threshold = reminderSettings.budgetAlertThreshold
   const exactBudgets = getBudgets().filter(
     budget => budget.year === year
       && budget.month === month
       && budget.type === '支出'
       && budget.amount > 0,
+  ).filter(
+    budget => reminderSettings.budgetCategoryAlertEnabled || budget.category === '__total__',
   )
 
   return exactBudgets.reduce<BudgetAlert | null>((current, budget) => {
@@ -259,6 +258,10 @@ export function getBudgetAlertBanner(alert: BudgetAlert): BudgetAlertBanner {
     title: '预算提醒',
     text: `本月支出已达到总预算的 ${alert.threshold}%，当前已花 ${alert.currencySymbol}${formatCurrency(alert.spentFen)}。`,
   }
+}
+
+export function clearBudgetAlertHistory(): void {
+  wx.removeStorageSync(BUDGET_ALERT_HISTORY_KEY)
 }
 
 export function showBudgetAlertModal(alert: BudgetAlert, onComplete?: () => void) {

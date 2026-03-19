@@ -1,0 +1,140 @@
+.page-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page);
+}
+
+.page-body {
+  flex: 1;
+  height: 0;
+  background: var(--color-bg-page);
+}
+
+.hero-card {
+  margin: 24rpx 24rpx 0;
+  padding: 22rpx;
+  border-radius: var(--radius-card);
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.12), rgba(255, 125, 0, 0.05));
+  border: 1rpx solid rgba(255, 125, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  box-sizing: border-box;
+}
+
+.hero-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.hero-desc {
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: #7a5f3a;
+}
+
+.hero-meta-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.hero-meta-pill {
+  flex: 1;
+  min-width: 0;
+  padding: 14rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.74);
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.hero-meta-kicker {
+  font-size: 19rpx;
+  color: var(--color-text-secondary);
+}
+
+.hero-meta-value {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.section-title {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 18rpx 24rpx 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.group-card {
+  margin: 0 24rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.info-row {
+  padding: 18rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.info-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.info-desc {
+  font-size: 21rpx;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.version-row {
+  min-height: 88rpx;
+  padding: 16rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.version-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.version-value {
+  font-size: 25rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.divider {
+  margin-left: 24rpx;
+  height: 1rpx;
+  background: var(--color-border);
+}
+
+.footer-note {
+  margin: 20rpx 36rpx 0;
+  text-align: center;
+}
+
+.footer-note-text {
+  font-size: 20rpx;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.page-gap {
+  height: 40rpx;
+}

@@ -1,4 +1,4 @@
-import { getCategories, getBudgets, upsertBudget, deleteBudget, getRecords, getCurrencyCode, getCurrencySymbol } from '../../utils/storage'
+import { getCategories, getBudgets, upsertBudget, deleteBudget, getRecords, getCurrencyCode, getCurrencySymbol, getReminderSettings, saveReminderSettings } from '../../utils/storage'
 import { hexToRgba } from '../../utils/format'
 import { fenToYuan, yuanToFen, CATEGORY_COLORS, CATEGORY_ICONS } from '../../models/record'
 
@@ -235,8 +235,9 @@ Component({
       const year = now.getFullYear()
       const month = now.getMonth() + 1
 
-      const alertThreshold = wx.getStorageSync('budgetAlertThreshold') || 80
-      const alertEnabled = wx.getStorageSync('budgetAlertEnabled') || false
+      const reminderSettings = getReminderSettings()
+      const alertThreshold = reminderSettings.budgetAlertThreshold
+      const alertEnabled = reminderSettings.budgetAlertEnabled
 
       const budgets = getBudgets()
       const records = getRecords()
@@ -544,8 +545,10 @@ Component({
         }
       }
 
-      wx.setStorageSync('budgetAlertThreshold', alertThreshold)
-      wx.setStorageSync('budgetAlertEnabled', alertEnabled)
+      saveReminderSettings({
+        budgetAlertThreshold: alertThreshold,
+        budgetAlertEnabled: alertEnabled,
+      })
 
       wx.showToast({ title: '保存成功', icon: 'success' })
       setTimeout(() => {

@@ -15,7 +15,7 @@
     <view class="profile-copy">
       <text class="profile-greeting">Hi，欢迎回来</text>
       <text class="profile-name">{{profileNickname || '微信用户'}}</text>
-      <text class="profile-subtitle">{{profilePersonalized ? '点击右侧图标修改头像和昵称' : '匿名模式，点击右侧图标开启个性化'}}</text>
+      <text class="profile-subtitle">{{profileSummaryText}}</text>
     </view>
     <view class="profile-edit-chip" bind:tap="onProfileCardTap">
       <image class="profile-edit-icon" src="/images/note.png" mode="aspectFit" />
@@ -124,92 +124,156 @@
     </view>
   </view>
 
-  <view class="section-header">数据管理</view>
+  <view class="section-header">我的设置</view>
   <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onBackupData">
-      <view class="item-icon-shell item-icon-shell-orange">
-        <image class="item-icon-img" src="/images/arrow-left-right.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">数据备份</text>
-      <view class="item-arrow"></view>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onRestoreData">
-      <view class="item-icon-shell item-icon-shell-red">
-        <image class="item-icon-img" src="/images/brush-cleaning.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">数据恢复</text>
-      <view class="item-arrow"></view>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onExportData">
-      <view class="item-icon-shell item-icon-shell-blue">
-        <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">导出数据</text>
-      <view class="item-arrow"></view>
-    </view>
-  </view>
-
-  <view class="section-header">个性化</view>
-  <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onCategoryManage">
-      <view class="item-icon-shell item-icon-shell-purple">
-        <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">分类管理</text>
-      <view class="item-arrow"></view>
-    </view>
-    <view class="divider"></view>
-    <!--
-    <view class="settings-item flex-row" bind:tap="onBudgetSetting">
-      <image class="item-icon-img" src="/images/wallet.png" mode="aspectFit" />
-      <text class="item-label flex-1">预算管理</text>
-      <text class="item-arrow">›</text>
-    </view>
-    -->
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onCurrency">
-      <view class="item-icon-shell item-icon-shell-green">
-        <image class="item-icon-img" src="/images/circle-dollar-sign.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">货币设置</text>
-      <view class="item-arrow"></view>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onRecurring">
-      <view class="item-icon-shell item-icon-shell-blue">
-        <image class="item-icon-img" src="/images/schedule.png" mode="aspectFit" />
-      </view>
-      <text class="item-label flex-1">定期账单</text>
-      <view class="item-arrow"></view>
-    </view>
-    <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onReminder">
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onReminder">
       <view class="item-icon-shell item-icon-shell-orange">
         <image class="item-icon-img" src="/images/alarm-clock.png" mode="aspectFit" />
       </view>
-      <text class="item-label flex-1">提醒设置</text>
-      <view class="item-arrow"></view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">提醒设置</text>
+        </view>
+        <text class="item-meta">{{reminderMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{reminderStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onRecurring">
+      <view class="item-icon-shell item-icon-shell-blue">
+        <image class="item-icon-img" src="/images/schedule.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">定期账单</text>
+        </view>
+        <text class="item-meta">{{recurringMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{recurringStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onCategoryManage">
+      <view class="item-icon-shell item-icon-shell-purple">
+        <image class="item-icon-img" src="/images/tag.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">分类管理</text>
+        </view>
+        <text class="item-meta">{{categoryMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{categoryStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onCurrency">
+      <view class="item-icon-shell item-icon-shell-green">
+        <image class="item-icon-img" src="/images/circle-dollar-sign.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">货币设置</text>
+        </view>
+        <text class="item-meta">{{currencyMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{currencyStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
     </view>
   </view>
 
-  <view class="section-header">关于</view>
+  <view class="section-header">数据工具</view>
   <view class="card settings-group">
-    <view class="settings-item flex-row" bind:tap="onAbout">
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onBackupData">
+      <view class="item-icon-shell item-icon-shell-orange">
+        <image class="item-icon-img" src="/images/arrow-left-right.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">数据备份</text>
+        </view>
+        <text class="item-meta">{{backupMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{backupStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onExportData">
+      <view class="item-icon-shell item-icon-shell-blue">
+        <image class="item-icon-img" src="/images/export.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">导出数据</text>
+        </view>
+        <text class="item-meta">{{exportMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{exportStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onRestoreData">
+      <view class="item-icon-shell item-icon-shell-red">
+        <image class="item-icon-img" src="/images/brush-cleaning.png" mode="aspectFit" />
+      </view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">数据恢复</text>
+        </view>
+        <text class="item-meta">{{restoreMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{restoreStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-header">支持与关于</view>
+  <view class="card settings-group settings-group-light">
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onAbout">
       <view class="item-icon-shell item-icon-shell-slate">
         <image class="item-icon-img" src="/images/info.png" mode="aspectFit" />
       </view>
-      <text class="item-label flex-1">关于我们</text>
-      <view class="item-arrow"></view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">关于极简小帐</text>
+        </view>
+        <text class="item-meta">{{aboutMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{aboutStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
     </view>
     <view class="divider"></view>
-    <view class="settings-item flex-row" bind:tap="onFeedback">
+    <view class="settings-item settings-item-rich flex-row" bind:tap="onFeedback">
       <view class="item-icon-shell item-icon-shell-purple">
         <image class="item-icon-img" src="/images/message-circle.png" mode="aspectFit" />
       </view>
-      <text class="item-label flex-1">意见反馈</text>
-      <view class="item-arrow"></view>
+      <view class="item-copy flex-1">
+        <view class="item-title-row">
+          <text class="item-label">意见反馈</text>
+        </view>
+        <text class="item-meta">{{feedbackMetaText}}</text>
+      </view>
+      <view class="item-right">
+        <text class="item-status">{{feedbackStatusText}}</text>
+        <view class="item-arrow"></view>
+      </view>
     </view>
   </view>
 
@@ -219,8 +283,23 @@
 
   <view class="app-info">
     <text class="app-name">极简小帐</text>
-    <text class="app-version">{{version}}</text>
+    <text class="app-version">当前版本 {{version}}</text>
   </view>
 
 </scroll-view>
+
+<view wx:if="{{dialogVisible}}" class="dialog-overlay" bind:tap="onDialogMaskTap"></view>
+<view wx:if="{{dialogVisible}}" class="dialog-sheet">
+  <view class="dialog-card">
+    <view class="dialog-head">
+      <text class="dialog-title">{{dialogTitle}}</text>
+      <text class="dialog-desc">{{dialogDesc}}</text>
+    </view>
+    <view class="dialog-actions {{dialogSingleAction ? 'dialog-actions-single' : ''}}">
+      <view wx:if="{{!dialogSingleAction}}" class="dialog-btn dialog-btn-secondary" bind:tap="onDialogCancel">{{dialogCancelText}}</view>
+      <view class="dialog-btn {{dialogDanger ? 'dialog-btn-danger' : 'dialog-btn-primary'}}" bind:tap="onDialogConfirm">{{dialogConfirmText}}</view>
+    </view>
+  </view>
+</view>
+
 <bottom-nav current="{{4}}" />

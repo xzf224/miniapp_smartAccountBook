@@ -1,43 +1,79 @@
-<navigation-bar title="定期账单" back="{{true}}" />
-<scroll-view scroll-y class="page-body">
-
-  <view class="empty-state" wx:if="{{rules.length === 0}}">
-    <image class="empty-icon" src="/images/schedule.png" mode="aspectFit" />
-    <text class="empty-text">还没有定期账单规则</text>
-    <text class="empty-sub">点击下方按钮添加，如每月房租、话费等</text>
-  </view>
-
-  <view wx:else>
-    <view class="rule-card" wx:for="{{rules}}" wx:key="id" wx:for-item="rule">
-      <view class="rule-main" data-id="{{rule.id}}" bind:tap="onEditRule">
-        <view class="rule-left">
-          <view class="rule-title-row">
-            <text class="rule-name">{{rule.name}}</text>
-            <text class="rule-freq">{{rule.frequencyLabel}}</text>
-          </view>
-          <view class="rule-meta">
-            <text class="rule-type {{rule.type === '支出' ? 'type-expense' : 'type-income'}}">{{rule.type}}</text>
-            <text class="rule-category">{{rule.category}}</text>
-            <text wx:if="{{rule.note}}" class="rule-note">· {{rule.note}}</text>
-          </view>
-        </view>
-        <view class="rule-right">
-          <text class="rule-amount {{rule.type === '支出' ? 'amount-expense' : 'amount-income'}}">¥{{rule.amountYuan}}</text>
-        </view>
+<view class="page-root">
+  <navigation-bar title="定期账单" back="{{true}}" />
+  <scroll-view scroll-y class="page-body">
+    <view class="overview-card">
+      <view class="overview-copy">
+        <text class="overview-title">让固定支出和固定收入按节奏发生</text>
+        <text class="overview-desc">
+          {{rules.length > 0 ? '规则到期后会自动生成待处理草稿。' : '新增后会按设定周期生成待处理草稿。'}}
+        </text>
       </view>
-      <view class="rule-footer">
-        <view class="toggle-area" data-id="{{rule.id}}" bind:tap="onToggleRule">
-          <view class="toggle-track {{rule.enabled ? 'active' : ''}}">
-            <view class="toggle-thumb"></view>
-          </view>
-          <text class="toggle-label">{{rule.enabled ? '已启用' : '已暂停'}}</text>
+      <view class="overview-grid">
+        <view class="overview-metric">
+          <text class="overview-kicker">全部规则</text>
+          <text class="overview-value">{{totalCount}}</text>
         </view>
-        <view class="delete-btn" data-id="{{rule.id}}" bind:tap="onDeleteRule">删除</view>
+        <view class="overview-metric">
+          <text class="overview-kicker">已启用</text>
+          <text class="overview-value overview-value-primary">{{activeCount}}</text>
+        </view>
+        <view class="overview-metric">
+          <text class="overview-kicker">已暂停</text>
+          <text class="overview-value">{{pausedCount}}</text>
+        </view>
       </view>
     </view>
+
+    <view class="empty-state" wx:if="{{rules.length === 0}}">
+      <image class="empty-icon" src="/images/schedule.png" mode="aspectFit" />
+      <text class="empty-text">还没有定期账单规则</text>
+      <text class="empty-sub">从房租、工资、会员费这类固定收支开始，先建立 1 到 3 条常用规则。</text>
+    </view>
+
+    <view wx:else class="rule-list">
+      <view class="rule-card" wx:for="{{rules}}" wx:key="id" wx:for-item="rule">
+        <view class="rule-main" data-id="{{rule.id}}" bind:tap="onEditRule">
+          <view class="rule-top">
+            <view class="rule-title-wrap">
+              <text class="rule-name">{{rule.name}}</text>
+              <view class="rule-status-chip {{rule.enabled ? 'rule-status-chip-on' : 'rule-status-chip-off'}}">
+                <text class="rule-status-chip-text">{{rule.statusText}}</text>
+              </view>
+            </view>
+            <text class="rule-amount {{rule.type === '支出' ? 'amount-expense' : 'amount-income'}}">¥{{rule.amountYuan}}</text>
+          </view>
+
+          <view class="rule-tags">
+            <text class="rule-tag rule-tag-freq">{{rule.frequencyLabel}}</text>
+            <text class="rule-tag {{rule.type === '支出' ? 'rule-tag-expense' : 'rule-tag-income'}}">{{rule.type}}</text>
+            <text class="rule-tag rule-tag-category">{{rule.category}}</text>
+          </view>
+
+          <text wx:if="{{rule.note}}" class="rule-note">{{rule.note}}</text>
+        </view>
+
+        <view class="rule-footer">
+          <view class="toggle-area" data-id="{{rule.id}}" bind:tap="onToggleRule">
+            <view class="toggle-track {{rule.enabled ? 'active' : ''}}">
+              <view class="toggle-thumb"></view>
+            </view>
+            <view class="toggle-copy">
+              <text class="toggle-label">{{rule.enabled ? '规则生效中' : '规则已暂停'}}</text>
+              <text class="toggle-sub">{{rule.enabled ? '到期后继续生成草稿' : '暂停后不再生成新草稿'}}</text>
+            </view>
+          </view>
+          <view class="footer-actions">
+            <view class="footer-action" data-id="{{rule.id}}" bind:tap="onEditRule">编辑</view>
+            <view class="footer-action footer-action-danger" data-id="{{rule.id}}" bind:tap="onDeleteRule">删除</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="page-gap"></view>
+  </scroll-view>
+
+  <view class="bottom-bar">
+    <view class="add-btn" bind:tap="onAddRule">＋ 新增定期账单</view>
   </view>
-
-  <view class="add-btn" bind:tap="onAddRule">＋ 新增定期账单</view>
-
-  <view style="height: 60rpx;"></view>
-</scroll-view>
+</view>
