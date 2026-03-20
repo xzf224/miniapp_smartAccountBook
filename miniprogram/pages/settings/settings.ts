@@ -17,6 +17,7 @@ import {
 const LAST_BACKUP_AT_KEY = 'settings_last_backup_at'
 const LAST_EXPORT_AT_KEY = 'settings_last_export_at'
 const LAST_RESTORE_AT_KEY = 'settings_last_restore_at'
+const LAST_FEEDBACK_AT_KEY = 'settings_last_feedback_at'
 
 function formatActionStatus(rawValue: unknown, actionLabel: string, fallback: string): string {
   const timestamp = Number(rawValue)
@@ -32,6 +33,13 @@ function formatActionStatus(rawValue: unknown, actionLabel: string, fallback: st
   if (diffDays === 1) return `昨天${actionLabel}`
   if (diffDays < 7) return `${diffDays} 天前${actionLabel}`
   return `${target.getMonth() + 1} 月 ${target.getDate()} 日${actionLabel}`
+}
+
+function formatLocalDateStamp(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 Component({
@@ -164,16 +172,16 @@ Component({
       const categoryMetaText = `支出 ${categories['支出'].length} 个，收入 ${categories['收入'].length} 个`
       const currencyStatusText = `当前 ${currentCurrencyCode}`
       const currencyMetaText = '记账、预算和定期规则统一使用'
-      const backupStatusText = formatActionStatus(wx.getStorageSync(LAST_BACKUP_AT_KEY), '备份', '建议先备份一次')
+      const backupStatusText = formatActionStatus(wx.getStorageSync(LAST_BACKUP_AT_KEY), '生成备份', '建议先生成')
       const backupMetaText = '导出完整备份，适合迁移或保底保存'
-      const exportStatusText = formatActionStatus(wx.getStorageSync(LAST_EXPORT_AT_KEY), '导出', '导出 CSV 文件')
+      const exportStatusText = formatActionStatus(wx.getStorageSync(LAST_EXPORT_AT_KEY), '生成 CSV', '导出 CSV')
       const exportMetaText = '适合做表格分析或长期留存'
-      const restoreStatusText = formatActionStatus(wx.getStorageSync(LAST_RESTORE_AT_KEY), '恢复', '导入本地备份文件')
-      const restoreMetaText = '恢复会覆盖当前本地数据'
+      const restoreStatusText = formatActionStatus(wx.getStorageSync(LAST_RESTORE_AT_KEY), '恢复', '从微信会话恢复')
+      const restoreMetaText = '需先把备份文件发到微信会话，再选择恢复'
       const aboutStatusText = `版本 ${this.data.version}`
       const aboutMetaText = '产品介绍、版本信息与使用说明'
-      const feedbackStatusText = '欢迎反馈建议'
-      const feedbackMetaText = '告诉我哪里难用，优先继续打磨'
+      const feedbackStatusText = formatActionStatus(wx.getStorageSync(LAST_FEEDBACK_AT_KEY), '提交反馈', '欢迎反馈建议')
+      const feedbackMetaText = '功能建议、体验问题或 bug 都可以直接提交'
 
       this.setData({
         statRecords: monthCount,
@@ -273,6 +281,12 @@ Component({
           draftNickname: this.data.profileNickname,
         })
         this.closeDialog()
+        return
+      }
+
+      if (dialogMode === 'restore-guide') {
+        this.closeDialog()
+        this.chooseRestoreFile()
         return
       }
 
@@ -386,12 +400,12 @@ Component({
 
     onBackupData() {
       const backup = exportBackupJSON()
-      const dateStr = new Date().toISOString().slice(0, 10)
+      const dateStr = formatLocalDateStamp(new Date())
       this.writeShareFile(`记账备份_${dateStr}.json`, backup, LAST_BACKUP_AT_KEY)
       this.loadStats()
     },
 
-    onRestoreData() {
+    chooseRestoreFile() {
       if (!(wx as any).chooseMessageFile) {
         wx.showToast({ title: '当前基础库不支持恢复', icon: 'none' })
         return
@@ -413,7 +427,7 @@ Component({
             dialogVisible: true,
             dialogMode: 'restore-confirm',
             dialogTitle: '确认恢复备份',
-            dialogDesc: `即将恢复 ${file.name || '所选备份文件'}，当前账单、分类、预算和规则会被覆盖。建议先执行一次数据备份。`,
+            dialogDesc: `即将恢复 ${file.name || '所选备份文件'}。\n当前账单、分类、预算、提醒与规则会被覆盖，建议先执行一次数据备份。`,
             dialogConfirmText: '确认恢复',
             dialogCancelText: '取消',
             dialogSingleAction: false,
@@ -422,6 +436,19 @@ Component({
             pendingRestoreFileName: file.name || '',
           })
         },
+      })
+    },
+
+    onRestoreData() {
+      this.setData({
+        dialogVisible: true,
+        dialogMode: 'restore-guide',
+        dialogTitle: '从微信会话恢复',
+        dialogDesc: '恢复会从微信会话里的备份文件中选择。\n请先把备份文件发送到文件传输助手或任意微信会话，再继续选择。',
+        dialogConfirmText: '去选择文件',
+        dialogCancelText: '取消',
+        dialogSingleAction: false,
+        dialogDanger: false,
       })
     },
 
@@ -455,7 +482,7 @@ Component({
         wx.showToast({ title: '暂无记录可导出', icon: 'none' })
         return
       }
-      const dateStr = new Date().toISOString().slice(0, 10)
+      const dateStr = formatLocalDateStamp(new Date())
       this.writeShareFile(`账单_${dateStr}.csv`, csv, LAST_EXPORT_AT_KEY)
       this.loadStats()
     },
@@ -469,7 +496,7 @@ Component({
     },
 
     onFeedback() {
-      wx.showToast({ title: '欢迎通过评价反馈建议', icon: 'none' })
+      wx.navigateTo({ url: '/pages/feedback/feedback' })
     },
 
     onAbout() {

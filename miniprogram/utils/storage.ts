@@ -138,10 +138,270 @@ export interface IAppBackupPayload {
   exportedAt: number
   records: IRecord[]
   categories: ICategories
+  categoryMeta: Record<string, ICategoryMeta>
   budgets: IBudget[]
   recurringRules: IRecurringRule[]
   pendingDrafts: IPendingDraft[]
   userProfile: IUserProfile
+  reminderSettings: IReminderSettings
+  currencyCode: string
+  budgetAlertHistory: Record<string, { level: 'threshold' | 'over'; threshold: number }>
+}
+
+const RECORD_TYPES_SET = new Set(['支出', '收入', '不计入收支'])
+const BUDGET_TYPES_SET = new Set(['支出', '收入'])
+const RECURRING_FREQUENCY_SET = new Set(['daily', 'weekly', 'monthly', 'yearly'])
+const CURRENCY_KEY = 'app_currency'
+const BUDGET_ALERT_HISTORY_KEY = 'budgetAlertHistory'
+
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isValidDateText(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function normalizeText(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((item): item is string => typeof item === 'string')
+}
+
+function sanitizeRecord(value: unknown): IRecord | null {
+  if (!isPlainObject(value)) return null
+  const amount = toFiniteNumber(value.amount)
+  const createTime = toFiniteNumber(value.createTime)
+  const updateTime = toFiniteNumber(value.updateTime)
+  if (
+    typeof value.id !== 'string'
+    || !RECORD_TYPES_SET.has(value.type)
+    || typeof value.category !== 'string'
+    || amount === null
+    || !isValidDateText(value.date)
+    || typeof value.note !== 'string'
+    || createTime === null
+    || updateTime === null
+  ) {
+    return null
+  }
+
+  const record: IRecord = {
+    id: value.id,
+    type: value.type as IRecord['type'],
+    category: value.category,
+    amount: Math.round(amount),
+    date: value.date,
+    note: value.note,
+    createTime,
+    updateTime,
+  }
+
+  if (Array.isArray(value.tags)) {
+    record.tags = normalizeStringArray(value.tags)
+  }
+  if (typeof value.currency === 'string' && value.currency) {
+    record.currency = value.currency
+  }
+
+  return record
+}
+
+function sanitizeBudget(value: unknown): IBudget | null {
+  if (!isPlainObject(value)) return null
+  const year = toFiniteNumber(value.year)
+  const month = toFiniteNumber(value.month)
+  const amount = toFiniteNumber(value.amount)
+  if (
+    year === null
+    || month === null
+    || amount === null
+    || !BUDGET_TYPES_SET.has(value.type)
+    || typeof value.category !== 'string'
+  ) {
+    return null
+  }
+
+  return {
+    year: Math.round(year),
+    month: Math.round(month),
+    type: value.type as IBudget['type'],
+    category: value.category,
+    amount: Math.round(amount),
+  }
+}
+
+function sanitizeRecurringRule(value: unknown): IRecurringRule | null {
+  if (!isPlainObject(value)) return null
+  const amount = toFiniteNumber(value.amount)
+  if (
+    typeof value.id !== 'string'
+    || typeof value.name !== 'string'
+    || !RECORD_TYPES_SET.has(value.type)
+    || typeof value.category !== 'string'
+    || amount === null
+    || typeof value.note !== 'string'
+    || !RECURRING_FREQUENCY_SET.has(value.frequency)
+    || !isValidDateText(value.startDate)
+    || typeof value.lastGeneratedDate !== 'string'
+    || typeof value.enabled !== 'boolean'
+  ) {
+    return null
+  }
+
+  const rule: IRecurringRule = {
+    id: value.id,
+    name: value.name,
+    type: value.type as IRecurringRule['type'],
+    category: value.category,
+    amount: Math.round(amount),
+    note: value.note,
+    frequency: value.frequency as IRecurringRule['frequency'],
+    startDate: value.startDate,
+    lastGeneratedDate: value.lastGeneratedDate,
+    enabled: value.enabled,
+  }
+
+  const dayOfMonth = toFiniteNumber(value.dayOfMonth)
+  const dayOfWeek = toFiniteNumber(value.dayOfWeek)
+  const monthOfYear = toFiniteNumber(value.monthOfYear)
+
+  if (dayOfMonth !== null) rule.dayOfMonth = Math.round(dayOfMonth)
+  if (dayOfWeek !== null) rule.dayOfWeek = Math.round(dayOfWeek)
+  if (monthOfYear !== null) rule.monthOfYear = Math.round(monthOfYear)
+  if (typeof value.endDate === 'string' && value.endDate) rule.endDate = value.endDate
+  if (typeof value.currency === 'string' && value.currency) rule.currency = value.currency
+
+  return rule
+}
+
+function sanitizePendingDraft(value: unknown): IPendingDraft | null {
+  if (!isPlainObject(value)) return null
+  const amount = toFiniteNumber(value.amount)
+  const generatedAt = toFiniteNumber(value.generatedAt)
+  if (
+    typeof value.id !== 'string'
+    || typeof value.ruleId !== 'string'
+    || typeof value.ruleName !== 'string'
+    || !RECORD_TYPES_SET.has(value.type)
+    || typeof value.category !== 'string'
+    || amount === null
+    || typeof value.note !== 'string'
+    || !isValidDateText(value.date)
+    || generatedAt === null
+  ) {
+    return null
+  }
+
+  const draft: IPendingDraft = {
+    id: value.id,
+    ruleId: value.ruleId,
+    ruleName: value.ruleName,
+    type: value.type as IPendingDraft['type'],
+    category: value.category,
+    amount: Math.round(amount),
+    note: value.note,
+    date: value.date,
+    generatedAt,
+  }
+
+  if (typeof value.currency === 'string' && value.currency) {
+    draft.currency = value.currency
+  }
+
+  return draft
+}
+
+function sanitizeCategoryMetaMap(value: unknown): Record<string, ICategoryMeta> {
+  if (!isPlainObject(value)) return {}
+  const entries = Object.entries(value).filter(([, meta]) =>
+    isPlainObject(meta)
+      && typeof meta.icon === 'string'
+      && typeof meta.color === 'string'
+      && typeof meta.bgColor === 'string',
+  )
+
+  return entries.reduce<Record<string, ICategoryMeta>>((result, [name, meta]) => {
+    result[name] = {
+      icon: meta.icon,
+      color: meta.color,
+      bgColor: meta.bgColor,
+    }
+    return result
+  }, {})
+}
+
+function sanitizeUserProfile(value: unknown): IUserProfile {
+  if (!isPlainObject(value)) {
+    return { avatarUrl: '', nickname: '', personalized: false }
+  }
+
+  return {
+    avatarUrl: normalizeText(value.avatarUrl),
+    nickname: normalizeText(value.nickname),
+    personalized: Boolean(value.personalized),
+  }
+}
+
+function sanitizeReminderSettings(value: unknown): IReminderSettings {
+  if (!isPlainObject(value)) return DEFAULT_REMINDER_SETTINGS
+  return {
+    budgetAlertEnabled: Boolean(value.budgetAlertEnabled),
+    budgetAlertThreshold: normalizePercent(value.budgetAlertThreshold, DEFAULT_REMINDER_SETTINGS.budgetAlertThreshold),
+    budgetCategoryAlertEnabled: value.budgetCategoryAlertEnabled === undefined
+      ? DEFAULT_REMINDER_SETTINGS.budgetCategoryAlertEnabled
+      : Boolean(value.budgetCategoryAlertEnabled),
+    budgetRepeatOverAlertEnabled: Boolean(value.budgetRepeatOverAlertEnabled),
+    pendingDraftAlertEnabled: value.pendingDraftAlertEnabled === undefined
+      ? DEFAULT_REMINDER_SETTINGS.pendingDraftAlertEnabled
+      : Boolean(value.pendingDraftAlertEnabled),
+    pendingDraftAlertThreshold: normalizePositiveInt(
+      value.pendingDraftAlertThreshold,
+      DEFAULT_REMINDER_SETTINGS.pendingDraftAlertThreshold,
+    ),
+  }
+}
+
+function sanitizeBudgetAlertHistory(value: unknown): Record<string, { level: 'threshold' | 'over'; threshold: number }> {
+  if (!isPlainObject(value)) return {}
+  return Object.entries(value).reduce<Record<string, { level: 'threshold' | 'over'; threshold: number }>>((result, [key, entry]) => {
+    if (!isPlainObject(entry)) return result
+    if (entry.level !== 'threshold' && entry.level !== 'over') return result
+    result[key] = {
+      level: entry.level,
+      threshold: normalizePercent(entry.threshold, DEFAULT_REMINDER_SETTINGS.budgetAlertThreshold),
+    }
+    return result
+  }, {})
+}
+
+function sanitizeCurrencyCode(code: unknown): string {
+  return typeof code === 'string' && CURRENCIES.some(item => item.code === code) ? code : 'CNY'
+}
+
+function saveCategoryMetaMap(metaMap: Record<string, ICategoryMeta>): void {
+  wx.setStorageSync(CATEGORY_META_KEY, metaMap)
+}
+
+function replaceUserProfile(profile: IUserProfile): void {
+  wx.setStorageSync(USER_PROFILE_KEY, profile)
+}
+
+function replaceBudgetAlertHistory(history: Record<string, { level: 'threshold' | 'over'; threshold: number }>): void {
+  wx.setStorageSync(BUDGET_ALERT_HISTORY_KEY, history)
+}
+
+function escapeCSVCell(value: unknown): string {
+  const text = String(value ?? '')
+  return `"${text.replace(/"/g, '""')}"`
 }
 
 // ---- 记录 CRUD ----
@@ -262,43 +522,81 @@ export function exportRecordsCSV(): string {
   if (records.length === 0) return ''
   // UTF-8 BOM 让 Excel / Numbers 正确识别中文
   const BOM = '\uFEFF'
-  const header = '类型,类别,金额(元),日期,备注,创建时间'
+  const header = '类型,类别,金额(元),货币,日期,备注,创建时间'
   const rows = records.map(r =>
-    `${r.type},${r.category},${(r.amount / 100).toFixed(2)},${r.date},"${r.note.replace(/"/g, '""')}",${new Date(r.createTime).toLocaleString()}`,
+    [
+      escapeCSVCell(r.type),
+      escapeCSVCell(r.category),
+      escapeCSVCell((r.amount / 100).toFixed(2)),
+      escapeCSVCell(r.currency ?? 'CNY'),
+      escapeCSVCell(r.date),
+      escapeCSVCell(r.note),
+      escapeCSVCell(new Date(r.createTime).toLocaleString()),
+    ].join(','),
   )
   return BOM + [header, ...rows].join('\n')
 }
 
 export function exportBackupJSON(): string {
   const payload: IAppBackupPayload = {
-    version: 1,
+    version: 2,
     exportedAt: Date.now(),
     records: getRecords(),
     categories: getCategories(),
+    categoryMeta: getCategoryMeta(),
     budgets: getBudgets(),
     recurringRules: getRecurringRules(),
     pendingDrafts: getPendingDrafts(),
     userProfile: getUserProfile(),
+    reminderSettings: getReminderSettings(),
+    currencyCode: getCurrencyCode(),
+    budgetAlertHistory: wx.getStorageSync(BUDGET_ALERT_HISTORY_KEY) || {},
   }
   return JSON.stringify(payload, null, 2)
 }
 
 export function restoreBackupJSON(raw: string): boolean {
   const parsed = JSON.parse(raw || '{}') as Partial<IAppBackupPayload>
-  if (!Array.isArray(parsed.records) || !parsed.categories || !Array.isArray(parsed.budgets)) {
+  if (!Array.isArray(parsed.records) || !isPlainObject(parsed.categories) || !Array.isArray(parsed.budgets)) {
     return false
   }
 
-  saveRecords(parsed.records)
-  saveCategories({
-    '支出': Array.isArray(parsed.categories['支出']) ? parsed.categories['支出'] : [...DEFAULT_CATEGORIES['支出']],
-    '收入': Array.isArray(parsed.categories['收入']) ? parsed.categories['收入'] : [...DEFAULT_CATEGORIES['收入']],
-    '不计入收支': Array.isArray(parsed.categories['不计入收支']) ? parsed.categories['不计入收支'] : [...DEFAULT_CATEGORIES['不计入收支']],
-  })
-  saveBudgets(Array.isArray(parsed.budgets) ? parsed.budgets : [])
-  saveRecurringRules(Array.isArray(parsed.recurringRules) ? parsed.recurringRules : [])
-  savePendingDrafts(Array.isArray(parsed.pendingDrafts) ? parsed.pendingDrafts : [])
-  saveUserProfile(parsed.userProfile || {})
+  const records = parsed.records.map(sanitizeRecord).filter((item): item is IRecord => Boolean(item))
+  const budgets = parsed.budgets.map(sanitizeBudget).filter((item): item is IBudget => Boolean(item))
+  const recurringRules = Array.isArray(parsed.recurringRules)
+    ? parsed.recurringRules.map(sanitizeRecurringRule).filter((item): item is IRecurringRule => Boolean(item))
+    : []
+  const pendingDrafts = Array.isArray(parsed.pendingDrafts)
+    ? parsed.pendingDrafts.map(sanitizePendingDraft).filter((item): item is IPendingDraft => Boolean(item))
+    : []
+  const categories: ICategories = {
+    '支出': Array.isArray(parsed.categories['支出']) ? normalizeStringArray(parsed.categories['支出']) : [...DEFAULT_CATEGORIES['支出']],
+    '收入': Array.isArray(parsed.categories['收入']) ? normalizeStringArray(parsed.categories['收入']) : [...DEFAULT_CATEGORIES['收入']],
+    '不计入收支': Array.isArray(parsed.categories['不计入收支']) ? normalizeStringArray(parsed.categories['不计入收支']) : [...DEFAULT_CATEGORIES['不计入收支']],
+  }
+
+  if (
+    records.length !== parsed.records.length
+    || budgets.length !== parsed.budgets.length
+    || (Array.isArray(parsed.recurringRules) && recurringRules.length !== parsed.recurringRules.length)
+    || (Array.isArray(parsed.pendingDrafts) && pendingDrafts.length !== parsed.pendingDrafts.length)
+    || (Array.isArray(parsed.categories['支出']) && categories['支出'].length !== parsed.categories['支出'].length)
+    || (Array.isArray(parsed.categories['收入']) && categories['收入'].length !== parsed.categories['收入'].length)
+    || (Array.isArray(parsed.categories['不计入收支']) && categories['不计入收支'].length !== parsed.categories['不计入收支'].length)
+  ) {
+    return false
+  }
+
+  saveRecords(records)
+  saveCategories(categories)
+  saveCategoryMetaMap(sanitizeCategoryMetaMap(parsed.categoryMeta))
+  saveBudgets(budgets)
+  saveRecurringRules(recurringRules)
+  savePendingDrafts(pendingDrafts)
+  replaceUserProfile(sanitizeUserProfile(parsed.userProfile))
+  saveReminderSettings(sanitizeReminderSettings(parsed.reminderSettings))
+  setCurrencyCode(sanitizeCurrencyCode(parsed.currencyCode))
+  replaceBudgetAlertHistory(sanitizeBudgetAlertHistory(parsed.budgetAlertHistory))
   return true
 }
 
@@ -346,8 +644,6 @@ export function removePendingDraft(id: string): void {
 }
 
 // ---- 货币 ----
-
-const CURRENCY_KEY = 'app_currency'
 
 export const CURRENCIES = [
   { code: 'CNY', symbol: '¥',   name: '人民币',   flag: '🇨🇳' },

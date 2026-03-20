@@ -2,7 +2,8 @@
   <view class="swipe-content" style="transform: translateX({{offsetX}}px)"
         bind:touchstart="onTouchStart"
         bind:touchmove="onTouchMove"
-        bind:touchend="onTouchEnd">
+        bind:touchend="onTouchEnd"
+        bind:touchcancel="onTouchEnd">
     <slot></slot>
   </view>
   <view class="actions">

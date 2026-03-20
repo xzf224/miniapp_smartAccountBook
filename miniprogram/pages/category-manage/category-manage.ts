@@ -10,6 +10,13 @@ interface CategoryDisplayItem {
   bgColor: string
 }
 
+interface FormPreviewPatch {
+  typeIndex?: number
+  newName?: string
+  budgetYuan?: string
+  selectedColor?: string
+}
+
 const PASTEL_BACKGROUNDS = [
   '#FFF2E8', '#EEF4FF', '#F4EDFF', '#EAFBF1',
   '#EDF5FF', '#FFF0F4', '#FFF8E5', '#EEFBEF',
@@ -53,8 +60,12 @@ Component({
     showAddForm: false,
     selectedIcon: FORM_ICON_OPTIONS[0],
     selectedColor: FORM_COLOR_OPTIONS[1],
+    selectedPreviewBg: createSoftBackground(FORM_COLOR_OPTIONS[1]),
     newName: '',
     budgetYuan: '',
+    formNamePreviewText: '未命名分类',
+    formBudgetPreviewText: '未设置预算',
+    formTypePreviewText: '支出',
     iconOptions: FORM_ICON_OPTIONS,
     colorOptions: FORM_COLOR_OPTIONS,
   },
@@ -72,6 +83,20 @@ Component({
   },
 
   methods: {
+    buildFormPreview(patch: FormPreviewPatch) {
+      const typeIndex = typeof patch.typeIndex === 'number' ? patch.typeIndex : this.data.typeIndex
+      const newName = typeof patch.newName === 'string' ? patch.newName : this.data.newName
+      const budgetYuan = typeof patch.budgetYuan === 'string' ? patch.budgetYuan : this.data.budgetYuan
+      const selectedColor = typeof patch.selectedColor === 'string' ? patch.selectedColor : this.data.selectedColor
+
+      return {
+        selectedPreviewBg: createSoftBackground(selectedColor),
+        formNamePreviewText: newName.trim() || '未命名分类',
+        formBudgetPreviewText: budgetYuan ? `¥${budgetYuan}` : '未设置预算',
+        formTypePreviewText: this.data.types[typeIndex] || '支出',
+      }
+    },
+
     loadCategories() {
       const { typeIndex } = this.data
       const cats = getCategories()
@@ -94,7 +119,10 @@ Component({
 
     onTypeChange(e: WechatMiniprogram.CustomEvent) {
       const typeIndex = Number(e.currentTarget.dataset.index)
-      this.setData({ typeIndex }, () => this.loadCategories())
+      this.setData({
+        typeIndex,
+        ...this.buildFormPreview({ typeIndex }),
+      }, () => this.loadCategories())
     },
 
     onAddCategory() {
@@ -102,8 +130,12 @@ Component({
         showAddForm: true,
         selectedIcon: FORM_ICON_OPTIONS[0],
         selectedColor: FORM_COLOR_OPTIONS[1],
+        selectedPreviewBg: createSoftBackground(FORM_COLOR_OPTIONS[1]),
         newName: '',
         budgetYuan: '',
+        formNamePreviewText: '未命名分类',
+        formBudgetPreviewText: '未设置预算',
+        formTypePreviewText: this.data.types[this.data.typeIndex] || '支出',
       })
     },
 
@@ -118,11 +150,18 @@ Component({
 
     onSelectColor(e: WechatMiniprogram.TouchEvent) {
       const selectedColor = (e.currentTarget.dataset || {}).color as string
-      this.setData({ selectedColor })
+      this.setData({
+        selectedColor,
+        ...this.buildFormPreview({ selectedColor }),
+      })
     },
 
     onNameInput(e: WechatMiniprogram.Input) {
-      this.setData({ newName: e.detail.value })
+      const newName = e.detail.value
+      this.setData({
+        newName,
+        ...this.buildFormPreview({ newName }),
+      })
     },
 
     onBudgetInput(e: WechatMiniprogram.Input) {
@@ -131,7 +170,10 @@ Component({
         .replace(/^\./, '')
         .replace(/(\..*)\./g, '$1')
         .replace(/^(\d+)\.(\d{0,2}).*$/, '$1.$2')
-      this.setData({ budgetYuan: normalized })
+      this.setData({
+        budgetYuan: normalized,
+        ...this.buildFormPreview({ budgetYuan: normalized }),
+      })
     },
 
     onSaveCategory() {
@@ -185,8 +227,12 @@ Component({
         showAddForm: false,
         selectedIcon: FORM_ICON_OPTIONS[0],
         selectedColor: FORM_COLOR_OPTIONS[1],
+        selectedPreviewBg: createSoftBackground(FORM_COLOR_OPTIONS[1]),
         newName: '',
         budgetYuan: '',
+        formNamePreviewText: '未命名分类',
+        formBudgetPreviewText: '未设置预算',
+        formTypePreviewText: this.data.types[this.data.typeIndex] || '支出',
       })
       this.loadCategories()
       wx.showToast({ title: '分类已添加', icon: 'success' })

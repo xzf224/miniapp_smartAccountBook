@@ -1,70 +1,146 @@
 <view class="page-root">
   <block wx:if="{{!showAddForm}}">
     <navigation-bar title="分类管理" back="{{true}}" background="#F6F7F9" />
-    <view class="page-body">
-      <view class="type-switch">
-        <view
-          class="type-pill {{typeIndex === index ? 'active' : ''}}"
-          wx:for="{{types}}"
-          wx:key="*this"
-          data-index="{{index}}"
-          bind:tap="onTypeChange"
-        >
-          {{item}}
+    <scroll-view scroll-y class="page-body">
+      <view class="hero-card hero-card-compact">
+        <view class="hero-copy">
+          <text class="hero-title">让分类更贴近你的记账方式</text>
+          <text class="hero-desc">{{types[typeIndex]}}分类共 {{categories.length}} 个，自定义分类支持长按删除。</text>
         </view>
-      </view>
-
-      <scroll-view scroll-y class="category-scroll">
-        <view class="category-grid">
-          <view
-            class="category-item"
-            wx:for="{{categories}}"
-            wx:key="name"
-            data-name="{{item.name}}"
-            bindlongpress="onCategoryLongPress"
-          >
-            <view class="category-icon-wrap" style="background: {{item.bgColor}};">
-              <text class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
-            </view>
-            <text class="category-name">{{item.displayName}}</text>
+        <view class="hero-preview-row">
+          <view class="hero-preview-pill">
+            <text class="hero-preview-kicker">当前分组</text>
+            <text class="hero-preview-value">{{types[typeIndex]}}</text>
+          </view>
+          <view class="hero-preview-pill">
+            <text class="hero-preview-kicker">分类数量</text>
+            <text class="hero-preview-value">{{categories.length}} 个</text>
           </view>
         </view>
-        <view class="category-tip" wx:if="{{categories.length > 0}}">
+      </view>
+
+      <text class="section-title section-title-first">当前分类</text>
+      <view class="group-card">
+        <view class="field-block">
+          <view class="segmented-control">
+            <view
+              class="segmented-item {{typeIndex === index ? 'segmented-item-active' : ''}}"
+              wx:for="{{types}}"
+              wx:key="*this"
+              data-index="{{index}}"
+              bind:tap="onTypeChange"
+            >
+              {{item}}
+            </view>
+          </view>
+        </view>
+
+        <view class="divider divider-full"></view>
+
+        <view class="category-grid-wrap">
+          <view class="category-grid">
+            <view
+              class="category-item"
+              wx:for="{{categories}}"
+              wx:key="name"
+              data-name="{{item.name}}"
+              bindlongpress="onCategoryLongPress"
+            >
+              <view class="category-icon-wrap" style="background: {{item.bgColor}};">
+                <text class="category-icon" style="color: {{item.color}};">{{item.icon}}</text>
+              </view>
+              <text class="category-name">{{item.displayName}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="divider divider-full" wx:if="{{categories.length > 0}}"></view>
+        <view class="group-foot" wx:if="{{categories.length > 0}}">
           长按自定义分类可删除
         </view>
-        <view class="scroll-spacer"></view>
-      </scroll-view>
-
-      <view class="action-bar">
-        <view class="add-trigger" bind:tap="onAddCategory">
-          <text class="add-trigger-text">+ 添加自定义分类</text>
-        </view>
       </view>
+
+      <view class="page-gap"></view>
+    </scroll-view>
+
+    <view class="bottom-bar">
+      <view class="save-btn" bind:tap="onAddCategory">+ 新增自定义分类</view>
     </view>
   </block>
 
   <block wx:else>
     <navigation-bar title="添加分类" back="{{false}}" background="#F6F7F9">
       <view slot="left" class="nav-back" bindtap="onCloseAddForm">‹</view>
-      <view slot="right" class="nav-save" bindtap="onSaveCategory">保存</view>
     </navigation-bar>
 
-    <scroll-view scroll-y class="page-scroll">
-      <view class="form-content">
-        <view class="type-switch">
-          <view
-            class="type-pill {{typeIndex === index ? 'active' : ''}}"
-            wx:for="{{types}}"
-            wx:key="*this"
-            data-index="{{index}}"
-            bindtap="onTypeChange"
-          >
-            {{item}}
+    <scroll-view scroll-y class="page-body">
+      <view class="hero-card hero-card-compact">
+        <view class="hero-top">
+          <view class="hero-copy">
+            <text class="hero-title">新增一个更贴合你习惯的分类</text>
+            <text class="hero-desc">先定义类型和视觉标识，再决定要不要给它设置预算。</text>
+          </view>
+          <view class="hero-badge">保存后立即可用</view>
+        </view>
+        <view class="hero-preview-card">
+          <view class="hero-preview-icon" style="background: {{selectedPreviewBg}};">
+            <text class="hero-preview-icon-text" style="color: {{selectedColor}};">{{selectedIcon}}</text>
+          </view>
+          <view class="hero-preview-copy">
+            <text class="hero-preview-name">{{formNamePreviewText}}</text>
+            <text class="hero-preview-meta">{{formTypePreviewText}} · {{formBudgetPreviewText}}</text>
+          </view>
+        </view>
+      </view>
+
+      <text class="section-title section-title-first">基本信息</text>
+      <view class="group-card">
+        <view class="field-block">
+          <view class="field-head">
+            <text class="field-label">类型</text>
+            <text class="field-meta">归入{{formTypePreviewText}}分类</text>
+          </view>
+          <view class="segmented-control">
+            <view
+              class="segmented-item {{typeIndex === index ? 'segmented-item-active' : ''}}"
+              wx:for="{{types}}"
+              wx:key="*this"
+              data-index="{{index}}"
+              bindtap="onTypeChange"
+            >
+              {{item}}
+            </view>
           </view>
         </view>
 
-        <view class="form-section">
-          <text class="form-section-title">选择图标</text>
+        <view class="divider divider-full"></view>
+
+        <view class="field-block">
+          <view class="field-head">
+            <text class="field-label">分类名称</text>
+            <text class="field-meta">最多 6 个字</text>
+          </view>
+          <view class="input-shell">
+            <input
+              class="field-input"
+              placeholder="如：宠物、零食、会员"
+              placeholder-class="field-placeholder"
+              value="{{newName}}"
+              maxlength="6"
+              bindinput="onNameInput"
+            />
+          </view>
+          <text class="field-help">建议使用你平时会直接想到的称呼，后续找分类更快。</text>
+        </view>
+      </view>
+
+      <text class="section-title">图标与颜色</text>
+      <view class="group-card">
+        <view class="field-block field-block-stack">
+          <view class="field-head">
+            <text class="field-label">选择图标</text>
+            <text class="field-meta">已选 {{selectedIcon}}</text>
+          </view>
           <view class="icon-grid">
             <view
               class="icon-item {{selectedIcon === item ? 'selected' : ''}}"
@@ -78,8 +154,13 @@
           </view>
         </view>
 
-        <view class="form-section">
-          <text class="form-section-title">选择颜色</text>
+        <view class="divider divider-full"></view>
+
+        <view class="field-block field-block-stack">
+          <view class="field-head">
+            <text class="field-label">选择颜色</text>
+            <text class="field-meta">会同步用于分类标识</text>
+          </view>
           <view class="color-row">
             <view
               class="color-item {{selectedColor === item ? 'selected' : ''}}"
@@ -92,35 +173,37 @@
               <text wx:if="{{selectedColor === item}}" class="color-check">✓</text>
             </view>
           </view>
+          <text class="field-help">颜色会用于分类球标和后续页面里的识别色。</text>
         </view>
+      </view>
 
-        <view class="form-section">
-          <text class="form-section-title">分类名称</text>
-          <input
-            class="form-input"
-            placeholder="宠物"
-            value="{{newName}}"
-            maxlength="6"
-            bindinput="onNameInput"
-          />
-        </view>
-
-        <view class="form-section">
-          <text class="form-section-title">预算限额（可选）</text>
+      <text class="section-title">预算限额</text>
+      <view class="group-card">
+        <view class="field-block">
+          <view class="field-head">
+            <text class="field-label">预算限额（可选）</text>
+            <text class="field-meta">{{formBudgetPreviewText}}</text>
+          </view>
           <view class="money-input">
             <text class="money-symbol">¥</text>
             <input
               class="money-field"
               type="digit"
               placeholder="设置每月预算"
+              placeholder-class="field-placeholder"
               value="{{budgetYuan}}"
               bindinput="onBudgetInput"
             />
           </view>
+          <text class="field-help">不填也可以，之后再单独补预算。</text>
         </view>
-
-        <view class="save-button" bindtap="onSaveCategory">保存分类</view>
       </view>
+
+      <view class="page-gap"></view>
     </scroll-view>
+
+    <view class="bottom-bar">
+      <view class="save-btn" bindtap="onSaveCategory">保存分类</view>
+    </view>
   </block>
 </view>

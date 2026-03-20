@@ -66,6 +66,9 @@
   color: var(--color-text-secondary);
   margin-top: 4rpx;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .record-item-compact .category {

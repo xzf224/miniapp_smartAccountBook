@@ -49,6 +49,7 @@ Component({
     budgetAlertTone: 'warning',
     budgetAlertTitle: '',
     budgetAlertText: '',
+    openedRecordId: '',
   },
 
   lifetimes: {
@@ -152,11 +153,13 @@ Component({
 
     onRecordEdit(e: any) {
       const id = (e.currentTarget.dataset as any).id as string
+      this.setData({ openedRecordId: '' })
       wx.navigateTo({ url: `/pages/add-record/add-record?id=${id}` })
     },
 
     onRecordDelete(e: any) {
       const id = (e.currentTarget.dataset as any).id as string
+      this.setData({ openedRecordId: '' })
       wx.showModal({
         title: '确认删除',
         content: '删除后不可恢复',
@@ -167,6 +170,28 @@ Component({
           }
         },
       })
+    },
+
+    onSwipeOpen(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      if (id !== this.data.openedRecordId) {
+        this.setData({ openedRecordId: id })
+      }
+    },
+
+    onSwipeClose(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      if (id === this.data.openedRecordId) {
+        this.setData({ openedRecordId: '' })
+      }
+    },
+
+    onRecordWrapTap() {},
+
+    onCloseOpenedSwipe() {
+      if (this.data.openedRecordId) {
+        this.setData({ openedRecordId: '' })
+      }
     },
 
     onViewDrafts() {

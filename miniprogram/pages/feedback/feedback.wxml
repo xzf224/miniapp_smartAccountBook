@@ -1,0 +1,74 @@
+<view class="page-root">
+  <navigation-bar title="意见反馈" back="{{true}}" />
+  <scroll-view scroll-y class="page-body">
+    <view class="hero-card">
+      <text class="hero-title">把不顺手的地方告诉我</text>
+      <text class="hero-desc">优先收集真实使用里的卡点。功能建议、体验问题和 bug 都可以直接提交。</text>
+      <view class="hero-meta-row">
+        <view class="hero-meta-pill">
+          <text class="hero-meta-kicker">当前版本</text>
+          <text class="hero-meta-value">{{version}}</text>
+        </view>
+        <view class="hero-meta-pill">
+          <text class="hero-meta-kicker">提交方式</text>
+          <text class="hero-meta-value">云端收集</text>
+        </view>
+      </view>
+    </view>
+
+    <text class="section-title">问题类型</text>
+    <view class="group-card type-group">
+      <view
+        wx:for="{{feedbackTypes}}"
+        wx:key="*this"
+        class="type-chip {{item === selectedType ? 'type-chip-active' : ''}}"
+        data-type="{{item}}"
+        bind:tap="onTypeSelect"
+      >
+        <text class="type-chip-text {{item === selectedType ? 'type-chip-text-active' : ''}}">{{item}}</text>
+      </view>
+    </view>
+
+    <text class="section-title">问题描述</text>
+    <view class="group-card form-card">
+      <textarea
+        class="feedback-textarea"
+        value="{{content}}"
+        maxlength="{{maxContentLength}}"
+        placeholder="比如：哪里不好找、哪里看不懂、在哪一步出现了异常，尽量写清触发步骤。"
+        placeholder-class="feedback-placeholder"
+        auto-height
+        show-confirm-bar="{{false}}"
+        bind:input="onContentInput"
+      />
+      <view class="field-footer">
+        <text class="field-hint">建议写清页面、操作步骤和预期结果</text>
+        <text class="field-count">{{content.length}} / {{maxContentLength}}</text>
+      </view>
+    </view>
+
+    <text class="section-title">联系方式</text>
+    <view class="group-card form-card">
+      <input
+        class="contact-input"
+        value="{{contact}}"
+        maxlength="{{maxContactLength}}"
+        placeholder="选填：微信号 / 手机号 / 邮箱"
+        placeholder-class="feedback-placeholder"
+        bind:input="onContactInput"
+      />
+      <text class="field-hint">如果愿意继续沟通，可以留下联系方式</text>
+    </view>
+
+    <view class="privacy-card">
+      <text class="privacy-title">提交时会一并附带</text>
+      <text class="privacy-desc">问题类型、App 版本、设备基础信息和你的 openid，用于定位问题，不会读取账单明细。</text>
+    </view>
+
+    <button class="submit-btn" loading="{{submitting}}" disabled="{{submitting}}" bind:tap="onSubmit">
+      {{submitting ? '提交中...' : '提交反馈'}}
+    </button>
+
+    <view class="page-gap"></view>
+  </scroll-view>
+</view>

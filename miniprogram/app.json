@@ -16,6 +16,7 @@
     "pages/pending-drafts/pending-drafts",
     "pages/currency-setting/currency-setting",
     "pages/reminder-setting/reminder-setting",
+    "pages/feedback/feedback",
     "pages/about/about"
   ],
   "window": {

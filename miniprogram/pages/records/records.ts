@@ -1,5 +1,5 @@
 import { fenToYuan } from '../../models/record'
-import { getRecords, getCurrencySymbol, getCurrencyCode } from '../../utils/storage'
+import { getRecords, getCurrencySymbol, getCurrencyCode, deleteRecord } from '../../utils/storage'
 import { getToday, getWeekRange, groupRecordsByDate } from '../../utils/date'
 
 const now = new Date()
@@ -13,6 +13,17 @@ function formatRecordDateTime(record: any): string {
   if (Number.isNaN(value.getTime())) return record.date || ''
   const timeText = `${String(value.getHours()).padStart(2, '0')}:${String(value.getMinutes()).padStart(2, '0')}`
   return `${record.date} ${timeText}`
+}
+
+function formatRecordSubText(record: any): string {
+  const raw = formatRecordDateTime(record)
+  const timeText = raw.includes(' ') ? raw.split(' ')[1] : raw
+  const noteText = typeof record.note === 'string'
+    ? record.note.trim().replace(/\s+/g, ' ')
+    : ''
+
+  if (timeText && noteText) return `${timeText} · ${noteText}`
+  return timeText || noteText || record.date || ''
 }
 
 Component({
@@ -71,6 +82,7 @@ Component({
     currencySymbol: '¥',
     appliedTags: [] as Array<{ key: string; label: string }>,
     mixedCurrencyCount: 0,
+    openedRecordId: '',
   },
 
   lifetimes: {
@@ -238,7 +250,7 @@ Component({
       const currentCurrencyCode = getCurrencyCode()
       const groups = groupRecordsByDate(list.map((record: any) => ({
         ...record,
-        dateTimeText: formatRecordDateTime(record),
+        dateTimeText: formatRecordSubText(record),
       })) as any, currentCurrencyCode)
       const hasAdvanced = this.countAdvancedFilters(this.data) > 0
 
@@ -246,6 +258,7 @@ Component({
         groups,
         hasAdvancedFilter: hasAdvanced,
         appliedTags: this.buildAppliedTags(),
+        openedRecordId: '',
         ...this.buildSummary(list, groups, currentCurrencyCode),
       })
     },
@@ -274,6 +287,49 @@ Component({
     onSearchClear() {
       this.setData({ keyword: '' })
       this.loadData()
+    },
+
+    onRecordEdit(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      this.setData({ openedRecordId: '' })
+      wx.navigateTo({ url: `/pages/add-record/add-record?id=${id}` })
+    },
+
+    onRecordDelete(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      this.setData({ openedRecordId: '' })
+      wx.showModal({
+        title: '确认删除',
+        content: '删除后不可恢复',
+        success: (res: WechatMiniprogram.ShowModalSuccessCallbackResult) => {
+          if (res.confirm) {
+            deleteRecord(id)
+            this.loadData()
+          }
+        },
+      })
+    },
+
+    onSwipeOpen(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      if (id !== this.data.openedRecordId) {
+        this.setData({ openedRecordId: id })
+      }
+    },
+
+    onSwipeClose(e: WechatMiniprogram.CustomEvent) {
+      const id = (e.currentTarget.dataset as any).id as string
+      if (id === this.data.openedRecordId) {
+        this.setData({ openedRecordId: '' })
+      }
+    },
+
+    onRecordWrapTap() {},
+
+    onCloseOpenedSwipe() {
+      if (this.data.openedRecordId) {
+        this.setData({ openedRecordId: '' })
+      }
     },
 
     // 高级筛选面板

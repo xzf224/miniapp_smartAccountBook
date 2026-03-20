@@ -2,7 +2,7 @@
   <view slot="center" class="nav-title">交易记录</view>
 </navigation-bar>
 
-<scroll-view scroll-y class="page-scroll">
+<scroll-view scroll-y class="page-scroll" bind:tap="onCloseOpenedSwipe">
 
   <!-- 日期控件 + 筛选按钮 -->
   <view class="month-header">
@@ -81,8 +81,17 @@
         <view class="group-day-summary">{{item.dayExpense > 0 ? '支 ' + currencySymbol + item.dayExpenseText : ''}}{{item.dayExpense > 0 && item.dayIncome > 0 ? ' · ' : ''}}{{item.dayIncome > 0 ? '收 ' + currencySymbol + item.dayIncomeText : ''}}</view>
       </view>
       <view class="group-card">
-        <view wx:for="{{item.records}}" wx:key="id" wx:for-item="record">
-          <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.dateTimeText}}" />
+        <view wx:for="{{item.records}}" wx:key="id" wx:for-item="record" catch:tap="onRecordWrapTap">
+          <swipe-cell
+            opened="{{openedRecordId === record.id}}"
+            bind:open="onSwipeOpen"
+            bind:close="onSwipeClose"
+            bind:edit="onRecordEdit"
+            bind:delete="onRecordDelete"
+            data-id="{{record.id}}"
+          >
+            <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.dateTimeText}}" />
+          </swipe-cell>
           <view class="record-divider" wx:if="{{index < item.records.length - 1}}"></view>
         </view>
       </view>

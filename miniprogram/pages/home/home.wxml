@@ -1,5 +1,5 @@
 <navigation-bar brand="{{true}}" back="{{false}}" />
-<scroll-view scroll-y class="page-body tab-scroll">
+<scroll-view scroll-y class="page-body tab-scroll" bind:tap="onCloseOpenedSwipe">
   <view class="month-header flex-row">
     <picker mode="multiSelector" value="{{pickerValue}}" range="{{pickerRange}}" bind:change="onPickerChange">
       <view class="month-selector">
@@ -92,8 +92,15 @@
         </view>
       </view>
       <view class="day-records" style="overflow: hidden;">
-        <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap">
-          <swipe-cell bind:edit="onRecordEdit" bind:delete="onRecordDelete" data-id="{{record.id}}">
+        <view wx:for="{{group.records}}" wx:key="id" wx:for-item="record" class="record-wrap" catch:tap="onRecordWrapTap">
+          <swipe-cell
+            opened="{{openedRecordId === record.id}}"
+            bind:open="onSwipeOpen"
+            bind:close="onSwipeClose"
+            bind:edit="onRecordEdit"
+            bind:delete="onRecordDelete"
+            data-id="{{record.id}}"
+          >
             <record-item record="{{record}}" compact="{{true}}" iconVariant="budget" subText="{{record.timeText}}" />
           </swipe-cell>
           <view class="divider" wx:if="{{index < group.records.length - 1}}"></view>
